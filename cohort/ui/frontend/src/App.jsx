@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getGraph, getHealth, getRefusals } from './api'
 import DetailPanel from './DetailPanel'
-import GraphView from './GraphView'
+import GraphView, { NODE_LEGEND } from './GraphView'
 import CorpusPanel from './CorpusPanel'
 import FindingsPanel from './FindingsPanel'
 import RefusalsPanel from './RefusalsPanel'
@@ -215,12 +215,12 @@ export default function App() {
 }
 
 function Legend({ data, showAudit }) {
-  // Describes *this* graph, not the vocabulary: `legendFor` keeps only the
-  // entries whose edges are actually drawn. See graph-model.js for why that is
-  // safe to shrink, and why the discounting entry says "discounts" in words
-  // rather than leaving it to a dash pattern.
-  const { edges, statuses } = legendFor(data.nodes, data.edges, { showAudit })
-  if (!edges.length && !statuses.length) return null
+  // Edge key describes *this* graph (`legendFor` keeps only drawn edges); the
+  // node key explains the fill colours, which now carry meaning rather than
+  // status: a claim reads green/yellow/red for supported / insufficient /
+  // contradicted, a source text is black, a passage and a query blue. A dashed
+  // outline still marks a proposed (unchecked) node on the canvas.
+  const { edges } = legendFor(data.nodes, data.edges, { showAudit })
 
   return (
     <div className="legend">
@@ -229,9 +229,11 @@ function Legend({ data, showAudit }) {
           <i className={`swatch ${e.klass}`} /> {emphasise(e.text, e.strong)}
         </span>
       ))}
-      {!!edges.length && !!statuses.length && <span className="sep" />}
-      {statuses.map((s) => (
-        <span className="li" key={s}><i className={`dot s-${s}`} /> {s}</span>
+      {!!edges.length && <span className="sep" />}
+      {NODE_LEGEND.map((n) => (
+        <span className="li" key={n.key}>
+          <i className="dot" style={{ background: n.color }} /> {n.key}
+        </span>
       ))}
     </div>
   )
