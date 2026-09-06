@@ -191,6 +191,29 @@ class VerificationMethod(StrEnum):
     #: makes it a test rather than a check.
     PROSPECTIVE_TEST = "prospective_test"
 
+    #: Re-count a stated feature across the corpus and compare the numbers to
+    #: the ones a claim's author recorded (`cohort.measure`,
+    #: `cohort.tools.measure_claim`).
+    #:
+    #: Added 2026-09-06 with the argument §6 requires, for the Paramārtha
+    #: ascription question. Until now an agent could write "occurs eighteen
+    #: times in P-23, twice in P-weird" into a `derivation` and the graph had
+    #: no way to disagree. In an attribution study *every* claim is a count or
+    #: a rate, so that gap is not a rough edge: it is the difference between a
+    #: finding and a story with figures in it.
+    #:
+    #: It belongs here for the same reason `PROSPECTIVE_TEST` does and
+    #: `MODEL_ENTAILMENT` still does not — nothing in it is anyone's opinion.
+    #: A stated feature is counted again over the same works and the same base
+    #: edition, and the integers are compared. `cohort.measure` is pure and
+    #: deterministic precisely so this comparison means something.
+    #:
+    #: What it cannot do is say a feature *discriminates*. It re-derives the
+    #: numbers a claim rests on; whether they support the claim is a judgement,
+    #: and putting that judgement in a verification would turn a recount into a
+    #: verdict.
+    CORPUS_MEASUREMENT = "corpus_measurement"
+
 
 class VerificationResult(StrEnum):
     PASS = "pass"

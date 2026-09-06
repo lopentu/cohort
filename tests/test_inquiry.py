@@ -16,6 +16,7 @@ from __future__ import annotations
 import pytest
 
 from cohort.agents.roster import check_distinct_model_families
+from cohort.families import model_family
 from cohort.eventlog import EventLog, read_events, read_runs
 from cohort.graph import Graph
 from cohort.schemas import (
@@ -25,7 +26,7 @@ from cohort.schemas import (
     QuestionPayload,
 )
 from cohort.ui.runs import (
-    INQUIRY_STANCES,
+    INQUIRY_STANCE,
     ROLE_REVIEWER,
     ROLE_WORKER,
     RunRejected,
@@ -97,7 +98,10 @@ def test_the_planned_roster_is_one_the_write_boundary_accepts():
 
 def test_it_never_exceeds_the_server_ceiling():
     assert len(plan(max_agents=2, models=THREE)) == 2
-    assert len(plan(max_agents=1, models=THREE)) == 1
+    assert len(plan(max_agents=1, models=THREE)) == 1, (
+        "a ceiling of one spends the only seat on the worker: a lone reviewer "
+        "would have nothing to review"
+    )
 
 
 def test_an_empty_pool_still_plans_one_agent():
@@ -110,25 +114,39 @@ def test_an_empty_pool_still_plans_one_agent():
 
 # --- the second worker is not a copy of the first ----------------------------
 
-def test_the_second_worker_looks_for_what_would_break_an_answer():
-    """Two agents with the same question and the same instructions run the
-    same searches and return the same passages, and two identical answers read
-    as corroboration while being one result counted twice. So the stances
-    differ, and the second one's job is disconfirmation."""
+def test_the_one_worker_is_asked_to_break_its_own_answer():
+    """Auto mode plans one worker and one reviewer, so the disconfirming job
+    that used to belong to a second worker belongs to this one. Dropping it
+    when the roster shrank would have cut the half worth keeping:
+    `record_contradiction` has never been called in a live run, and nothing had
+    ever asked anyone to try."""
     specs = plan()
     workers = [s for s in specs if s.role == ROLE_WORKER]
-    assert len(workers) == 2
-    assert workers[0].instructions != workers[1].instructions
-    assert workers[0].method_label == "direct attestation"
-    assert workers[1].method_label == "disconfirmation"
-    assert "contradiction" in workers[1].instructions
+    assert len(workers) == 1
+    task = workers[0].instructions
+    assert "attest an answer" in task, "the worker still has to propose something"
+    assert "make your own answer wrong" in task, "and still has to try to break it"
+    assert "record the contradiction" in task
 
 
-def test_the_stances_are_fixed_not_generated():
-    """Fixed on purpose: a per-run stance would be a model deciding how to
-    inquire, and would make two runs on one question incomparable."""
-    assert len(INQUIRY_STANCES) == 2
-    assert plan()[0].instructions == plan()[0].instructions
+def test_the_roster_is_one_worker_and_one_reviewer():
+    """Not scaled to the pool. A third family buys a second opinion on the
+    same question, which is worth less than the checking the reviewer already
+    does, and costs another model's spend per run."""
+    assert [s.role for s in plan()] == [ROLE_WORKER, ROLE_REVIEWER]
+    assert len(plan(models=THREE + ["delta/m4", "epsilon/m5"])) == 2
+
+
+def test_the_worker_takes_the_default_model_and_the_reviewer_the_next_family():
+    """The pool's first entry is `OPENROUTER_MODEL`, the configured default, so
+    the worker runs on whatever the operator set and the reviewer takes the
+    next distinct provider. The two cannot be the same: `ReviewerNotIndependent`
+    refuses an attest across one family, so a same-family reviewer could never
+    promote anything it checked."""
+    specs = plan()
+    assert specs[0].model == THREE[0]
+    assert specs[1].model == THREE[1]
+    assert model_family(specs[0].model) != model_family(specs[1].model)
 
 
 def test_every_agent_declares_a_method():
@@ -277,7 +295,11 @@ def test_the_config_reports_the_roster_auto_would_build(tmp_path, monkeypatch):
     Graph(db, event_log=EventLog(log)).close()
 
     plan_rows = RunManager(db, log, None, max_budget_usd=0.5).config()["plan"]
-    assert [r["role"] for r in plan_rows] == [ROLE_WORKER, ROLE_WORKER, ROLE_REVIEWER]
+    assert [r["role"] for r in plan_rows] == [ROLE_WORKER, ROLE_REVIEWER], (
+        "the preview has to match what a run would actually build: a launcher "
+        "that promises three agents and starts two is worse than one that "
+        "promises nothing"
+    )
     # the preview carries no instructions: those depend on the question, and a
     # preview that showed a task for a question nobody picked would be fiction
     assert all("instructions" not in r for r in plan_rows)

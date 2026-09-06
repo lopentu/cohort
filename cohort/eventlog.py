@@ -77,7 +77,11 @@ class EventLog:
         cost_usd: float | None = None,
     ) -> Event:
         if event not in EVENT_TYPES:
-            raise UnknownEventType(event)
+            raise UnknownEventType(
+            f"{event!r} is not one of the recorded event types. The vocabulary is "
+            "closed on purpose (docs/design.md §6); adding one takes an "
+            "argument, not just a new string."
+        )
         record = Event(
             seq=self._next_seq,
             event=event,

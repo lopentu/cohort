@@ -323,7 +323,12 @@ class Graph:
         existing = self._get_row(node_id)
         if existing is not None and existing["status"] == NodeStatus.REJECTED:
             self._refuse(
-                "propose", authored_by, PersistentRejection(node_id),
+                "propose", authored_by, PersistentRejection(
+                    f"{node_id} was rejected by the researcher and proposing "
+                    "it again would quietly undo that. Reopen it with a reason "
+                    "if it deserves another look — the rejection stays on the "
+                    "record either way."
+                ),
                 node_id=node_id, node_type=NodeType.PASSAGE,
             )
         edge_id = None if existing is not None else f"edge:{uuid.uuid4().hex}"
@@ -368,7 +373,12 @@ class Graph:
         existing = self._get_row(node_id)
         if existing is not None and existing["status"] == NodeStatus.REJECTED:
             self._refuse(
-                "propose", authored_by, PersistentRejection(node_id),
+                "propose", authored_by, PersistentRejection(
+                    f"{node_id} was rejected by the researcher and proposing "
+                    "it again would quietly undo that. Reopen it with a reason "
+                    "if it deserves another look — the rejection stays on the "
+                    "record either way."
+                ),
                 node_id=node_id, node_type=node_type,
             )
         ev = self.event_log_or_raise().append(
@@ -414,19 +424,34 @@ class Graph:
         if node.type == NodeType.CLAIM:
             if not self._has_qualifying_attestation(node_id):
                 self._refuse(
-                    "attest", authored_by, UnattestableClaim(node_id),
+                    "attest", authored_by, UnattestableClaim(
+                        f"{node_id} has no attesting passage that is itself "
+                        "attested or better, so the mechanical check has "
+                        "nothing to run against. Gather evidence for it first "
+                        "— a claim is attestable once a located passage cites it."
+                    ),
                     node_id=node_id, node_type=node.type,
                 )
         elif node.type == NodeType.CONJECTURE:
             if not self._has_inbound_edge(node_id, EdgeType.TESTS):
                 self._refuse(
-                    "attest", authored_by, UnattestableConjecture(node_id),
+                    "attest", authored_by, UnattestableConjecture(
+                        f"{node_id} has no `tests` query, so nothing could "
+                        "refute it. Attesting passages do not satisfy this: a "
+                        "conjecture exceeds its evidence by design, and what "
+                        "makes it attestable is naming the retrieval that "
+                        "would settle it."
+                    ),
                     node_id=node_id, node_type=node.type,
                 )
         elif node.type == NodeType.PASSAGE:
             if not self._has_outbound_edge(node_id, EdgeType.PART_OF):
                 self._refuse(
-                    "attest", authored_by, PassageNotLocated(node_id),
+                    "attest", authored_by, PassageNotLocated(
+                        f"{node_id} has no `part_of` edge to a witness, so "
+                        "where it sits in the corpus is unrecorded and its "
+                        "reference cannot be resolved."
+                    ),
                     node_id=node_id, node_type=node.type,
                 )
         ev = self.event_log_or_raise().append(
@@ -455,7 +480,11 @@ class Graph:
         self._require_researcher(authored_by, action="reject", node_id=node_id)
         if not reason or not reason.strip():
             self._refuse(
-                "reject", authored_by, MissingRejectionReason(node_id), node_id=node_id,
+                "reject", authored_by, MissingRejectionReason(
+                    f"rejecting {node_id} needs a stated reason. What was "
+                    "thrown out and why is part of the record; a rejection "
+                    "with no reason reads later as an unexplained gap."
+                ), node_id=node_id,
             )
         node = self._require_node(node_id)
         if node.status not in (NodeStatus.PROPOSED, NodeStatus.ATTESTED):
@@ -472,7 +501,11 @@ class Graph:
         self._require_researcher(authored_by, action="reopen", node_id=node_id)
         if not reason or not reason.strip():
             self._refuse(
-                "reopen", authored_by, MissingRejectionReason(node_id), node_id=node_id,
+                "reopen", authored_by, MissingRejectionReason(
+                    f"reopening {node_id} needs a stated reason, for the same "
+                    "reason rejecting it did: the record has to say what "
+                    "changed."
+                ), node_id=node_id,
             )
         node = self._require_node(node_id)
         if node.status != NodeStatus.REJECTED:
@@ -1109,7 +1142,11 @@ class Graph:
     def _require_edge(self, edge_id: str):
         row = self.conn.execute("SELECT * FROM edges WHERE id=?", (edge_id,)).fetchone()
         if row is None:
-            raise EdgeNotFound(edge_id)
+            raise EdgeNotFound(
+                f"no edge {edge_id}. Edge ids come from `edges()` or from the "
+                "call that created one; they are not derivable from the nodes "
+                "they join."
+            )
         return row
 
     def _apply_verify(self, ev: Event) -> None:

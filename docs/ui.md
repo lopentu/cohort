@@ -257,19 +257,30 @@ is deliberate and narrow:
   agenda is the supervision, and a planner that paraphrased the question into
   a task would be relocating that decision, not automating it.
 
-Two things it does that a person pressing Start usually does not:
+The roster is **one worker and one reviewer**, and does not scale with the
+pool. Two things about that are deliberate:
 
-- **it spends the second seat on a reviewer, not a second worker.** No agent
-  may attest what it authored, so a single-family roster can propose but never
-  promote: every claim stops at `proposed`. The count that gets a *checked*
-  answer is two, not one.
-- **it gives the workers different stances** — one looking for attestation,
-  one for what would make an answer wrong. Two agents told the same thing run
-  the same searches and return the same passages, and two identical answers
-  read as corroboration while being one result counted twice.
+- **the second seat is a reviewer, not a second worker.** No agent may attest
+  what it authored, so a one-family roster can propose but never promote:
+  every claim stops at `proposed` and the output is a pile of assertions
+  nothing has checked. The count that buys a *checked* answer is two.
+- **the worker is asked to break its own answer** — propose what the passages
+  support, then search for what would make that answer wrong, recording a
+  contradiction rather than choosing between conflicting passages. That job
+  used to belong to a second worker; it moved rather than disappearing when
+  the roster shrank, because it is the half worth keeping.
 
-The stances are fixed rather than generated per run, so two runs on one
-question are comparable. `GET /api/run/config` reports the roster auto would
+The two models must come from **different providers**. Both the roster check
+(`check_distinct_model_families`) and the write boundary
+(`ReviewerNotIndependent`) refuse a reviewer that shares a model family with
+the author — a different id on one model is not a different reader — so a
+same-family reviewer would be refused before the run started, and could never
+promote anything even if it were not. The worker takes `OPENROUTER_MODEL`, the
+configured default; the reviewer takes the next distinct family in
+`OPENROUTER_MODELS`.
+
+The stance is fixed rather than generated per run, so two runs on one question
+are comparable. `GET /api/run/config` reports the roster auto would
 build (`plan`), so the launcher can name what it is about to spend money on;
 the shape depends on how many model *families* the pool has, which a browser
 computing it itself would have to reimplement and would drift from.
