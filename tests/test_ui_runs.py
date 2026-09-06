@@ -24,6 +24,7 @@ fastapi = pytest.importorskip("fastapi", reason="the `ui` extra is not installed
 from fastapi.testclient import TestClient  # noqa: E402
 
 from cohort.agents.budget import BudgetedTransport, BudgetExceeded  # noqa: E402
+from cohort.errors import CohortError  # noqa: E402
 from cohort.graph import Graph  # noqa: E402
 from cohort.schemas import ClaimPayload  # noqa: E402
 from cohort.sources.local_reader import LocalReader  # noqa: E402
@@ -284,7 +285,8 @@ def test_a_runs_refusals_are_attributed_to_that_run(graph_files, source, monkeyp
     # a pre-existing refusal, from before this run
     g = Graph.open(db_path, log_path)
     stale = g.propose_claim(ClaimPayload(text="stale"), authored_by=AGENT)
-    with pytest.raises(Exception):
+    # a refusal by the write boundary, not merely any exception
+    with pytest.raises(CohortError):
         g.attest(stale, authored_by=AGENT)
     g.close()
 

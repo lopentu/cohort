@@ -13,7 +13,7 @@ from io import BytesIO
 
 import pytest
 
-from cohort.errors import SourceRefMissing, WrongNodeType
+from cohort.errors import NodeNotFound, SourceRefMissing, WrongNodeType
 from cohort.schemas import (
     AssuranceLevel,
     ClaimPayload,
@@ -118,7 +118,7 @@ def test_absent_parallel_is_not_invented_as_a_witness_node(graph, source):
     w251, _ = _add_witness(graph, source, ENTRY_251, "ALPHA")
     link_parallels(graph, source, LinkParallelsInput(witness_id=w251), authored_by=AGENT)
     # reporting a candidate must not have created an unevidenced node
-    with pytest.raises(Exception):
+    with pytest.raises(NodeNotFound):
         graph.get_node("witness:T08n0252")
 
 
@@ -147,7 +147,7 @@ def test_parallel_edge_flips_independent_support(graph, source):
     """The payoff: two witnesses the corpus itself calls parallel stop
     counting as independent confirmation of the same claim."""
     w251, p251 = _add_witness(graph, source, ENTRY_251, "ALPHA")
-    w250, p250 = _add_witness(graph, source, ENTRY_250, "BETA")
+    _w250, p250 = _add_witness(graph, source, ENTRY_250, "BETA")
     claim_id = graph.propose_claim(ClaimPayload(text="a claim"), authored_by=AGENT)
     graph.add_edge(EdgeType.ATTESTS, p251, claim_id, authored_by=AGENT)
     graph.add_edge(EdgeType.ATTESTS, p250, claim_id, authored_by=AGENT)

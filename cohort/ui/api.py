@@ -180,7 +180,7 @@ def create_app(
         graph = read()
         try:
             try:
-                node = graph.get_node(node_id)
+                graph.get_node(node_id)
             except NodeNotFound as e:
                 raise HTTPException(status_code=404, detail=str(e)) from e
 

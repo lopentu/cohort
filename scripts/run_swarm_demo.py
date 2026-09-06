@@ -19,7 +19,6 @@ Requires OPENROUTER_API_KEY and OPENROUTER_MODEL (see .env.example).
 from __future__ import annotations
 
 import asyncio
-import json
 import sys
 import tempfile
 import time

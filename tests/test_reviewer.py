@@ -16,10 +16,8 @@ import pytest
 from cohort.errors import (
     ReviewerNotIndependent,
     SelfAttestation,
-    UnattestableClaim,
 )
 from cohort.eventlog import read_events
-from cohort.graph import Graph
 from cohort.schemas import (
     RESEARCHER,
     AgentKind,

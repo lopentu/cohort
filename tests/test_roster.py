@@ -82,7 +82,13 @@ def test_the_refusal_names_every_clashing_agent():
 
 # --- enforced where a run starts, not merely documented ----------------------
 
-def test_run_manager_refuses_a_roster_sharing_one_model(tmp_path):
+def test_run_manager_refuses_a_roster_sharing_one_model(tmp_path, monkeypatch):
+    # `start()` reads the OpenRouter config before the roster check, so an
+    # unstated model is checked as what it will actually be. Both specs below
+    # state one, but the config read still happens — without these the test
+    # fails on a missing key and never reaches the rule it is about.
+    monkeypatch.setenv("OPENROUTER_API_KEY", "k")
+    monkeypatch.setenv("OPENROUTER_MODEL", "m")
     from cohort.eventlog import EventLog
     from cohort.graph import Graph
 
@@ -104,8 +110,14 @@ def test_run_manager_refuses_a_roster_sharing_one_model(tmp_path):
         )
 
 
-def test_the_check_happens_before_any_money_is_spent(tmp_path):
+def test_the_check_happens_before_any_money_is_spent(tmp_path, monkeypatch):
     """A refusal after the first call would be a report, not a rule."""
+    # Same reason as above, and here it decides what the test proves: without
+    # the config set, `start()` refuses for a missing key, `RunRejected` is
+    # raised, no request is made — and the assertion below passes while the
+    # roster check is never reached.
+    monkeypatch.setenv("OPENROUTER_API_KEY", "k")
+    monkeypatch.setenv("OPENROUTER_MODEL", "m")
     from cohort.eventlog import EventLog
     from cohort.graph import Graph
 
@@ -124,7 +136,7 @@ def test_the_check_happens_before_any_money_is_spent(tmp_path):
             return []
 
     manager = RunManager(db, log, _Source(), transport_factory=transport_factory)
-    with pytest.raises(RunRejected):
+    with pytest.raises(RunRejected, match="model family"):
         manager.start(
             [
                 AgentSpec("agent:a", "go", model="z-ai/one"),

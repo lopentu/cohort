@@ -487,7 +487,7 @@ def test_retracting_a_parallel_edge_restores_independence_over_http(populated):
 
 def test_a_retracted_edge_is_still_reported_on_the_node(populated):
     """Withdrawn, not erased — the inspector is where the record is read."""
-    db_path, claim_id = populated
+    db_path, _claim_id = populated
     log_path = db_path.parent / "events.jsonl"
     client = TestClient(create_app(db_path, log_path, allow_writes=True))
     edge = next(

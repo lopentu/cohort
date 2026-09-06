@@ -22,3 +22,11 @@ cbeta_index.json
 # regenerates cohort/ui/static/ from them.
 cohort/ui/frontend/node_modules/
 cohort/ui/static/
+
+# Researcher data (Radich / CHAI-Heidelberg). Licence-restricted and personal:
+# the CBETA-derived corpus is CC BY-NC-SA-equivalent, not public domain, and the
+# mail PDF carries participants' addresses. This repository is public — corpus
+# bytes and correspondence never enter it, same rule as the CBETA archive above.
+data/
+*.zip
+wget-log

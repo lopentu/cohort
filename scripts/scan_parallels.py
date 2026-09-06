@@ -78,7 +78,7 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     started = time.monotonic()
-    print(f"verifying archive hash...", flush=True)
+    print("verifying archive hash...", flush=True)
     try:
         verify_archive_hash(Path(archive_path), CBETA_V061_SHA256)
     except CbetaArchiveError as e:

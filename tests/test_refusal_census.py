@@ -24,8 +24,7 @@ from cohort.errors import (
     RefusalCategory,
     refusal_category,
 )
-from cohort.eventlog import EventLog, summarize_refusals
-from cohort.graph import Graph
+from cohort.eventlog import summarize_refusals
 from cohort.schemas import (
     RESEARCHER,
     ClaimPayload,

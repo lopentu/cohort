@@ -22,7 +22,6 @@ from pathlib import Path
 import pytest
 
 from cohort.errors import WrongNodeType
-from cohort.graph import Graph
 from cohort.schemas import (
     RESEARCHER,
     AssuranceLevel,

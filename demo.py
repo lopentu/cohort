@@ -33,6 +33,11 @@ from cohort.schemas import (
 )
 
 AGENT = "agent:demo-worker"
+#: A second agent, because `attest()` refuses a self-attestation: the author
+#: is the one party with an interest in the answer (cohort/graph.py
+#: `_reviewer_conflict`). Neither demo agent declares a model, so the
+#: model-family half of that rule has nothing to compare and stays quiet.
+REVIEWER = "agent:demo-reviewer"
 
 
 def main() -> None:
@@ -82,7 +87,7 @@ def main() -> None:
         )
         g.add_edge(EdgeType.ATTESTS, p1, claim_id, authored_by=AGENT)
         g.add_edge(EdgeType.ATTESTS, p2, claim_id, authored_by=AGENT)
-        g.attest(claim_id, authored_by=AGENT)
+        g.attest(claim_id, authored_by=REVIEWER)
 
         support = g.independent_support(claim_id)
         print("Before any descent relation is recorded:")
@@ -101,7 +106,7 @@ def main() -> None:
         verification_id = g.verify(
             claim_id, method=VerificationMethod.CROSS_EDITION_COLLATION,
             result=(VerificationResult.PASS if support.independent else VerificationResult.FAIL),
-            assurance_level=AssuranceLevel.A3_INDEPENDENCE_CHECKED,
+            assurance_level=AssuranceLevel.A3_EDITION_SUPPORT_CHECKED,
             detail=f"independent_support: independent={support.independent}, "
                    f"non_independent_pairs={support.non_independent_pairs}",
             authored_by=AGENT,
@@ -127,7 +132,7 @@ def main() -> None:
             authored_by=AGENT,
         )
         try:
-            g.attest(conjecture_id, authored_by=AGENT)
+            g.attest(conjecture_id, authored_by=REVIEWER)
         except Exception as e:
             print(f"attest(conjecture) with no tests edge refused: {type(e).__name__}: {e}")
         query_id = g.propose_query(
@@ -135,7 +140,7 @@ def main() -> None:
             authored_by=AGENT,
         )
         g.add_edge(EdgeType.TESTS, query_id, conjecture_id, authored_by=AGENT)
-        g.attest(conjecture_id, authored_by=AGENT)
+        g.attest(conjecture_id, authored_by=REVIEWER)
         print("attest(conjecture) succeeds once a tests edge names what would refute it\n")
 
         print("--- persistent rejection ---")

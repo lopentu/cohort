@@ -15,7 +15,6 @@ from cohort.cli import main
 from cohort.eventlog import summarize_refusals
 from cohort.graph import Graph
 from cohort.schemas import (
-    RESEARCHER,
     AgentKind,
     AgentProfile,
     ClaimPayload,
@@ -218,7 +217,7 @@ def test_refusals_census_flag_prints_the_summary_without_the_list(seeded, capsys
 def test_cli_and_http_agree_on_the_census(seeded):
     """Parity is the promise: the census must be the same object on both
     surfaces, not two implementations that could drift."""
-    fastapi = pytest.importorskip("fastapi", reason="the `ui` extra is not installed")
+    pytest.importorskip("fastapi", reason="the `ui` extra is not installed")
     from fastapi.testclient import TestClient
 
     from cohort.ui.api import create_app
