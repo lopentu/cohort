@@ -124,3 +124,83 @@ def test_reasoning_effort_is_forwarded_to_the_provider():
     complete("m", [], [], api_key="k", transport=transport, max_output_tokens=None, reasoning_effort="low")
     assert "max_tokens" not in seen
     assert seen["reasoning"] == {"effort": "low"}
+
+
+def test_reasoning_details_are_echoed_back_on_the_tool_turn(tmp_path):
+    """A reasoning model's tool call is only valid to the provider together
+    with the thinking that produced it; dropping `reasoning_details` from the
+    replayed assistant turn made the second turn fail with a 400 (Meta via
+    OpenRouter, 2026-09-06)."""
+    from cohort.agents.attestation_worker import AttestationWorker
+    from cohort.graph import Graph
+
+    sent: list[dict] = []
+    details = [{"type": "reasoning.text", "text": "think", "id": "r1"}]
+
+    def transport(url, headers, body, timeout):
+        payload = json.loads(body)
+        sent.append(payload)
+        if len(sent) == 1:
+            msg = {
+                "role": "assistant", "content": None, "reasoning_details": details,
+                "tool_calls": [{"id": "call_1", "type": "function", "function": {
+                    "name": "find_attestations",
+                    "arguments": json.dumps({"claim_or_conjecture_id": "claim:none", "query": "x"}),
+                }}],
+            }
+            fin = "tool_calls"
+        else:
+            msg = {"role": "assistant", "content": "done"}
+            fin = "stop"
+        return 200, json.dumps({
+            "id": "x", "model": "m", "choices": [{"message": msg, "finish_reason": fin}],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+        }).encode()
+
+    graph = Graph.open(tmp_path / "g.sqlite", tmp_path / "g.jsonl")
+    source = LocalReader(FIXTURE)
+    try:
+        worker = AttestationWorker(
+            graph, source, authored_by="agent:w", model="m", api_key="k", transport=transport,
+        )
+        worker.run("look", max_turns=3)
+    finally:
+        source.close()
+        graph.close()
+    assistant_turns = [m for m in sent[1]["messages"] if m["role"] == "assistant"]
+    assert assistant_turns[0]["reasoning_details"] == details
+    assert assistant_turns[0]["tool_calls"][0]["id"] == "call_1"
+    # The provider needs the call's `type` echoed too; without it the second
+    # turn is refused ("No function call found for function call output").
+    assert assistant_turns[0]["tool_calls"][0]["type"] == "function"
+
+
+def test_the_archive_pin_and_version_come_from_the_environment(monkeypatch, tmp_path):
+    """A different CBETA build is pinned by its own hash, never unpinned, and
+    names itself on the provenance note."""
+    import hashlib
+    import zipfile
+
+    from cohort.sources.cbeta_reader import CbetaReader
+
+    archive = tmp_path / "cbeta.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr(
+            "Bookcase/CBETA/XML/T/T00/T00n0000.xml",
+            "<TEI><teiHeader><fileDesc/></teiHeader><text><body><p>色即是空</p></body></text></TEI>",
+        )
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    monkeypatch.delenv("LOCAL_CORPUS_ROOT", raising=False)
+    monkeypatch.setenv("CBETA_ARCHIVE_PATH", str(archive))
+    monkeypatch.setenv("CBETA_ARCHIVE_SHA256", digest)
+    monkeypatch.setenv("CBETA_ARCHIVE_VERSION", "xml-p5 2021Q3")
+    monkeypatch.delenv("CBETA_FTS_PATH", raising=False)
+    source, reason = open_corpus_from_env(repo_root=tmp_path, require_search=False)
+    assert reason is None
+    assert isinstance(source, CbetaReader)
+    rec = source.fetch("Bookcase/CBETA/XML/T/T00/T00n0000.xml::色即是空")
+    assert "xml-p5 2021Q3" in (rec.note or "")
+    monkeypatch.setenv("CBETA_ARCHIVE_SHA256", "not-a-hash")
+    source, reason = open_corpus_from_env(repo_root=tmp_path, require_search=False)
+    assert source is None
+    assert "SHA-256" in reason

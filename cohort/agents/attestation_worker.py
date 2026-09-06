@@ -318,11 +318,16 @@ class AttestationWorker:
                 cost_usd=response.usage.cost,
             )
             choice = response.choices[0]
-            messages.append({
+            assistant: dict[str, Any] = {
                 "role": "assistant",
                 "content": choice.message.content,
                 "tool_calls": [tc.model_dump() for tc in (choice.message.tool_calls or [])],
-            })
+            }
+            if choice.message.reasoning_details:
+                # Echoed back verbatim: a reasoning model's tool call is only
+                # valid to the provider together with the thinking that made it.
+                assistant["reasoning_details"] = choice.message.reasoning_details
+            messages.append(assistant)
 
             if choice.finish_reason != "tool_calls":
                 break

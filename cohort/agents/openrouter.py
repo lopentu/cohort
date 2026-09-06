@@ -50,12 +50,24 @@ class OpenRouterFunctionCall(_Model):
 class OpenRouterToolCall(_Model):
     id: str
     function: OpenRouterFunctionCall
+    #: Replayed to the provider on the next turn. Some providers (Meta via
+    #: OpenRouter, 2026-09-06) refuse a tool result whose originating call was
+    #: echoed without its `type`, so it is kept and defaulted rather than
+    #: dropped by the model_dump that builds the assistant turn.
+    type: str = "function"
 
 
 class OpenRouterMessage(_Model):
     role: str
     content: str | None = None
     tool_calls: list[OpenRouterToolCall] | None = None
+    #: Reasoning models return their thinking as `reasoning_details`, and
+    #: OpenRouter requires it to be sent back verbatim on the assistant turn
+    #: that carried a tool call; without it the provider cannot match the tool
+    #: result to the call ("No function call found for function call output",
+    #: Meta, 2026-09-06) and the run dies on its second turn. Kept opaque:
+    #: the content is the provider's, and it is only ever echoed.
+    reasoning_details: list[dict] | None = None
 
 
 class OpenRouterChoice(_Model):

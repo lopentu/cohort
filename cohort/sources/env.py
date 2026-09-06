@@ -65,14 +65,25 @@ def open_corpus_from_env(
     if not archive:
         return None, "neither LOCAL_CORPUS_ROOT nor CBETA_ARCHIVE_PATH is set"
 
+    # The archive is pinned by hash so that a witness node names the exact
+    # bytes it came from. The pin defaults to the v061 release; an operator
+    # holding a different build (the xml-p5 repository at a tag, re-zipped
+    # into the Bookcase layout) pins *that* instead of loosening the check.
+    expected = (os.environ.get("CBETA_ARCHIVE_SHA256") or CBETA_V061_SHA256).strip().lower()
+    if len(expected) != 64 or any(c not in "0123456789abcdef" for c in expected):
+        return None, "CBETA_ARCHIVE_SHA256 must be a 64-character hex SHA-256"
+
     fts_path = Path(os.environ.get("CBETA_FTS_PATH") or (root / DEFAULT_FTS_FILENAME))
     try:
-        fts = CbetaFtsIndex(fts_path, CBETA_V061_SHA256) if fts_path.is_file() else None
+        fts = CbetaFtsIndex(fts_path, expected) if fts_path.is_file() else None
         if fts is None and require_search:
             return None, (
                 f"no FTS index at {fts_path}, so search would raise. "
                 "Build it: .venv/bin/python scripts/build_cbeta_index.py"
             )
-        return CbetaReader(archive, CBETA_V061_SHA256, fts=fts), None
+        # The version label rides on every witness's provenance note, so an
+        # archive that is not v061 must say what it is.
+        version = (os.environ.get("CBETA_ARCHIVE_VERSION") or "v061").strip()
+        return CbetaReader(archive, expected, fts=fts, version=version), None
     except CbetaArchiveError as e:
         return None, str(e)
