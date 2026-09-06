@@ -103,11 +103,48 @@ def default_transport(url: str, headers: dict[str, str], body: bytes, timeout: f
 #: than a task needing the room.
 DEFAULT_MAX_OUTPUT_TOKENS = 2800
 
+#: Reasoning models spend output tokens thinking before they write. Under the
+#: 2,800 ceiling one such model (meta/muse-spark, 2026-09-06) spent every token
+#: reasoning and returned nothing -- a truncated call that cost money and
+#: produced no tool call. So the ceiling and the reasoning effort are both
+#: settable from the environment: OPENROUTER_MAX_OUTPUT_TOKENS (0 or "none" =
+#: no ceiling; the dollar budget in budget.py remains the hard stop) and
+#: OPENROUTER_REASONING_EFFORT (low / medium / high, sent as OpenRouter's
+#: `reasoning.effort`).
+REASONING_EFFORTS = ("low", "medium", "high")
+
+
+def output_limits_from_env() -> tuple[int | None, str | None]:
+    """`(max_output_tokens, reasoning_effort)` as configured, with the module
+    default for the ceiling when the variable is unset."""
+    _load_dotenv()
+    raw = (os.environ.get("OPENROUTER_MAX_OUTPUT_TOKENS") or "").strip().lower()
+    if raw in ("", None):
+        ceiling: int | None = DEFAULT_MAX_OUTPUT_TOKENS
+    elif raw in ("0", "none", "off"):
+        ceiling = None
+    else:
+        try:
+            ceiling = int(raw)
+        except ValueError as e:
+            raise OpenRouterError(
+                f"OPENROUTER_MAX_OUTPUT_TOKENS must be an integer, 0, or 'none'; got {raw!r}",
+                cause="config",
+            ) from e
+    effort = (os.environ.get("OPENROUTER_REASONING_EFFORT") or "").strip().lower() or None
+    if effort is not None and effort not in REASONING_EFFORTS:
+        raise OpenRouterError(
+            f"OPENROUTER_REASONING_EFFORT must be one of {REASONING_EFFORTS}; got {effort!r}",
+            cause="config",
+        )
+    return ceiling, effort
+
 
 def complete(
     model: str, messages: list[dict], tools: list[dict], *, api_key: str,
     timeout: float = 30.0, transport=default_transport,
     max_output_tokens: int | None = DEFAULT_MAX_OUTPUT_TOKENS,
+    reasoning_effort: str | None = None,
 ) -> OpenRouterResponse:
     """Validated at the boundary before anything touches domain logic — the
     same discipline COHORT already applies to tool inputs, applied here to a
@@ -115,10 +152,14 @@ def complete(
     tests, no HTTP-mocking dependency needed.
 
     `max_output_tokens=None` sends no ceiling, which is what the provider
-    defaults to; passing it explicitly is a decision, not an accident."""
+    defaults to; passing it explicitly is a decision, not an accident.
+    `reasoning_effort` is forwarded as OpenRouter's `reasoning.effort` for
+    models that think before they write."""
     payload: dict = {"model": model, "messages": messages, "tools": tools}
     if max_output_tokens is not None:
         payload["max_tokens"] = max_output_tokens
+    if reasoning_effort is not None:
+        payload["reasoning"] = {"effort": reasoning_effort}
     body = json.dumps(payload).encode("utf-8")
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     status, raw = transport(OPENROUTER_URL, headers, body, timeout)

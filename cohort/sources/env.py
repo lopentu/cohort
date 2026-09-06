@@ -46,9 +46,24 @@ def open_corpus_from_env(
     root = repo_root or Path.cwd()
     _load_dotenv(root / ".env")
 
+    # A folder of plain-text files with a manifest.csv (LocalReader) is the
+    # other kind of corpus this system reads. It takes precedence when set,
+    # because the point of setting it is to make the Corpus tab, the agents'
+    # verify_exact_span and the Evidence tab read the *same bytes* -- Radich's
+    # paratext-stripped files rather than the CBETA archive they derive from.
+    local_root = os.environ.get("LOCAL_CORPUS_ROOT")
+    if local_root:
+        from .local_reader import LocalReader, ManifestError
+
+        manifest = os.environ.get("LOCAL_CORPUS_MANIFEST") or None
+        try:
+            return LocalReader(local_root, manifest), None
+        except ManifestError as e:
+            return None, f"LOCAL_CORPUS_ROOT is set but unusable: {e}"
+
     archive = os.environ.get("CBETA_ARCHIVE_PATH")
     if not archive:
-        return None, "CBETA_ARCHIVE_PATH is not set"
+        return None, "neither LOCAL_CORPUS_ROOT nor CBETA_ARCHIVE_PATH is set"
 
     fts_path = Path(os.environ.get("CBETA_FTS_PATH") or (root / DEFAULT_FTS_FILENAME))
     try:

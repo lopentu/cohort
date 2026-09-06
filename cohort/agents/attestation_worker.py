@@ -53,6 +53,7 @@ from .openrouter import (
     complete,
     default_transport,
     load_openrouter_config,
+    output_limits_from_env,
 )
 
 #: bump whenever SYSTEM_PROMPT or TOOLS changes shape, so logged model_call
@@ -215,13 +216,20 @@ class AttestationWorker:
         transport=None,
         profile: AgentProfile | None = None,
         max_output_tokens: int | None = DEFAULT_MAX_OUTPUT_TOKENS,
+        reasoning_effort: str | None = None,
         question_id: str | None = None,
     ) -> None:
         if model is None or api_key is None:
             config_key, config_model = load_openrouter_config()
             api_key = api_key if api_key is not None else config_key
             model = model if model is not None else config_model
+        # The module default means "whatever the environment says"; an explicit
+        # number is a caller's decision and is kept.
+        env_ceiling, env_effort = output_limits_from_env()
+        if max_output_tokens == DEFAULT_MAX_OUTPUT_TOKENS:
+            max_output_tokens = env_ceiling
         self.max_output_tokens = max_output_tokens
+        self.reasoning_effort = reasoning_effort if reasoning_effort is not None else env_effort
         self.graph = graph
         self.source = source
         self.authored_by = authored_by
@@ -299,6 +307,7 @@ class AttestationWorker:
             response = await asyncio.to_thread(
                 complete, self.model, messages, self.TOOLS, api_key=self.api_key,
                 transport=self.transport, max_output_tokens=self.max_output_tokens,
+                reasoning_effort=self.reasoning_effort,
             )
             latency_ms = int((time.monotonic() - started) * 1000)
             call_event = self.graph.log_model_call(

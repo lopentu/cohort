@@ -72,7 +72,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--corpus", action="store_true",
-        help="mount corpus browse/search (needs CBETA_ARCHIVE_PATH and CBETA_FTS_PATH)",
+        help="mount corpus browse/search (needs LOCAL_CORPUS_ROOT, or CBETA_ARCHIVE_PATH and CBETA_FTS_PATH)",
     )
     parser.add_argument(
         "--allow-runs", action="store_true",
