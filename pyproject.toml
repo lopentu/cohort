@@ -35,6 +35,9 @@ include = ["cohort*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# The experiment scripts under scripts/ are importable as `scripts.experiments`
+# (a namespace package) only when the repository root is on the path.
+pythonpath = ["."]
 
 [tool.ruff]
 # Strict on purpose, and checked in CI-style by `uvx ruff check .`: a house
