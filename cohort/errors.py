@@ -14,6 +14,11 @@ from enum import StrEnum
 class CohortError(Exception):
     """Base for every COHORT rule violation."""
 
+    #: Set by `Graph._refuse` / `Graph.log_refusal` once the refusal has been
+    #: appended to the event log, so a caller further out can tell an
+    #: already-recorded refusal from one that would otherwise go unrecorded.
+    logged_to_event_log: bool = False
+
 
 # --- event log ---------------------------------------------------------------
 

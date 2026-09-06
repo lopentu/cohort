@@ -27,9 +27,9 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..graph import Graph
-from ..schemas import ConjecturePayload, EdgeType, HitExpectation, QueryPayload
-from ..sources.base import Source
+from cohort.graph import Graph
+from cohort.schemas import ConjecturePayload, EdgeType, HitExpectation, QueryPayload
+from cohort.sources.base import Source
 
 NAME = "propose_conjecture"
 DESCRIPTION = (

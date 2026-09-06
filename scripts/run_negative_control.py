@@ -40,6 +40,7 @@ import json
 import sys
 import time
 from pathlib import Path
+from typing import NoReturn
 
 from cohort.agents.openrouter import _load_dotenv, load_model_pool
 from cohort.families import model_family
@@ -61,7 +62,7 @@ CLAIM_TEXT = "The title 般若波羅蜜多心經 appears in the corpus."
 GROUNDING_QUERY = "般若波羅蜜多心經"
 
 
-def die(message: str) -> None:
+def die(message: str) -> NoReturn:
     print(f"error: {message}", file=sys.stderr)
     sys.exit(1)
 
@@ -188,7 +189,7 @@ def main() -> None:
     graph.close()
 
     # --- review --------------------------------------------------------------
-    from cohort.ui.runs import AgentSpec, RunManager, RunRejected, ROLE_REVIEWER
+    from cohort.ui.runs import ROLE_REVIEWER, AgentSpec, RunManager, RunRejected
 
     manager = RunManager(db_path, log_path, source,
                          max_budget_usd=args.budget, max_turns=args.max_turns)

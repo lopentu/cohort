@@ -41,8 +41,8 @@ from cohort.sources.cbeta_reader import (
     find_text_content_start,
     verify_archive_hash,
 )
-
 from cohort.sources.env import CBETA_V061_SHA256  # one definition; see docs/corpus.md
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 _T_REF_RE = re.compile(r"^T(\d+)n0*(\d+[A-Za-z]?)$")

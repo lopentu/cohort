@@ -10,9 +10,10 @@ from __future__ import annotations
 
 import asyncio
 
+from test_attestation_worker import FakeTransport, _response
+
 from cohort.agents.attestation_worker import AttestationWorker
 from cohort.agents.swarm import run_swarm
-from test_attestation_worker import FakeTransport, _response
 
 
 def _worker(graph, *, authored_by, transport):

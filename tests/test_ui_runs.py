@@ -12,15 +12,16 @@ No network: every run here goes through a fake transport, the same seam
 """
 from __future__ import annotations
 
+import itertools
 import json
 import re
 import time
 
-import itertools
-
 import pytest
 
 fastapi = pytest.importorskip("fastapi", reason="the `ui` extra is not installed")
+from pathlib import Path  # noqa: E402
+
 from fastapi.testclient import TestClient  # noqa: E402
 
 from cohort.agents.budget import BudgetedTransport, BudgetExceeded  # noqa: E402
@@ -36,8 +37,6 @@ from cohort.ui.runs import (  # noqa: E402
     RunManager,
     RunRejected,
 )
-
-from pathlib import Path  # noqa: E402
 
 AGENT = "agent:worker-1"
 

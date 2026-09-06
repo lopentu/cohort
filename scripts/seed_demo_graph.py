@@ -29,6 +29,7 @@ import sys
 from pathlib import Path
 
 from cohort.agents.openrouter import _load_dotenv
+from cohort.errors import SelfAttestation, UnattestableConjecture
 from cohort.graph import Graph
 from cohort.schemas import (
     RESEARCHER,
@@ -44,17 +45,16 @@ from cohort.schemas import (
     WitnessPayload,
 )
 from cohort.sources.cbeta_reader import CbetaArchiveError, CbetaReader
-from cohort.errors import SelfAttestation, UnattestableConjecture
+from cohort.sources.env import CBETA_V061_SHA256  # one definition; see docs/corpus.md
 from cohort.tools.collate_editions import CollateEditionsInput, collate_editions
+from cohort.tools.link_parallels import LinkParallelsInput, link_parallels
 from cohort.tools.propose_claim import ProposeClaimInput, propose_claim
 from cohort.tools.record_contradiction import (
     RecordContradictionInput,
     record_contradiction,
 )
-from cohort.tools.link_parallels import LinkParallelsInput, link_parallels
 from cohort.tools.verify_exact_span import verify_exact_span
 
-from cohort.sources.env import CBETA_V061_SHA256  # one definition; see docs/corpus.md
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 AGENT = "agent:worker-heart"

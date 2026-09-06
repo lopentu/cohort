@@ -28,9 +28,9 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
-from ..errors import WrongNodeType
-from ..graph import Graph
-from ..schemas import (
+from cohort.errors import WrongNodeType
+from cohort.graph import Graph
+from cohort.schemas import (
     AssuranceLevel,
     EdgeType,
     HitExpectation,
@@ -38,7 +38,7 @@ from ..schemas import (
     VerificationMethod,
     VerificationResult,
 )
-from ..sources.base import Source
+from cohort.sources.base import Source
 
 NAME = "run_prospective_test"
 
@@ -76,7 +76,7 @@ def _tests_query(graph: Graph, conjecture_id: str):
     stays honest if a conjecture is ever re-tested with a sharper query, and
     the verification records which query id it ran.
     """
-    edges = [e for e in graph.edges(edge_type=EdgeType.TESTS, dst=conjecture_id)]
+    edges = list(graph.edges(edge_type=EdgeType.TESTS, dst=conjecture_id))
     if not edges:
         return None
     queries = [graph.get_node(e.src) for e in edges]

@@ -16,11 +16,13 @@ something is a legitimate answer that still owes a reason (design doc §6).
 """
 from __future__ import annotations
 
+import contextlib
+
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..errors import CohortError, WrongNodeType
-from ..graph import Graph
-from ..schemas import (
+from cohort.errors import CohortError, WrongNodeType
+from cohort.graph import Graph
+from cohort.schemas import (
     Dating,
     DatingRoute,
     EdgeType,
@@ -29,7 +31,7 @@ from ..schemas import (
     PassagePayload,
     WitnessPayload,
 )
-from ..sources.base import Source
+from cohort.sources.base import Source
 
 NAME = "find_attestations"
 DESCRIPTION = (
@@ -151,12 +153,10 @@ def find_attestations(
         and graph.get_node(target).status == NodeStatus.PROPOSED
         and graph.attest_conflict(target, authored_by) is None
     ):
-        try:
+        # A conjecture with no `tests` edge is the expected case: the
+        # falsifiability gate outranks attestation, and refusing here is
+        # the gate working. Already recorded to the log by `_refuse`.
+        with contextlib.suppress(CohortError):
             graph.attest(target, authored_by=authored_by, model_call_id=model_call_id)
-        except CohortError:
-            # A conjecture with no `tests` edge is the expected case: the
-            # falsifiability gate outranks attestation, and refusing here is
-            # the gate working. Already recorded to the log by `_refuse`.
-            pass
 
     return FindAttestationsReport(passages=passage_ids, witnesses=witness_ids)

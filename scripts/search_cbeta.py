@@ -29,8 +29,8 @@ from pathlib import Path
 from cohort.agents.openrouter import _load_dotenv
 from cohort.sources.cbeta_fts import CbetaFtsIndex
 from cohort.sources.cbeta_reader import CbetaArchiveError, CbetaReader
-
 from cohort.sources.env import CBETA_V061_SHA256  # one definition; see docs/corpus.md
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -84,7 +84,7 @@ def main() -> None:
         if args.fetch:
             try:
                 record = reader.fetch(hit.ref)
-                status = "ok" if hit.snippet in record.text else "MISSING FROM SOURCE"
+                status = "ok" if (hit.snippet or "") in record.text else "MISSING FROM SOURCE"
                 print(f"    fetch: {status} ({len(record.text)} chars, {record.locator})")
             except CbetaArchiveError as e:
                 print(f"    fetch: FAILED — {e}")

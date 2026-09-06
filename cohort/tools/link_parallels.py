@@ -32,11 +32,12 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..errors import NodeNotFound, SourceRefMissing, WrongNodeType
-from ..graph import Graph
-from ..schemas import EdgeType, NodeType
-from ..sources.base import Source
-from ..sources.cbeta_markup import parse_parallel_refs
+from cohort.errors import NodeNotFound, SourceRefMissing, WrongNodeType
+from cohort.graph import Graph
+from cohort.schemas import EdgeType, NodeType
+from cohort.sources.base import Source
+from cohort.sources.cbeta_markup import parse_parallel_refs
+
 from ._witness_source import source_ref_for_witness
 
 NAME = "link_parallels"

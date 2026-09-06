@@ -38,7 +38,8 @@ def open_corpus_from_env(
     `search()` would raise on first use; a caller that only needs `fetch()`
     can pass False and get a reader without one.
     """
-    from ..agents.openrouter import _load_dotenv
+    from cohort.agents.openrouter import _load_dotenv
+
     from .cbeta_fts import CbetaFtsIndex
     from .cbeta_reader import CbetaArchiveError, CbetaReader
 

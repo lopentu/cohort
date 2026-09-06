@@ -136,17 +136,17 @@ def test_nothing_attesting_reads_as_unsupported_not_independent(graph, source):
 # --- the dossier -------------------------------------------------------------
 
 def conjecture(graph, source, **over):
-    args = dict(
-        text="An earlier recension underlies this passage",
-        derivation="vocabulary patterns",
-        corpus_boundary="only the local_corpus fixture was searched",
-        selection_risks="the index is unranked",
-        alternative_explanations="a later redactor chose similar vocabulary",
-        prior_art_query="recension",
-        tests_query_text="這個詞不在語料庫裡",
-        tests_expectation="at_most",
-        tests_expected_hits=0,
-    )
+    args = {
+        "text": "An earlier recension underlies this passage",
+        "derivation": "vocabulary patterns",
+        "corpus_boundary": "only the local_corpus fixture was searched",
+        "selection_risks": "the index is unranked",
+        "alternative_explanations": "a later redactor chose similar vocabulary",
+        "prior_art_query": "recension",
+        "tests_query_text": "這個詞不在語料庫裡",
+        "tests_expectation": "at_most",
+        "tests_expected_hits": 0,
+    }
     args.update(over)
     return propose_conjecture(graph, source, ProposeConjectureInput(**args), authored_by=AGENT)
 

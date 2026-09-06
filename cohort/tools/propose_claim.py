@@ -46,10 +46,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..errors import UngroundedClaim
-from ..graph import Graph
-from ..schemas import ClaimPayload, EdgeType, QueryPayload
-from ..sources.base import Source
+from cohort.errors import UngroundedClaim
+from cohort.graph import Graph
+from cohort.schemas import ClaimPayload, EdgeType, QueryPayload
+from cohort.sources.base import Source
 
 NAME = "propose_claim"
 DESCRIPTION = (

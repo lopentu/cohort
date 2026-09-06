@@ -21,7 +21,6 @@ from cohort.agents.roster import (
 )
 from cohort.ui.runs import AgentSpec, RunManager, RunRejected
 
-
 # --- the family heuristic, and its stated limits -----------------------------
 
 def test_family_is_the_provider_prefix():

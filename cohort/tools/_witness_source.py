@@ -8,8 +8,8 @@ if this lookup is ever wrong it is wrong for both.
 """
 from __future__ import annotations
 
-from ..graph import Graph
-from ..schemas import EdgeType
+from cohort.graph import Graph
+from cohort.schemas import EdgeType
 
 
 def source_ref_for_witness(graph: Graph, witness_id: str) -> str | None:

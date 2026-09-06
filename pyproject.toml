@@ -31,3 +31,47 @@ include = ["cohort*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+# Strict on purpose, and checked in CI-style by `uvx ruff check .`: a house
+# style that lives in a config can be enforced; one that lives in a README
+# cannot. 100 columns because the docstrings here explain *why*, and 88 made
+# them terse.
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",      # pycodestyle
+    "F",           # pyflakes
+    "I",           # isort
+    "B",           # bugbear
+    "UP",          # pyupgrade
+    "SIM",         # simplify
+    "RUF",         # ruff's own
+    "TID252",      # absolute imports, not relative
+    "PT",          # pytest style
+    "C4",          # comprehensions
+    "PIE",         # misc lints
+    "RET",         # return statements
+    "PL",          # pylint (errors, warnings, and the refactor rules below)
+]
+ignore = [
+    "B008",        # FastAPI's Query(...)/Body(...) in defaults is the framework's idiom
+    "PLR2004",     # magic-value comparisons: thresholds here are named where it matters
+    "PLR0913",     # many arguments: the tool schemas mirror the API
+    "PLR0912", "PLR0915", "PLR0911", "C901",  # complexity: measured by tests, not by counting branches
+    "E501",        # long lines: only in the places below
+    "RUF001", "RUF002", "RUF003",  # ambiguous unicode: the corpus is Chinese and the docs use dashes
+    "SIM115",      # graph.py holds the flock handle open on purpose
+    "PT011",       # broad pytest.raises where the message is asserted separately
+    "RUF012",      # mutable class attributes on pydantic models
+    "PLC0415",     # imports inside functions: the core stays importable without the optional extras
+    "PLR0917",     # positional-argument counts: mirrors the tool schemas
+    "PT018",       # composite asserts: this suite states one invariant per assert, joined with `and`
+    "PLW2901",     # `line = line.strip()` inside a loop is the idiom, not a bug
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["PLR2004", "S101"]
+"scripts/*" = ["T201"]

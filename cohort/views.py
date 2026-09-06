@@ -13,8 +13,8 @@ from __future__ import annotations
 from typing import Any
 
 from .graph import Graph
-from .sources.cbeta_refs import reader_url
 from .schemas import EdgeType, NodeType
+from .sources.cbeta_refs import reader_url
 
 #: The two edge types that *discount* support rather than adding it: witnesses
 #: linked by either are evidence of shared descent, not independent
@@ -178,7 +178,7 @@ def findings_json(graph: Graph, *, limit: int | None = None) -> dict[str, Any]:
     "most attested" would be a confidence ranking wearing a different hat, and
     the whole argument is that counting agreement is the wrong move.
     """
-    rows = []
+    rows: list[dict[str, Any]] = []
     for node_type in (NodeType.CONJECTURE, NodeType.CLAIM):
         for node in graph.nodes(node_type=node_type):
             support = graph.independent_support(node.id)
@@ -225,7 +225,7 @@ def question_json(graph: Graph, question_id: str) -> dict[str, Any]:
         graph.get_node(e.src)
         for e in graph.edges(edge_type=EdgeType.ADDRESSES, dst=question_id)
     ]
-    hypotheses = []
+    hypotheses: list[dict[str, Any]] = []
     for n in sorted(addressed, key=lambda n: -n.created_seq):
         support = graph.independent_support(n.id)
         hypotheses.append({
@@ -259,7 +259,7 @@ def question_json(graph: Graph, question_id: str) -> dict[str, Any]:
 
 def questions_json(graph: Graph) -> dict[str, Any]:
     """Every research question, newest first, with how much addresses each."""
-    rows = []
+    rows: list[dict[str, Any]] = []
     for node in graph.nodes(node_type=NodeType.QUESTION):
         addressing = graph.edges(edge_type=EdgeType.ADDRESSES, dst=node.id)
         rows.append({

@@ -41,23 +41,22 @@ from typing import Any
 from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import ValidationError
 
-from ..errors import (
+from cohort.errors import (
     CohortError,
     EdgeNotFound,
     NodeNotFound,
     RebuildMismatch,
     SingleWriterViolation,
 )
-from ..eventlog import read_refusals, summarize_refusals
-from ..graph import Graph
-from pydantic import ValidationError
-
-from ..schemas import RESEARCHER, EdgeType, NodeType, QuestionPayload
-from ..sources.base import Source
-from ..sources.cbeta_markup import strip_markup_for_display
-from ..sources.cbeta_refs import reader_url
-from ..views import (
+from cohort.eventlog import read_refusals, summarize_refusals
+from cohort.graph import Graph
+from cohort.schemas import RESEARCHER, EdgeType, NodeType, QuestionPayload
+from cohort.sources.base import Source
+from cohort.sources.cbeta_markup import strip_markup_for_display
+from cohort.sources.cbeta_refs import reader_url
+from cohort.views import (
     DISCOUNTING_EDGE_TYPES,
     dossier_json,
     findings_json,
@@ -65,8 +64,9 @@ from ..views import (
     question_json,
     questions_json,
 )
-from ..views import edge_json as _edge_json
-from ..views import node_json as _node_json
+from cohort.views import edge_json as _edge_json
+from cohort.views import node_json as _node_json
+
 from .runs import ROLE_WORKER, AgentSpec, RunManager, RunRejected, plan_inquiry
 
 FRONTEND_DIR = Path(__file__).resolve().parent / "static"
@@ -514,7 +514,7 @@ def create_app(
 
             Behind `--allow-writes` because it records a verification, and
             behind a configured corpus because it has to search one."""
-            from ..tools.run_prospective_test import run_prospective_test
+            from cohort.tools.run_prospective_test import run_prospective_test
 
             if source is None:
                 raise HTTPException(
@@ -660,7 +660,7 @@ def create_app(
             that reason."""
             try:
                 record = source.fetch(ref)
-            except Exception as e:  # noqa: BLE001 — reader errors are the client's answer
+            except Exception as e:
                 raise HTTPException(status_code=404, detail=f"{type(e).__name__}: {e}") from e
             raw = record.text
             text = strip_markup_for_display(raw) if strip_markup else raw

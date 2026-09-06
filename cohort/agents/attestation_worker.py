@@ -26,27 +26,28 @@ import json
 import time
 from typing import Any
 
-from ..graph import Graph
-from ..schemas import AgentProfile, EdgeType, NodeType
-from ..sources.base import Source
-from ..tools.find_attestations import DESCRIPTION as FIND_ATTESTATIONS_DESCRIPTION
-from ..tools.find_attestations import NAME as FIND_ATTESTATIONS_NAME
-from ..tools.find_attestations import FindAttestationsInput, find_attestations
-from ..tools.collate_editions import DESCRIPTION as COLLATE_EDITIONS_DESCRIPTION
-from ..tools.collate_editions import NAME as COLLATE_EDITIONS_NAME
-from ..tools.collate_editions import CollateEditionsInput, collate_editions
-from ..tools.link_parallels import DESCRIPTION as LINK_PARALLELS_DESCRIPTION
-from ..tools.link_parallels import NAME as LINK_PARALLELS_NAME
-from ..tools.link_parallels import LinkParallelsInput, link_parallels
-from ..tools.record_contradiction import DESCRIPTION as RECORD_CONTRADICTION_DESCRIPTION
-from ..tools.record_contradiction import NAME as RECORD_CONTRADICTION_NAME
-from ..tools.record_contradiction import RecordContradictionInput, record_contradiction
-from ..tools.propose_claim import DESCRIPTION as PROPOSE_CLAIM_DESCRIPTION
-from ..tools.propose_claim import NAME as PROPOSE_CLAIM_NAME
-from ..tools.propose_claim import ProposeClaimInput, propose_claim
-from ..tools.propose_conjecture import DESCRIPTION as PROPOSE_CONJECTURE_DESCRIPTION
-from ..tools.propose_conjecture import NAME as PROPOSE_CONJECTURE_NAME
-from ..tools.propose_conjecture import ProposeConjectureInput, propose_conjecture
+from cohort.graph import Graph
+from cohort.schemas import AgentProfile, EdgeType, NodeType
+from cohort.sources.base import Source
+from cohort.tools.collate_editions import DESCRIPTION as COLLATE_EDITIONS_DESCRIPTION
+from cohort.tools.collate_editions import NAME as COLLATE_EDITIONS_NAME
+from cohort.tools.collate_editions import CollateEditionsInput, collate_editions
+from cohort.tools.find_attestations import DESCRIPTION as FIND_ATTESTATIONS_DESCRIPTION
+from cohort.tools.find_attestations import NAME as FIND_ATTESTATIONS_NAME
+from cohort.tools.find_attestations import FindAttestationsInput, find_attestations
+from cohort.tools.link_parallels import DESCRIPTION as LINK_PARALLELS_DESCRIPTION
+from cohort.tools.link_parallels import NAME as LINK_PARALLELS_NAME
+from cohort.tools.link_parallels import LinkParallelsInput, link_parallels
+from cohort.tools.propose_claim import DESCRIPTION as PROPOSE_CLAIM_DESCRIPTION
+from cohort.tools.propose_claim import NAME as PROPOSE_CLAIM_NAME
+from cohort.tools.propose_claim import ProposeClaimInput, propose_claim
+from cohort.tools.propose_conjecture import DESCRIPTION as PROPOSE_CONJECTURE_DESCRIPTION
+from cohort.tools.propose_conjecture import NAME as PROPOSE_CONJECTURE_NAME
+from cohort.tools.propose_conjecture import ProposeConjectureInput, propose_conjecture
+from cohort.tools.record_contradiction import DESCRIPTION as RECORD_CONTRADICTION_DESCRIPTION
+from cohort.tools.record_contradiction import NAME as RECORD_CONTRADICTION_NAME
+from cohort.tools.record_contradiction import RecordContradictionInput, record_contradiction
+
 from .openrouter import (
     DEFAULT_MAX_OUTPUT_TOKENS,
     complete,
@@ -356,7 +357,7 @@ class AttestationWorker:
                 EdgeType.ADDRESSES, node_id, self.question_id,
                 authored_by=self.authored_by, model_call_id=model_call_id,
             )
-        except Exception as e:  # noqa: BLE001 — see docstring
+        except Exception as e:
             self.graph.log_refusal(
                 "address_question", self.authored_by, e,
                 node_id=node_id, model_call_id=model_call_id,
@@ -415,7 +416,7 @@ class AttestationWorker:
                     model_call_id=model_call_id,
                 )
             return True, f"unknown tool: {name}"
-        except Exception as e:  # noqa: BLE001 — deliberately broad: report to the model, don't crash the loop
+        except Exception as e:
             self.graph.log_refusal(
                 name, self.authored_by, e,
                 node_id=(

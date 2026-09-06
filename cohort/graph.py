@@ -17,22 +17,22 @@ import sqlite3
 import uuid
 from collections.abc import Iterable
 from pathlib import Path
-from typing import NoReturn
+from typing import Literal, NoReturn, TypeVar
 
 from .errors import (
+    CohortError,
     EdgeAlreadyRetracted,
-    EdgeNotFound,
-    PersistentRetraction,
     EdgeDomainViolation,
     EdgeEndpointMissing,
+    EdgeNotFound,
     EdgeSelfLoop,
-    CohortError,
     MissingRejectionReason,
     NodeNotFound,
     NoEventLog,
     NotResearcher,
     PassageNotLocated,
     PersistentRejection,
+    PersistentRetraction,
     RebuildMismatch,
     ReviewerNotIndependent,
     RungSkipped,
@@ -126,6 +126,22 @@ SYMMETRIC_EDGE_TYPES = {EdgeType.CONTRADICTS, EdgeType.PARALLEL_OF}
 #: that could drift from the enum.
 _ASSURANCE_RANK = {level: i for i, level in enumerate(AssuranceLevel)}
 
+_T = TypeVar("_T")
+
+
+def _need(value: _T | None, field: str, ev: Event) -> _T:
+    """Return an event field that a well-formed log always carries.
+
+    The `Event` model leaves most fields optional because one schema serves
+    every event type; replay knows which ones each type requires. Raising here
+    names the event rather than failing later inside SQLite.
+    """
+    if value is None:
+        msg = f"event {ev.seq} ({ev.event!r}) has no {field}; the log is malformed"
+        raise CohortError(msg)
+    return value
+
+
 class Graph:
     def __init__(
         self, db_path: str | Path, event_log: EventLog | None = None, *,
@@ -181,7 +197,7 @@ class Graph:
             )
 
     @classmethod
-    def open(cls, db_path: str | Path, log_path: str | Path) -> "Graph":
+    def open(cls, db_path: str | Path, log_path: str | Path) -> Graph:
         db_path = Path(db_path)
         log_path = Path(log_path)
         fresh_db = not db_path.exists()
@@ -193,7 +209,7 @@ class Graph:
         return graph
 
     @classmethod
-    def open_read_only(cls, db_path: str | Path) -> "Graph":
+    def open_read_only(cls, db_path: str | Path) -> Graph:
         """A reader's handle on an existing projection: no writer lock, no
         event log, no migrations. Safe to open while an agent run holds the
         write lock — see `_open_read_only`."""
@@ -211,7 +227,7 @@ class Graph:
             f.close()
             raise SingleWriterViolation(
                 f"another process already holds the write lock on {db_path}"
-            )
+            ) from None
         self._lock_file = f
 
     def close(self) -> None:
@@ -222,7 +238,7 @@ class Graph:
             self._lock_file.close()
             self._lock_file = None
 
-    def __enter__(self) -> "Graph":
+    def __enter__(self) -> Graph:
         return self
 
     def __exit__(self, *exc) -> None:
@@ -417,18 +433,16 @@ class Graph:
                     "attest", authored_by, UnattestableClaim(node_id),
                     node_id=node_id, node_type=node.type,
                 )
-        elif node.type == NodeType.CONJECTURE:
-            if not self._has_inbound_edge(node_id, EdgeType.TESTS):
-                self._refuse(
-                    "attest", authored_by, UnattestableConjecture(node_id),
-                    node_id=node_id, node_type=node.type,
-                )
-        elif node.type == NodeType.PASSAGE:
-            if not self._has_outbound_edge(node_id, EdgeType.PART_OF):
-                self._refuse(
-                    "attest", authored_by, PassageNotLocated(node_id),
-                    node_id=node_id, node_type=node.type,
-                )
+        elif node.type == NodeType.CONJECTURE and not self._has_inbound_edge(node_id, EdgeType.TESTS):
+            self._refuse(
+                "attest", authored_by, UnattestableConjecture(node_id),
+                node_id=node_id, node_type=node.type,
+            )
+        elif node.type == NodeType.PASSAGE and not self._has_outbound_edge(node_id, EdgeType.PART_OF):
+            self._refuse(
+                "attest", authored_by, PassageNotLocated(node_id),
+                node_id=node_id, node_type=node.type,
+            )
         ev = self.event_log_or_raise().append(
             "attest", authored_by=authored_by, node_id=node_id, node_type=node.type,
             model_call_id=model_call_id, detail={},
@@ -521,10 +535,10 @@ class Graph:
             )
         domain = EDGE_DOMAINS[edge_type]
         if domain != "any":
-            if domain == "same_type":
-                ok = src_row["type"] == dst_row["type"]
-            else:
+            if isinstance(domain, set):
                 ok = (src_row["type"], dst_row["type"]) in domain
+            else:  # "same_type"
+                ok = src_row["type"] == dst_row["type"]
             if not ok:
                 self._refuse(
                     "add_edge", authored_by,
@@ -1009,9 +1023,7 @@ class Graph:
             self._apply_ask(ev)
         elif ev.event == "register_agent":
             self._apply_register_agent(ev)
-        elif ev.event == "refused":
-            pass  # an audit marker only; never mutates state
-        elif ev.event == "model_call":
+        elif ev.event in {"refused", "model_call"}:
             pass  # an audit marker only; never mutates state
         elif ev.event in ("run_started", "run_finished"):
             pass  # a run beginning is not a change to the graph
@@ -1020,62 +1032,69 @@ class Graph:
 
     def _apply_propose(self, ev: Event) -> None:
         detail = ev.detail
-        existing = self._get_row(ev.node_id)
+        node_id, author = _need(ev.node_id, "node_id", ev), _need(ev.authored_by, "authored_by", ev)
+        existing = self._get_row(node_id)
         if existing is not None:
-            self._add_authorship("node", ev.node_id, ev.authored_by, "converged", ev.at, ev.seq)
-            self.conn.execute("UPDATE nodes SET updated_seq=? WHERE id=?", (ev.seq, ev.node_id))
+            self._add_authorship("node", node_id, author, "converged", ev.at, ev.seq)
+            self.conn.execute("UPDATE nodes SET updated_seq=? WHERE id=?", (ev.seq, node_id))
         else:
             self._insert_node_row(
-                ev.node_id, ev.node_type, NodeStatus.PROPOSED,
+                node_id, _need(ev.node_type, "node_type", ev), NodeStatus.PROPOSED,
                 json.dumps(detail["payload"]), None, ev.seq,
             )
-            self._add_authorship("node", ev.node_id, ev.authored_by, "proposed", ev.at, ev.seq)
+            self._add_authorship("node", node_id, author, "proposed", ev.at, ev.seq)
         if ev.edge_id is not None and ev.edge_type is not None:
-            self._insert_edge_row(ev.edge_id, ev.edge_type, ev.node_id, detail["witness_id"], ev.seq)
-            self._add_authorship("edge", ev.edge_id, ev.authored_by, "proposed", ev.at, ev.seq)
+            self._insert_edge_row(ev.edge_id, ev.edge_type, node_id, detail["witness_id"], ev.seq)
+            self._add_authorship("edge", ev.edge_id, author, "proposed", ev.at, ev.seq)
         self.conn.commit()
 
     def _apply_attest(self, ev: Event) -> None:
+        node_id, author = _need(ev.node_id, "node_id", ev), _need(ev.authored_by, "authored_by", ev)
         self.conn.execute(
             "UPDATE nodes SET status=?, updated_seq=? WHERE id=?",
-            (NodeStatus.ATTESTED, ev.seq, ev.node_id),
+            (NodeStatus.ATTESTED, ev.seq, node_id),
         )
-        self._add_authorship("node", ev.node_id, ev.authored_by, "attested", ev.at, ev.seq)
+        self._add_authorship("node", node_id, author, "attested", ev.at, ev.seq)
         self.conn.commit()
 
-    def _apply_verdict(self, ev: Event, new_status: NodeStatus, verdict: str) -> None:
+    def _apply_verdict(
+        self, ev: Event, new_status: NodeStatus, verdict: Literal["accepted", "rejected", "reopened"],
+    ) -> None:
         detail = ev.detail
+        node_id, author = _need(ev.node_id, "node_id", ev), _need(ev.authored_by, "authored_by", ev)
         decision_id = detail["decision_node_id"]
         reason = detail.get("reason")
         rejected_reason = reason if new_status == NodeStatus.REJECTED else None
         self.conn.execute(
             "UPDATE nodes SET status=?, rejected_reason=?, updated_seq=? WHERE id=?",
-            (new_status, rejected_reason, ev.seq, ev.node_id),
+            (new_status, rejected_reason, ev.seq, node_id),
         )
-        self._add_authorship("node", ev.node_id, ev.authored_by, verdict, ev.at, ev.seq)
+        self._add_authorship("node", node_id, author, verdict, ev.at, ev.seq)
         decision_payload = DecisionPayload(
-            subject_node_id=ev.node_id, verdict=verdict, reason=reason
+            subject_node_id=node_id, verdict=verdict, reason=reason
         ).model_dump(mode="json")
         self._insert_node_row(
             decision_id, NodeType.DECISION, NodeStatus.ACCEPTED,
             json.dumps(decision_payload), None, ev.seq,
         )
-        self._add_authorship("node", decision_id, ev.authored_by, "proposed", ev.at, ev.seq)
+        self._add_authorship("node", decision_id, author, "proposed", ev.at, ev.seq)
         self.conn.commit()
 
     def _apply_add_edge(self, ev: Event) -> None:
         src, dst = ev.detail["src"], ev.detail["dst"]
+        edge_id, author = _need(ev.edge_id, "edge_id", ev), _need(ev.authored_by, "authored_by", ev)
         if ev.detail.get("converge"):
-            self._add_authorship("edge", ev.edge_id, ev.authored_by, "converged", ev.at, ev.seq)
+            self._add_authorship("edge", edge_id, author, "converged", ev.at, ev.seq)
             self.conn.commit()
             return
+        edge_type = _need(ev.edge_type, "edge_type", ev)
         reason = ev.detail.get("reason")
-        self._insert_edge_row(ev.edge_id, ev.edge_type, src, dst, ev.seq, reason)
-        self._add_authorship("edge", ev.edge_id, ev.authored_by, "proposed", ev.at, ev.seq)
-        if ev.edge_type in SYMMETRIC_EDGE_TYPES:
-            rev_id = f"{ev.edge_id}:rev"
-            self._insert_edge_row(rev_id, ev.edge_type, dst, src, ev.seq, reason)
-            self._add_authorship("edge", rev_id, ev.authored_by, "proposed", ev.at, ev.seq)
+        self._insert_edge_row(edge_id, edge_type, src, dst, ev.seq, reason)
+        self._add_authorship("edge", edge_id, author, "proposed", ev.at, ev.seq)
+        if edge_type in SYMMETRIC_EDGE_TYPES:
+            rev_id = f"{edge_id}:rev"
+            self._insert_edge_row(rev_id, edge_type, dst, src, ev.seq, reason)
+            self._add_authorship("edge", rev_id, author, "proposed", ev.at, ev.seq)
         self.conn.commit()
 
     def _apply_edge_retraction(self, ev: Event, *, retracted: bool) -> None:
@@ -1086,7 +1105,8 @@ class Graph:
         at = ev.at if retracted else None
         reason = ev.detail.get("reason") if retracted else None
         action = "retracted" if retracted else "restored"
-        for row_id in self._edge_row_ids(ev.edge_id):
+        author = _need(ev.authored_by, "authored_by", ev)
+        for row_id in self._edge_row_ids(_need(ev.edge_id, "edge_id", ev)):
             self.conn.execute(
                 "UPDATE edges SET retracted_at=?, retracted_reason=? WHERE id=?",
                 (at, reason, row_id),
@@ -1094,7 +1114,7 @@ class Graph:
             # Authorship goes on both rows, the way `_apply_add_edge` writes it
             # on both: a twin that is retracted but does not say who retracted
             # it would be a row whose state no author owns.
-            self._add_authorship("edge", row_id, ev.authored_by, action, ev.at, ev.seq)
+            self._add_authorship("edge", row_id, author, action, ev.at, ev.seq)
         self.conn.commit()
 
     def _edge_row_ids(self, edge_id: str) -> list[str]:
@@ -1114,21 +1134,24 @@ class Graph:
 
     def _apply_verify(self, ev: Event) -> None:
         detail = ev.detail
+        node_id, author = _need(ev.node_id, "node_id", ev), _need(ev.authored_by, "authored_by", ev)
+        edge_id, edge_type = _need(ev.edge_id, "edge_id", ev), _need(ev.edge_type, "edge_type", ev)
         self._insert_node_row(
-            ev.node_id, NodeType.VERIFICATION, NodeStatus.ACCEPTED,
+            node_id, NodeType.VERIFICATION, NodeStatus.ACCEPTED,
             json.dumps(detail["payload"]), None, ev.seq,
         )
-        self._add_authorship("node", ev.node_id, ev.authored_by, "proposed", ev.at, ev.seq)
-        self._insert_edge_row(ev.edge_id, ev.edge_type, ev.node_id, detail["subject_node_id"], ev.seq)
-        self._add_authorship("edge", ev.edge_id, ev.authored_by, "proposed", ev.at, ev.seq)
+        self._add_authorship("node", node_id, author, "proposed", ev.at, ev.seq)
+        self._insert_edge_row(edge_id, edge_type, node_id, detail["subject_node_id"], ev.seq)
+        self._add_authorship("edge", edge_id, author, "proposed", ev.at, ev.seq)
         self.conn.commit()
 
     def _apply_ask(self, ev: Event) -> None:
+        node_id, author = _need(ev.node_id, "node_id", ev), _need(ev.authored_by, "authored_by", ev)
         self._insert_node_row(
-            ev.node_id, NodeType.QUESTION, NodeStatus.ACCEPTED,
+            node_id, NodeType.QUESTION, NodeStatus.ACCEPTED,
             json.dumps(ev.detail["payload"]), None, ev.seq,
         )
-        self._add_authorship("node", ev.node_id, ev.authored_by, "proposed", ev.at, ev.seq)
+        self._add_authorship("node", node_id, author, "proposed", ev.at, ev.seq)
         self.conn.commit()
 
     def _apply_register_agent(self, ev: Event) -> None:
@@ -1195,7 +1218,8 @@ class Graph:
                 "message": str(error),
             },
         )
-        error.logged_to_event_log = True
+        if isinstance(error, CohortError):
+            error.logged_to_event_log = True
 
     def _require_researcher(
         self, authored_by: str, *, action: str,
@@ -1452,7 +1476,7 @@ class Graph:
     def _count(self, table: str) -> int:
         return self.conn.execute(f"SELECT COUNT(*) AS c FROM {table}").fetchone()["c"]
 
-    def _diff(self, other: "Graph") -> dict:
+    def _diff(self, other: Graph) -> dict:
         mine, theirs = self._snapshot(), other._snapshot()
         return {} if mine == theirs else {"self": mine, "other": theirs}
 

@@ -51,27 +51,24 @@ and a retry would make the single-writer rule feel like flakiness.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import threading
 import time
 import uuid
 from pathlib import Path
 from typing import Any
 
-from ..agents.attestation_worker import AttestationWorker
-from ..agents.budget import BudgetedTransport, BudgetExceeded
-from ..agents.openrouter import (
-    OpenRouterError,
-    load_model_pool,
-    load_openrouter_config,
-)
-from ..agents.swarm import run_swarm
-from ..eventlog import read_refusals, read_runs
-from ..graph import Graph
-from ..agents.review_worker import ReviewWorker, pending_review_context
-from ..agents.roster import RosterNotIndependent, check_distinct_model_families
-from ..families import model_family
-from ..schemas import AgentKind, AgentProfile, NodeType
-from ..sources.base import Source
+from cohort.agents.attestation_worker import AttestationWorker
+from cohort.agents.budget import BudgetedTransport, BudgetExceeded
+from cohort.agents.openrouter import OpenRouterError, load_model_pool, load_openrouter_config
+from cohort.agents.review_worker import ReviewWorker, pending_review_context
+from cohort.agents.roster import RosterNotIndependent, check_distinct_model_families
+from cohort.agents.swarm import run_swarm
+from cohort.eventlog import read_refusals, read_runs
+from cohort.families import model_family
+from cohort.graph import Graph
+from cohort.schemas import AgentKind, AgentProfile, NodeType
+from cohort.sources.base import Source
 
 #: What a run may cost unless the operator raises it. Low on purpose: the
 #: whole live conjecture run cost $0.004, so a dollar is already generous, and
@@ -558,7 +555,7 @@ class RunManager:
             # ran it is gone. Set directly rather than with `during_run`
             # because the run's scope is this whole method including its
             # `finally`, not a block inside it.
-            graph.event_log.run_id = run.id
+            graph.event_log_or_raise().run_id = run.id
             graph.log_run_started(
                 run.id, authored_by=f"run:{run.id}",
                 agents=[spec.as_json() for spec in run.specs],
@@ -589,6 +586,9 @@ class RunManager:
                     )
                     graph.register_agent(profile, authored_by=spec.agent_id)
                 cls = ReviewWorker if spec.is_reviewer else AttestationWorker
+                if self.source is None:  # already refused above; this is the type-level guarantee
+                    msg = "no corpus is mounted, so no agent can be built"
+                    raise RunRejected(msg)
                 return cls(
                     graph, source=self.source, authored_by=spec.agent_id,
                     profile=profile, transport=transport, model=spec.model,
@@ -610,7 +610,7 @@ class RunManager:
             results: dict[str, Any] = {}
             if workers:
                 for spec, result in zip(
-                    workers, self._run_turns(run, [build(s) for s in workers])
+                    workers, self._run_turns(run, [build(s) for s in workers]), strict=False
                 ):
                     results[spec.agent_id] = result
 
@@ -663,7 +663,7 @@ class RunManager:
             with run._lock:
                 run.stopped_early = str(e)
                 run.state = "finished"
-        except Exception as e:  # noqa: BLE001 — nothing upstream can catch this
+        except Exception as e:
             with run._lock:
                 run.error = f"{type(e).__name__}: {e}"
                 run.state = "failed"
@@ -681,12 +681,10 @@ class RunManager:
                         spent_usd=spend.get("spent_usd"),
                         calls=spend.get("calls", 0), error=error,
                     )
-                except Exception:  # noqa: BLE001, S110 — reporting, never fatal
+                except Exception:
                     pass
-                try:
+                with contextlib.suppress(Exception):
                     graph.close()
-                except Exception:  # noqa: BLE001, S110 — closing must not mask the real error
-                    pass
             # Refusals this run produced. Read after the lock is released so
             # the log is complete, and selected by `run_id` rather than by
             # diffing a count taken beforehand — the count was right only
@@ -697,7 +695,7 @@ class RunManager:
                     new = read_refusals(self.log_path, run_id=run.id)
                     with run._lock:
                         run.refusals = [r.model_dump(mode="json") for r in new]
-            except Exception:  # noqa: BLE001, S110 — reporting extra, never fatal
+            except Exception:
                 pass
             with run._lock:
                 run.ended_at = time.time()

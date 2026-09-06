@@ -80,7 +80,7 @@ class OpenRouterResponse(_Model):
 def default_transport(url: str, headers: dict[str, str], body: bytes, timeout: float) -> tuple[int, bytes]:
     req = Request(url, data=body, headers=headers, method="POST")
     try:
-        with urlopen(req, timeout=timeout) as resp:  # noqa: S310 — url is a fixed constant, not user input
+        with urlopen(req, timeout=timeout) as resp:
             return resp.status, resp.read()
     except HTTPError as e:
         return e.code, e.read()

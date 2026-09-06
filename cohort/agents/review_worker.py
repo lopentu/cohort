@@ -32,15 +32,16 @@ independence, not a proof of one.
 """
 from __future__ import annotations
 
+from cohort.graph import Graph
+from cohort.schemas import NodeStatus, NodeType
+from cohort.tools.record_contradiction import DESCRIPTION as RECORD_CONTRADICTION_DESCRIPTION
+from cohort.tools.record_contradiction import NAME as RECORD_CONTRADICTION_NAME
+from cohort.tools.record_contradiction import RecordContradictionInput, record_contradiction
+from cohort.tools.review_claim import DESCRIPTION as REVIEW_CLAIM_DESCRIPTION
+from cohort.tools.review_claim import NAME as REVIEW_CLAIM_NAME
+from cohort.tools.review_claim import ReviewClaimInput, review_claim
+
 from .attestation_worker import AttestationWorker
-from ..graph import Graph
-from ..schemas import NodeStatus, NodeType
-from ..tools.record_contradiction import DESCRIPTION as RECORD_CONTRADICTION_DESCRIPTION
-from ..tools.record_contradiction import NAME as RECORD_CONTRADICTION_NAME
-from ..tools.record_contradiction import RecordContradictionInput, record_contradiction
-from ..tools.review_claim import DESCRIPTION as REVIEW_CLAIM_DESCRIPTION
-from ..tools.review_claim import NAME as REVIEW_CLAIM_NAME
-from ..tools.review_claim import ReviewClaimInput, review_claim
 
 #: bump whenever REVIEW_PROMPT or REVIEW_TOOLS changes shape, so logged
 #: model_call rows stay comparable across prompt revisions.
@@ -127,7 +128,7 @@ class ReviewWorker(AttestationWorker):
                 f"{REVIEW_CLAIM_NAME} and {RECORD_CONTRADICTION_NAME}; "
                 "proposing and accepting are not a reviewer's to do."
             )
-        except Exception as e:  # noqa: BLE001 — report to the model, don't crash the loop
+        except Exception as e:
             self.graph.log_refusal(
                 name, self.authored_by, e,
                 node_id=args.get("claim_id") or args.get("node_a_id"),

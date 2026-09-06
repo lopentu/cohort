@@ -152,7 +152,7 @@ def cmd_node(args) -> None:
     try:
         payload = node_detail_json(graph, args.id)
     except NodeNotFound as e:
-        raise SystemExit(str(e))
+        raise SystemExit(str(e)) from e
     finally:
         graph.close()
 
@@ -376,7 +376,7 @@ def _verdict(args, action: str) -> None:
         graph = _write(args)
     except SingleWriterViolation as e:
         # Same answer the API gives as a 409, phrased for a terminal.
-        raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}")
+        raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}") from e
     try:
         kwargs: dict[str, Any] = {"authored_by": RESEARCHER}
         if action in ("reject", "reopen"):
@@ -393,12 +393,12 @@ def _verdict(args, action: str) -> None:
         payload = {"node": node_json(graph, graph.get_node(args.id)),
                    "decision_node_id": decision_id}
     except NodeNotFound as e:
-        raise SystemExit(str(e))
+        raise SystemExit(str(e)) from e
     except CohortError as e:
         # A refused write is a real answer from this system, already recorded
         # to the log. Exit 2 distinguishes it from a usage error.
         print(f"refused ({type(e).__name__}): {e}", file=sys.stderr)
-        raise SystemExit(2)
+        raise SystemExit(2) from e
     finally:
         graph.close()
 
@@ -409,17 +409,17 @@ def _edge_verdict(args, action: str) -> None:
     try:
         graph = _write(args)
     except SingleWriterViolation as e:
-        raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}")
+        raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}") from e
     try:
         method = graph.retract_edge if action == "retract" else graph.restore_edge
         method(args.id, authored_by=RESEARCHER, reason=args.reason)
         edge = next(e for e in graph.edges(include_retracted=True) if e.id == args.id)
         payload = {"edge": edge_json(edge)}
     except EdgeNotFound as e:
-        raise SystemExit(str(e))
+        raise SystemExit(str(e)) from e
     except CohortError as e:
         print(f"refused ({type(e).__name__}): {e}", file=sys.stderr)
-        raise SystemExit(2)
+        raise SystemExit(2) from e
     finally:
         graph.close()
 
@@ -466,7 +466,7 @@ def cmd_question(args) -> None:
         try:
             graph = _write(args)
         except SingleWriterViolation as e:
-            raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}")
+            raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}") from e
         try:
             qid = graph.ask_question(
                 QuestionPayload(text=args.ask, answerable_by=args.answerable_by),
@@ -474,7 +474,7 @@ def cmd_question(args) -> None:
             )
             payload = question_json(graph, qid)
         except CohortError as e:
-            raise SystemExit(f"refused ({type(e).__name__}): {e}")
+            raise SystemExit(f"refused ({type(e).__name__}): {e}") from e
         finally:
             graph.close()
     elif args.address:
@@ -483,16 +483,16 @@ def cmd_question(args) -> None:
         try:
             graph = _write(args)
         except SingleWriterViolation as e:
-            raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}")
+            raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}") from e
         try:
             graph.add_edge(
                 EdgeType.ADDRESSES, args.address, args.id, authored_by=RESEARCHER,
             )
             payload = question_json(graph, args.id)
         except NodeNotFound as e:
-            raise SystemExit(str(e))
+            raise SystemExit(str(e)) from e
         except CohortError as e:
-            raise SystemExit(f"refused ({type(e).__name__}): {e}")
+            raise SystemExit(f"refused ({type(e).__name__}): {e}") from e
         finally:
             graph.close()
     else:
@@ -500,7 +500,7 @@ def cmd_question(args) -> None:
         try:
             payload = question_json(graph, args.id) if args.id else questions_json(graph)
         except NodeNotFound as e:
-            raise SystemExit(str(e))
+            raise SystemExit(str(e)) from e
         finally:
             graph.close()
 
@@ -553,7 +553,7 @@ def cmd_findings(args) -> None:
         else:
             payload = findings_json(graph, limit=args.limit)
     except NodeNotFound as e:
-        raise SystemExit(str(e))
+        raise SystemExit(str(e)) from e
     finally:
         graph.close()
 
@@ -639,16 +639,16 @@ def cmd_test_conjecture(args) -> None:
     try:
         graph = _write(args)
     except SingleWriterViolation as e:
-        raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}")
+        raise SystemExit(f"the graph is locked by another writer (an agent run?): {e}") from e
     try:
         report = run_prospective_test(
             graph, source, args.id, authored_by=RESEARCHER,
         )
         payload = report.model_dump(mode="json")
     except NodeNotFound as e:
-        raise SystemExit(str(e))
+        raise SystemExit(str(e)) from e
     except CohortError as e:
-        raise SystemExit(f"refused ({type(e).__name__}): {e}")
+        raise SystemExit(f"refused ({type(e).__name__}): {e}") from e
     finally:
         graph.close()
 
@@ -717,9 +717,7 @@ def cmd_run(args) -> None:
     """Start a run and wait for it. The web launcher is asynchronous because a
     browser cannot block; a terminal can, so this stays in the foreground and
     Ctrl-C is the stop button."""
-    from .ui.runs import AgentSpec, RunManager, RunRejected
-
-    from .ui.runs import ROLE_REVIEWER
+    from .ui.runs import ROLE_REVIEWER, AgentSpec, RunManager, RunRejected
 
     if args.history:
         _run_history(args)
@@ -734,9 +732,9 @@ def cmd_run(args) -> None:
     # both front ends can start a run, it is that a run started either way is
     # the same run.
     if args.question and not workers and not reviewers:
-        from .ui.runs import plan_inquiry
         from .agents.openrouter import load_model_pool
         from .graph import Graph
+        from .ui.runs import plan_inquiry
 
         with Graph.open_read_only(Path(args.db)) as g:
             payload = g.get_node(args.question).payload or {}
@@ -827,7 +825,7 @@ def cmd_run(args) -> None:
         manager.start(specs, budget_usd=args.budget, max_turns=args.max_turns,
                       question_id=args.question)
     except RunRejected as e:
-        raise SystemExit(f"refused: {e}")
+        raise SystemExit(f"refused: {e}") from e
 
     async def wait() -> dict[str, Any] | None:
         """Poll the same way the browser does — `current()`/`history()` are the
@@ -842,7 +840,7 @@ def cmd_run(args) -> None:
         run = asyncio.run(wait())
     except KeyboardInterrupt:
         manager.stop()
-        raise SystemExit("\nstopping after this turn…")
+        raise SystemExit("\nstopping after this turn…") from None
 
     if run is None:
         history = manager.history(limit=1)

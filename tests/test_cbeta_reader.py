@@ -26,7 +26,7 @@ DOCUMENT = (
     '<?xml version="1.0" encoding="UTF-8"?>\n'
     "<TEI><teiHeader><fileDesc>synthetic test fixture, mentions 諸行無常 in metadata too"
     "</fileDesc></teiHeader><text>諸行無常。是生滅法。</text></TEI>\n"
-).encode("utf-8")
+).encode()
 
 
 def _build_archive(tmp_path, entries: dict[str, bytes]) -> tuple:
@@ -79,9 +79,10 @@ def test_read_verified_entry_fails_on_missing_entry(archive):
 
 def test_read_verified_entry_fails_on_duplicate_entry(tmp_path):
     buf = BytesIO()
-    with zipfile.ZipFile(buf, "w") as zf, pytest.warns(UserWarning, match="Duplicate name"):
+    with zipfile.ZipFile(buf, "w") as zf:
         zf.writestr(ENTRY_PATH, DOCUMENT)
-        zf.writestr(ENTRY_PATH, DOCUMENT)  # same name written twice — zipfile permits this
+        with pytest.warns(UserWarning, match="Duplicate name"):
+            zf.writestr(ENTRY_PATH, DOCUMENT)  # same name written twice — zipfile permits this
     archive_bytes = buf.getvalue()
     path = tmp_path / "dup.zip"
     path.write_bytes(archive_bytes)
@@ -100,7 +101,7 @@ def test_read_verified_entry_fails_on_oversized_entry(archive):
 
 def test_find_text_content_start_succeeds():
     start = find_text_content_start(DOCUMENT)
-    assert DOCUMENT[start:].startswith("諸行無常".encode("utf-8"))
+    assert DOCUMENT[start:].startswith("諸行無常".encode())
 
 
 def test_find_text_content_start_fails_without_header():
@@ -111,18 +112,18 @@ def test_find_text_content_start_fails_without_header():
 # --- span location -------------------------------------------------------------
 
 def test_locate_span_succeeds():
-    body = "諸行無常。是生滅法。".encode("utf-8")
+    body = "諸行無常。是生滅法。".encode()
     start, end = locate_span(body, "諸行無常")
-    assert body[start:end] == "諸行無常".encode("utf-8")
+    assert body[start:end] == "諸行無常".encode()
 
 
 def test_locate_span_fails_when_absent():
     with pytest.raises(CbetaArchiveError, match="not found"):
-        locate_span("諸行無常".encode("utf-8"), "不存在")
+        locate_span("諸行無常".encode(), "不存在")
 
 
 def test_locate_span_fails_when_not_unique():
-    body = "諸行無常，諸行無常".encode("utf-8")
+    body = "諸行無常，諸行無常".encode()
     with pytest.raises(CbetaArchiveError, match="not unique"):
         locate_span(body, "諸行無常")
 
