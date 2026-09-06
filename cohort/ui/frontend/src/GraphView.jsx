@@ -1,6 +1,8 @@
 import {
   COLUMNS,
   EDGE_STYLE,
+  TEST_OUTCOME,
+  edgeClass,
   NODE_H,
   NODE_W,
   edgePath,
@@ -38,7 +40,8 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
     <div className="graph-scroll">
       <svg width={width} height={height} className="graph" role="img" aria-label="Evidence graph">
         <defs>
-          {['attests', 'discount', 'contradicts', 'structural', 'tests', 'addresses'].map((k) => (
+          {['attests', 'discount', 'contradicts', 'structural', 'tests', 'addresses',
+            'test-held', 'test-broke', 'test-undecided'].map((k) => (
             <marker
               key={k} id={`arrow-${k}`} viewBox="0 0 10 10" refX="9" refY="5"
               markerWidth="6" markerHeight="6" orient="auto-start-reverse"
@@ -67,16 +70,22 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
         <g className="edges">
           {drawn.map((e) => {
             const style = EDGE_STYLE[e.type] || EDGE_STYLE.part_of
+            // A run `tests` edge draws as its outcome, not as its type.
+            const klass = edgeClass(e)
+            const label =
+              e.type === 'tests' && e.outcome
+                ? (TEST_OUTCOME[e.outcome] || TEST_OUTCOME.unrun).label
+                : style.label
             const dim = selectedId && e.src !== selectedId && e.dst !== selectedId
-            const marker = style.klass.replace('e-', '')
+            const marker = klass.replace('e-', '')
             return (
               <path
                 key={e.id}
                 d={edgePath(positions.get(e.src), positions.get(e.dst))}
-                className={`edge ${style.klass} ${dim ? 'dim' : ''}`}
+                className={`edge ${klass} ${dim ? 'dim' : ''}`}
                 markerEnd={`url(#arrow-${marker})`}
               >
-                <title>{style.label}{e.discounts ? ' — discounts support' : ''}</title>
+                <title>{label}{e.discounts ? ' — discounts support' : ''}</title>
               </path>
             )
           })}

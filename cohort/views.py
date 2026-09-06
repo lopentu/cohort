@@ -14,7 +14,7 @@ from typing import Any
 
 from .graph import Graph
 from .sources.cbeta_refs import reader_url
-from .schemas import EdgeType, NodeType
+from .schemas import EdgeType, NodeType, VerificationMethod, VerificationResult
 
 #: The two edge types that *discount* support rather than adding it: witnesses
 #: linked by either are evidence of shared descent, not independent
@@ -40,6 +40,28 @@ def node_json(graph: Graph, node) -> dict[str, Any]:
         # corpus browser cannot disagree about where a passage lives.
         "cbeta_url": reader_url(node.payload.get("canonical_ref") or ""),
     }
+
+
+def test_outcome(graph: Graph, conjecture_id: str) -> str:
+    """`held`, `broke`, `undecided` or `unrun` for a conjecture's prospective
+    test — the latest one, for the reason `assurance_for` takes the latest per
+    method.
+
+    Reported on the `tests` edge rather than on the conjecture, because the
+    edge *is* the test: it points from the query that would settle something to
+    the thing it would settle, and whether it did is a fact about that
+    relation. Putting it on the node would also collide with status, which is
+    the promotion ladder and must not start meaning "a prediction held".
+    """
+    latest = None
+    for v in graph.verifications(conjecture_id):
+        if v.payload.get("method") == VerificationMethod.PROSPECTIVE_TEST:
+            latest = v.payload["result"]
+    return {
+        VerificationResult.PASS: "held",
+        VerificationResult.FAIL: "broke",
+        VerificationResult.INDETERMINATE: "undecided",
+    }.get(latest, "unrun")
 
 
 def edge_json(edge) -> dict[str, Any]:

@@ -106,9 +106,13 @@ def register_discriminator(
 
     conjecture_id = graph.propose_conjecture(
         ConjecturePayload(
+            # The feature leads. Every one of these sentences is otherwise
+            # identical, so a title truncated to fit a node box would show
+            # twenty-two cards reading "The feature '…' dist…" — the one word
+            # that tells them apart buried in the middle of the elision.
             text=(
-                f"The feature {args.feature!r} distinguishes "
-                f"{catalogue.benchmark_label} works from works outside that group."
+                f"{args.feature} — distinguishes {catalogue.benchmark_label} "
+                "works from works outside that group."
             ),
             derivation=args.derivation,
             corpus_boundary=args.corpus_boundary,

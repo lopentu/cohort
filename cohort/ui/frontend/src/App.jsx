@@ -8,6 +8,7 @@ import RefusalsPanel from './RefusalsPanel'
 import RunPanel from './RunPanel'
 import Settings, { applyTheme, loadTheme } from './Settings'
 import LedgerPanel from './LedgerPanel'
+import StudyPanel from './StudyPanel'
 import StatsBar from './StatsBar'
 import { EDGE_STYLE, legendFor } from './graph-model'
 import { usePresence, useSlidingIndicator } from './motion'
@@ -58,6 +59,7 @@ export default function App() {
     ['graph', 'Graph'],
     ['findings', 'Findings'],
     health?.corpus_enabled && ['corpus', 'Corpus'],
+    health?.study_enabled && ['study', 'Attribution'],
     health?.discriminators > 0 && ['ledger', 'Ledger'],
     health?.runs_enabled && ['run', 'Inquiry'],
   ].filter(Boolean)
@@ -189,6 +191,7 @@ export default function App() {
                 onSelect={(id) => { setSelectedId(id); goTab('graph') }}
               />
             )}
+            {tab === 'study' && <StudyPanel />}
             {tab === 'ledger' && (
               <LedgerPanel
                 onSelect={(id) => { setSelectedId(id); goTab('graph') }}
@@ -226,8 +229,8 @@ function Legend({ data, showAudit }) {
   // entries whose edges are actually drawn. See graph-model.js for why that is
   // safe to shrink, and why the discounting entry says "discounts" in words
   // rather than leaving it to a dash pattern.
-  const { edges, statuses } = legendFor(data.nodes, data.edges, { showAudit })
-  if (!edges.length && !statuses.length) return null
+  const { edges, outcomes, statuses } = legendFor(data.nodes, data.edges, { showAudit })
+  if (!edges.length && !outcomes.length && !statuses.length) return null
 
   return (
     <div className="legend">
@@ -236,7 +239,12 @@ function Legend({ data, showAudit }) {
           <i className={`swatch ${e.klass}`} /> {emphasise(e.text, e.strong)}
         </span>
       ))}
-      {!!edges.length && !!statuses.length && <span className="sep" />}
+      {outcomes.map((o) => (
+        <span className="li" key={o.key}>
+          <i className={`swatch ${o.klass}`} /> {emphasise(o.text, o.strong)}
+        </span>
+      ))}
+      {(!!edges.length || !!outcomes.length) && !!statuses.length && <span className="sep" />}
       {statuses.map((s) => (
         <span className="li" key={s}><i className={`dot s-${s}`} /> {s}</span>
       ))}

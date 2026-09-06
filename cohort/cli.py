@@ -202,6 +202,45 @@ def cmd_citable(args) -> None:
     _emit(args, payload, render)
 
 
+def cmd_study(args) -> None:
+    """The ascription study. Reads the corpus directly and holds no graph — a
+    Delta space is a measurement over texts, not a record of anyone's claims."""
+    from .attribution import load_study
+    from .catalogue import load_catalogue
+
+    root = Path(args.radich)
+    catalogue = load_catalogue(
+        root / "P-catalogue.txt",
+        benchmark_label=args.benchmark_label, control_label=args.control_label,
+    )
+    payload = load_study(root / "corpus" / "T-stripped", catalogue).as_json(top=args.top)
+
+    def render(p):
+        n = p["null"]
+        print(f"benchmark {p['benchmark_label']}: {n['n']} works, "
+              f"Δ to each other {n['min']}–{n['max']} (median {n['median']})")
+        print(f"{p['features']} features over {p['corpus_size']} works, "
+              f"floor {p['min_chars']} chars\n")
+        for label, group in p["groups"].items():
+            print(f"{label}:")
+            for prof in group["profiles"]:
+                where = "inside" if prof["inside_null"] else "OUTSIDE"
+                near = ", ".join(
+                    f"{q['work']}{'*' if q['label'] == p['benchmark_label'] else ''}"
+                    f" {q['delta']}"
+                    for q in prof["neighbours"][:4]
+                )
+                print(f"  {prof['work']:<12} Δ={prof['mean_delta_to_benchmark']:.3f} "
+                      f"[{where} the benchmark's own spread]  nearest: {near}")
+            if group["unmeasurable"]:
+                print(f"  below the floor, not profiled: "
+                      f"{', '.join(group['unmeasurable'])}")
+            print()
+        print(f"* = a {p['benchmark_label']} work")
+        print(p["caveat"])
+    _emit(args, payload, render)
+
+
 def cmd_ledger(args) -> None:
     graph = _read(args)
     try:
@@ -953,6 +992,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("id")
 
     add("citable", cmd_citable, "accepted nodes — the only ones citable by output")
+    p = add("study", cmd_study,
+            "an ascription study: where each disputed work sits relative to the "
+            "benchmark's own internal spread, and what it is nearest to in the "
+            "whole corpus")
+    p.add_argument("--radich", required=True, metavar="DIR",
+                   help="directory holding corpus/T-stripped/ and P-catalogue.txt")
+    p.add_argument("--benchmark-label", default="P-23")
+    p.add_argument("--control-label", default="interloper")
+    p.add_argument("--top", type=int, default=8, help="neighbours per work")
+
     add("ledger", cmd_ledger,
         "every candidate discriminator and what became of it — including the "
         "ones that failed their negative control, which is the number that "

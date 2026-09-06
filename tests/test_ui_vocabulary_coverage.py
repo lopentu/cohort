@@ -102,3 +102,28 @@ def test_the_question_column_is_last(model):
     keys = re.findall(r"key: '(\w+)', label:", _block(model, "COLUMNS"))
     assert keys[-1] == "question", f"question is not the terminal column: {keys}"
     assert keys.index("audit") == len(keys) - 2
+
+
+def test_every_test_outcome_the_api_can_report_has_a_rendering(model):
+    """`views.test_outcome` returns one of four strings and the graph view
+    styles by it. A value with no entry falls back to "unrun" and silently
+    draws a decided prediction as an open one — the same class of bug as a node
+    type with no column, and invisible in exactly the same way."""
+    from cohort.views import test_outcome  # noqa: F401  (import proves it exists)
+
+    emitted = {"held", "broke", "undecided", "unrun"}
+    block = _block(model, "TEST_OUTCOME")
+    missing = [o for o in sorted(emitted) if f"{o}:" not in block]
+    assert not missing, f"outcomes with no rendering: {missing}"
+
+
+def test_a_run_prediction_is_not_drawn_as_an_open_one(model):
+    """Dotted means "not yet asked". A decided test that kept the dotted style
+    would report twenty-two identical lines for twenty-two different results."""
+    block = _block(model, "TEST_OUTCOME")
+    for outcome in ("held", "broke"):
+        line = next(l for l in block.splitlines() if l.strip().startswith(outcome))
+        assert "e-tests" not in line, (
+            f"{outcome} reuses the unrun style, so a run prediction still "
+            "draws as an open one"
+        )

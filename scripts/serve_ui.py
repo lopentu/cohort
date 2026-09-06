@@ -59,6 +59,15 @@ def _open_corpus():
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default=str(REPO_ROOT / "demo_graph.sqlite"))
+    parser.add_argument(
+        "--radich", metavar="DIR", default=None,
+        help="directory holding an ascription study: `corpus/T-stripped/` and "
+             "a catalogue. Opening one builds a Delta space over the whole "
+             "corpus, which takes about half a minute and is done once at "
+             "startup so no request pays for it",
+    )
+    parser.add_argument("--benchmark-label", default="P-23")
+    parser.add_argument("--control-label", default="interloper")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--reload", action="store_true")
@@ -137,11 +146,31 @@ def main() -> None:
             file=sys.stderr,
         )
 
+    study = None
+    if args.radich:
+        from cohort.attribution import load_study
+        from cohort.catalogue import load_catalogue
+
+        radich = Path(args.radich)
+        catalogue = load_catalogue(
+            radich / "P-catalogue.txt",
+            benchmark_label=args.benchmark_label,
+            control_label=args.control_label,
+        )
+        print(f"building the Delta space over {radich / 'corpus' / 'T-stripped'} "
+              "— about 35s, once", file=sys.stderr)
+        study = load_study(radich / "corpus" / "T-stripped", catalogue)
+        print(f"  {study.corpus_size} works read, {len(study.space.works())} "
+              f"long enough to profile, {len(study.space.features)} features",
+              file=sys.stderr)
+
     modes = ["read-only"]
     if args.allow_writes:
         modes.append("researcher writes")
     if source is not None:
         modes.append("corpus")
+    if study is not None:
+        modes.append("ascription study")
     if run_manager is not None:
         modes.append(f"agent runs (max ${args.max_budget:.2f}/run)")
     mode = " + ".join(modes)
@@ -162,7 +191,7 @@ def main() -> None:
     uvicorn.run(
         create_app(
             db_path, args.log, allow_writes=args.allow_writes,
-            source=source, run_manager=run_manager,
+            source=source, run_manager=run_manager, study=study,
         ),
         host=args.host, port=args.port,
     )

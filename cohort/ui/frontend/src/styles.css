@@ -2034,3 +2034,136 @@ a.cbeta-link.block:hover { color: var(--text); }
   .ledger-head { grid-template-columns: 1fr; gap: 6px; }
   .ledger-ratio { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
+
+
+/* --- a prediction that has been run -------------------------------------- */
+
+/* `tests` dotted means *not yet asked* — which is what dotted always said.
+   Once a prediction has been run it either held or broke, and drawing both
+   like the unrun case makes a page of tested predictions unreadable: every
+   line identical, the one that survived indistinguishable from the twenty-one
+   that did not.
+
+   Solid for a decided test, dashed for one that could not decide, and the
+   weights differ too, so the distinction survives greyscale and colour
+   blindness the way the discounting edges do. */
+.e-test-held { stroke: var(--accepted); stroke-width: 2; }
+.a-test-held { fill: var(--accepted); }
+.e-test-broke { stroke: var(--rejected); stroke-width: 1.2; opacity: .75; }
+.a-test-broke { fill: var(--rejected); opacity: .75; }
+.e-test-undecided { stroke: var(--proposed); stroke-width: 1.4; stroke-dasharray: 6 3; }
+.a-test-undecided { fill: var(--proposed); }
+
+.swatch.e-test-held { border-color: var(--accepted); border-top-width: 3px; }
+.swatch.e-test-broke { border-color: var(--rejected); }
+.swatch.e-test-undecided { border-color: var(--proposed); border-top-style: dashed; }
+
+
+/* --- attribution: a distance against the spread it has to beat ----------- */
+
+.study { margin: 18px; max-width: 940px; }
+.study h2 { margin: 0 0 12px; font-size: 14px; font-weight: 650; }
+
+.study-frame {
+  padding: 13px 15px; margin-bottom: 12px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+}
+.study-null { margin: 0 0 6px; font-size: 13px; line-height: 1.55; }
+.study-frame .hint { margin: 0; }
+
+/* The caveat is a first-class element, not a footnote. These neighbourhoods
+   track subject matter, and a reader who scrolls past that will over-read
+   every row below it. */
+.study-caveat {
+  margin: 0 0 22px; padding: 10px 13px;
+  border-left: 3px solid var(--tests);
+  background: color-mix(in srgb, var(--tests) 7%, transparent);
+  font-size: 12.5px; line-height: 1.55; color: var(--text-dim);
+}
+
+.study-group { margin-bottom: 26px; }
+.study-group h3 {
+  display: flex; align-items: baseline; gap: 8px; margin: 0 0 10px;
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+.study-n {
+  font-size: 11px; padding: 1px 7px; border-radius: 999px;
+  background: var(--fill-2); letter-spacing: 0;
+}
+
+.study-work {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  margin-bottom: 8px; padding-bottom: 2px;
+}
+/* Inside the band is the *common* case and the unremarkable one, so it is not
+   coloured like a pass. Outside is what deserves a reader's attention. */
+.study-work.outside { border-color: color-mix(in srgb, var(--tests) 45%, var(--line)); }
+
+.study-head {
+  display: grid; grid-template-columns: 8.5rem 1fr 5.5rem; gap: 14px;
+  align-items: center; width: 100%; padding: 11px 14px 6px;
+  background: none; border: 0; text-align: left; cursor: pointer;
+  color: var(--text); font: inherit;
+  white-space: normal; overflow: visible; text-overflow: clip;
+}
+.study-id { font-size: 14px; font-weight: 600; }
+.study-delta {
+  font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+  text-align: right;
+}
+
+/* The scale. One shared domain across every row, so two works can be compared
+   by eye rather than by reading two numbers and subtracting. */
+.study-scale {
+  position: relative; display: block; height: 20px;
+  border-radius: 3px; background: var(--fill-1);
+}
+.scale-band {
+  position: absolute; top: 4px; bottom: 4px;
+  background: color-mix(in srgb, var(--accepted) 22%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--accepted) 55%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--accepted) 55%, transparent);
+  border-radius: 2px;
+}
+.scale-median {
+  position: absolute; top: 6px; bottom: 6px; width: 1px;
+  background: color-mix(in srgb, var(--accepted) 65%, transparent);
+}
+.scale-mark {
+  position: absolute; top: 1px; bottom: 1px; width: 3px; margin-left: -1.5px;
+  border-radius: 2px; background: var(--text);
+}
+.study-work.outside .scale-mark { background: var(--tests); }
+
+.study-reading {
+  margin: 0 14px 10px; font-size: 12px; line-height: 1.5; color: var(--text-dim);
+}
+
+.study-neighbours { padding: 0 14px 12px; border-top: 1px solid var(--line-soft); }
+.study-neighbours h4 {
+  margin: 12px 0 6px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--text-faint);
+}
+.study-neighbours ol { margin: 0 0 8px; padding-left: 20px; display: grid; gap: 3px; }
+.study-neighbours li { font-size: 12.5px; display: flex; gap: 9px; align-items: baseline; }
+.nb-work { font-weight: 550; }
+/* A benchmark work turning up as a nearest neighbour is the single most
+   interesting thing this view can show, so it is marked rather than left for
+   the reader to cross-reference against the catalogue. */
+.nb-bench { color: var(--accepted); }
+.nb-bench::after { content: ' ★'; font-size: 10px; }
+.nb-label { color: var(--text-faint); font-size: 11px; }
+.nb-delta { color: var(--text-dim); font-family: var(--mono); font-size: 11.5px; }
+
+.study-unmeasurable {
+  margin: 10px 0 0; padding: 9px 12px; font-size: 12px; line-height: 1.5;
+  border: 1px dashed var(--line); border-radius: var(--radius-sm);
+  color: var(--text-dim);
+}
+
+@media (max-width: 720px) {
+  .study-head { grid-template-columns: 1fr; gap: 8px; }
+  .study-delta { text-align: left; }
+}
