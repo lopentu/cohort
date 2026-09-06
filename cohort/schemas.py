@@ -361,6 +361,39 @@ class HitExpectation(StrEnum):
     AT_LEAST = "at_least"
 
 
+class DiscriminationPrediction(_Model):
+    """What a candidate discriminator promises, registered before it is run.
+
+    Added 2026-09-06 with the argument §6 requires, for the Paramārtha
+    ascription question.
+
+    **Two-sided, and that is the whole point.** A one-sided prediction — "this
+    feature appears in the benchmark" — is satisfied by any sufficiently common
+    word, which is how a description gets mistaken for a discriminator. The
+    control ceiling is what makes it a test: the feature must be present in the
+    benchmark group *and* absent from a set of works believed not to belong.
+    `HitExpectation` cannot say this, because one threshold on one count cannot
+    express a contrast between two groups.
+
+    Shares of *works*, not of characters or occurrences. The groups contain
+    works differing in length by more than two hundred fold, and a share of
+    characters would let one long text carry a prediction on its own. An
+    ascription claim is about works, so the threshold is too.
+
+    The control group is named here rather than inferred, so a discriminator
+    records which negative control it was actually tested against — a later
+    reader should not have to assume it was the strict one.
+    """
+
+    feature: str = Field(min_length=1)
+    benchmark_label: str = Field(min_length=1)
+    control_label: str = Field(min_length=1)
+    #: fraction of *measurable* benchmark works that must attest the feature
+    min_benchmark_share: float = Field(ge=0.0, le=1.0)
+    #: fraction of *measurable* control works that may attest it and no more
+    max_control_share: float = Field(ge=0.0, le=1.0)
+
+
 class QueryPayload(_Model):
     text: str = Field(min_length=1)
 
@@ -375,6 +408,12 @@ class QueryPayload(_Model):
     #: conjecture, and nothing can edit a payload afterwards.
     expectation: HitExpectation | None = None
     expected_hits: int | None = Field(default=None, ge=0)
+
+    #: Set only on the `tests` query of a candidate discriminator, by
+    #: `register_discriminator`, in the same call that creates the conjecture.
+    #: Same contract as `expectation` above: on the record first, or it is not
+    #: a prediction.
+    discrimination: DiscriminationPrediction | None = None
 
 
 class QuestionPayload(_Model):
@@ -401,6 +440,27 @@ class DecisionPayload(_Model):
     reason: str | None = None
 
 
+class GroupOutcome(_Model):
+    """What one labelled group of works showed, as a tally.
+
+    Added 2026-09-06 alongside `DiscriminationPrediction`. A control test's
+    result is four numbers, and until this existed they lived only inside the
+    `detail` sentence — which meant every reader of the record, the ledger
+    included, had to parse English to tabulate them. Prose is the right place
+    for what a result *means* and the wrong place for what it *was*.
+
+    Tallies of works, matching the shares a prediction is written in. No rates
+    and no totals: a group whose members differ in length by two hundred fold
+    has no meaningful pooled rate, and offering a field for one would invite
+    somebody to fill it.
+    """
+
+    label: str = Field(min_length=1)
+    works_measured: int = Field(ge=0)
+    works_attesting: int = Field(ge=0)
+    works_skipped_short: int = Field(ge=0)
+
+
 class VerificationPayload(_Model):
     method: VerificationMethod
     result: VerificationResult
@@ -419,6 +479,10 @@ class VerificationPayload(_Model):
     excerpt_hash: str | None = None
     span_start: int | None = None
     span_end: int | None = None
+    #: Populated only by checks that compared labelled groups of works — a
+    #: discriminator's control test. Empty for everything else, and additive,
+    #: so every verification written before this existed still validates.
+    groups: tuple[GroupOutcome, ...] = ()
 
 
 PAYLOAD_BY_TYPE: dict[NodeType, type[_Model]] = {

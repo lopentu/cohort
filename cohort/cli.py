@@ -42,6 +42,7 @@ from .errors import (
 )
 from .eventlog import EventLog, read_refusals, read_runs, summarize_refusals
 from .graph import Graph
+from .ledger import ledger_json
 from .schemas import RESEARCHER, EdgeType, NodeType, QuestionPayload
 from .views import (
     dossier_json,
@@ -198,6 +199,34 @@ def cmd_citable(args) -> None:
         for n in p:
             print(f"{n['type']:<12} {n['id']}")
         print(f"\n{len(p)} citable")
+    _emit(args, payload, render)
+
+
+def cmd_ledger(args) -> None:
+    graph = _read(args)
+    try:
+        payload = ledger_json(graph)
+    finally:
+        graph.close()
+
+    def render(p):
+        if not p["features"]:
+            print(p["reading"])
+            return
+        print(f"{'fate':<10} {'feature':<14} {'predicted':<22} outcome")
+        for row in sorted(p["features"], key=lambda r: r["fate"]):
+            pred = row["prediction"]
+            window = (
+                f">={pred['min_benchmark_share']:.2f} / "
+                f"<={pred['max_control_share']:.2f}"
+            )
+            control = row["control"]
+            outcome = control["result"] if control else "not run"
+            print(f"{row['fate']:<10} {row['feature']:<14} {window:<22} {outcome}")
+        print()
+        # The ratio, not the survivors, and last so it is the line left on
+        # screen.
+        print(p["reading"])
     _emit(args, payload, render)
 
 
@@ -924,6 +953,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("id")
 
     add("citable", cmd_citable, "accepted nodes — the only ones citable by output")
+    add("ledger", cmd_ledger,
+        "every candidate discriminator and what became of it — including the "
+        "ones that failed their negative control, which is the number that "
+        "says whether the surviving ones mean anything")
 
     p = add("rejected", cmd_rejected, "rejected nodes, with their reasons")
     p.add_argument("--type", choices=[t.value for t in NodeType])

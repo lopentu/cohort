@@ -7,6 +7,7 @@ import FindingsPanel from './FindingsPanel'
 import RefusalsPanel from './RefusalsPanel'
 import RunPanel from './RunPanel'
 import Settings, { applyTheme, loadTheme } from './Settings'
+import LedgerPanel from './LedgerPanel'
 import StatsBar from './StatsBar'
 import { EDGE_STYLE, legendFor } from './graph-model'
 import { usePresence, useSlidingIndicator } from './motion'
@@ -57,6 +58,7 @@ export default function App() {
     ['graph', 'Graph'],
     ['findings', 'Findings'],
     health?.corpus_enabled && ['corpus', 'Corpus'],
+    health?.discriminators > 0 && ['ledger', 'Ledger'],
     health?.runs_enabled && ['run', 'Inquiry'],
   ].filter(Boolean)
 
@@ -184,6 +186,11 @@ export default function App() {
             )}
             {tab === 'findings' && (
               <FindingsPanel
+                onSelect={(id) => { setSelectedId(id); goTab('graph') }}
+              />
+            )}
+            {tab === 'ledger' && (
+              <LedgerPanel
                 onSelect={(id) => { setSelectedId(id); goTab('graph') }}
               />
             )}

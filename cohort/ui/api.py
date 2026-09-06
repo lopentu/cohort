@@ -65,6 +65,7 @@ from ..views import (
     question_json,
     questions_json,
 )
+from ..ledger import ledger_json
 from ..views import edge_json as _edge_json
 from ..views import node_json as _node_json
 from .runs import ROLE_WORKER, AgentSpec, RunManager, RunRejected, plan_inquiry
@@ -130,6 +131,10 @@ def create_app(
                 "writes_enabled": allow_writes,
                 "corpus_enabled": source is not None,
                 "runs_enabled": run_manager is not None,
+                # So the browser can hide a tab that would be empty on every
+                # graph that is not an ascription study, without asking it to
+                # guess from node counts what kind of study this is.
+                "discriminators": len(ledger_json(graph)["features"]),
             }
         finally:
             graph.close()
@@ -193,6 +198,20 @@ def create_app(
         graph = read()
         try:
             return [_node_json(graph, n) for n in graph.citable()]
+        finally:
+            graph.close()
+
+    @app.get("/api/ledger")
+    def ledger() -> dict[str, Any]:
+        """Every candidate discriminator and what became of it.
+
+        The discarded rows are the point. Features that did not work are
+        invisible in ordinary stylometry, so a reader cannot tell a discovery
+        from a fishing expedition — this endpoint is the record that makes the
+        difference legible, and `tried` matters more than `usable`."""
+        graph = read()
+        try:
+            return ledger_json(graph)
         finally:
             graph.close()
 

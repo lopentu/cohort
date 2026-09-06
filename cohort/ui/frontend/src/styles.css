@@ -1965,3 +1965,72 @@ a.cbeta-link.block { display: inline-block; margin: 6px 0 2px; font-size: 12px;
                      color: var(--addresses); text-decoration: underline;
                      text-underline-offset: 2px; }
 a.cbeta-link.block:hover { color: var(--text); }
+
+
+/* --- the feature ledger -------------------------------------------------- */
+
+.ledger { margin: 18px; }
+.ledger h2 { margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+
+/* The ratio, given the weight the finding actually has. A panel that led with
+   the survivors would let "3 usable" read the same whether 4 or 90 features
+   were tried, which is the difference between a discovery and an artefact. */
+.ledger-ratio {
+  display: flex; align-items: center; gap: 16px;
+  margin: 14px 0 20px; padding: 14px 16px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+}
+.ratio-figure { display: flex; align-items: baseline; gap: 6px; flex: none; }
+.ratio-figure strong { font-size: 30px; font-weight: 680; letter-spacing: -0.02em; }
+.ratio-figure span { color: var(--text-dim); font-size: 13px; }
+.ledger-ratio p { margin: 0; color: var(--text-dim); font-size: 12.5px; line-height: 1.5; }
+
+.ledger-group { margin-bottom: 22px; }
+.ledger-group h3 {
+  display: flex; align-items: baseline; gap: 8px;
+  margin: 0 0 2px; font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--text-dim);
+}
+.ledger-n {
+  font-size: 11px; padding: 1px 7px; border-radius: 999px;
+  background: var(--fill-2); color: var(--text-dim); letter-spacing: 0;
+}
+.ledger-rows { display: grid; gap: 6px; margin-top: 10px; }
+
+.ledger-row { border: 1px solid var(--line); border-radius: var(--radius); }
+.ledger-head {
+  display: grid; grid-template-columns: 7rem 1fr auto; gap: 14px;
+  align-items: center; width: 100%; padding: 9px 12px;
+  background: none; border: 0; text-align: left; cursor: pointer;
+  color: var(--text); font: inherit;
+  /* the global button rule clips and forbids wrapping, which is right for
+     compact controls and wrong for a row of prose */
+  white-space: normal; overflow: visible; text-overflow: clip;
+}
+.ledger-feature { font-size: 15px; font-weight: 600; }
+.ledger-pred { color: var(--text-faint); font-size: 11.5px; }
+.ledger-observed { display: flex; gap: 12px; align-items: baseline; }
+.tally { display: inline-flex; gap: 5px; align-items: baseline; font-size: 12px; }
+.tally-label { color: var(--text-faint); }
+.tally em { color: var(--text-faint); font-style: normal; font-size: 11px; }
+
+/* Discarded features stay legible. Fading them to near-invisibility would be
+   hiding them politely, which defeats the point of keeping them — but the
+   surviving ones still have to be findable at a glance, so the distinction is
+   carried by the left border rather than by opacity. */
+.ledger-row.f-usable { border-left: 3px solid var(--accepted); }
+.ledger-row.f-discarded { border-left: 3px solid var(--rejected); }
+.ledger-row.f-untested { border-left: 3px solid var(--proposed); }
+.ledger-row.f-discarded .ledger-feature { color: var(--text-dim); }
+
+.ledger-detail {
+  padding: 2px 12px 12px; border-top: 1px solid var(--line-soft);
+  display: grid; gap: 8px; justify-items: start;
+}
+.ledger-detail p { margin: 8px 0 0; font-size: 12.5px; line-height: 1.55; }
+
+@media (max-width: 720px) {
+  .ledger-head { grid-template-columns: 1fr; gap: 6px; }
+  .ledger-ratio { flex-direction: column; align-items: flex-start; gap: 8px; }
+}

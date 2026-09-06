@@ -29,6 +29,7 @@ ROUTE_TO_COMMAND = {
     ("GET", "/api/graph"): "graph",
     ("GET", "/api/node"): "node",
     ("GET", "/api/citable"): "citable",
+    ("GET", "/api/ledger"): "ledger",
     ("GET", "/api/rejected"): "rejected",
     ("GET", "/api/agent"): "agent",
     ("GET", "/api/refusals"): "refusals",

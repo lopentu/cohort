@@ -240,6 +240,7 @@ verdict.
 | `dating_route_confidence` | how a date was arrived at |
 | `human_review` | the researcher looked |
 | `prospective_test` | a conjecture's own query, re-run against the prediction recorded with it |
+| `corpus_measurement` | a stated feature re-counted across catalogued works, against the numbers a claim rests on |
 
 There is deliberately **no `model_entailment`**: a second model's opinion is
 still another agent's opinion, and admitting it as a formal method would smuggle
@@ -252,6 +253,43 @@ rather than a check — it is the only method that can fail on new evidence. It
 qualifies because nothing in it is an opinion: a stored query is re-run and a
 stored integer is compared to the count that comes back. It grants no assurance
 rung either way; see [tools.md](tools.md).
+
+`corpus_measurement` (added 2026-09-06) qualifies on the same terms, for the
+Paramārtha ascription question. Until it existed an agent could write "occurs
+eighteen times in P-23, twice in P-weird" into a `derivation` and the graph had
+no way to disagree — which in an attribution study, where every claim is a count
+or a rate, is the difference between a finding and a story with figures in it.
+
+The first measurement of a feature is `indeterminate` on purpose: it establishes
+a baseline and proves nothing the claim's author could not have typed. A later
+run re-counts and compares by **hash** — `cohort/measure.py` is pure, so the
+canonical JSON of a measurement fingerprints it exactly, and the digest lives in
+`excerpt_hash`. Two runs whose hashes match agree on every count, rate, edition
+tally and skipped work. A mismatch means the corpus, the catalogue, the
+character floor or the counting moved, and none of those announce themselves.
+
+It reports counts and refuses to say a feature *discriminates*. That is a
+judgement, and a verification returning a verdict off a contingency table would
+be the confident sentence in the machine's field that the negative control
+caught on 2026-09-02.
+
+### Discrimination predictions
+
+A candidate discriminator needs no new node type: it is a `conjecture`, and the
+`tests` query that would settle it carries a `DiscriminationPrediction` instead
+of a hit count. That prediction is **two-sided**, and has to be — a one-sided
+claim ("this feature appears in the benchmark") is satisfied by any sufficiently
+common word, which is how a description gets mistaken for a discriminator.
+Thresholds are shares of *works*, not of characters, because the groups contain
+works differing in length by over two hundred fold and an ascription claim is
+about works.
+
+The order is enforced, not advised. `apply_to_disputed` raises
+`ControlNotPassed` until the feature has survived its negative control: run the
+control first and a feature can fail, run it afterwards and the result is
+unfalsifiable by construction. See [tools.md](tools.md) and `cohort/ledger.py`,
+which keeps every discarded feature visible — the ratio of discarded to
+surviving candidates is what separates a discovery from a fishing expedition.
 
 Results are `pass`, `fail`, `indeterminate`. **`indeterminate` is a real
 answer**, not a failure — the same commitment as `unknown` dating below. A
