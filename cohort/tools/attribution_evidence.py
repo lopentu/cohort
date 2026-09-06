@@ -21,6 +21,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from cohort.attribution import FEATURE_SETS, AttributionIndex
+from cohort.errors import UnitNotInCorpus
 
 NAME = "attribution_evidence"
 DESCRIPTION = (
@@ -48,10 +49,15 @@ class AttributionEvidenceInput(BaseModel):
 
 
 def attribution_evidence(index: AttributionIndex, args: AttributionEvidenceInput) -> dict[str, Any]:
-    ev = index.evidence(
-        args.uid, args.features, withhold=args.withhold, offset=0,
-        pair=(args.pair[0], args.pair[1]) if args.pair else None,
-    )
+    try:
+        ev = index.evidence(
+            args.uid, args.features, withhold=args.withhold, offset=0,
+            pair=(args.pair[0], args.pair[1]) if args.pair else None,
+        )
+    except KeyError as e:
+        # The index speaks in KeyError; the tool layer speaks in named rules
+        # the refusal census can file.
+        raise UnitNotInCorpus(e.args[0] if e.args else str(e)) from e
     keep = (
         "uid", "label", "work", "features", "n_features", "han_chars", "hits", "distinct",
         "withheld_units", "withheld_extra", "verdict", "first", "second", "margin", "gap",

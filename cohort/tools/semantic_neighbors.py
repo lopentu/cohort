@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from cohort.attribution import AttributionIndex
 from cohort.embeddings import EmbeddingIndex
+from cohort.errors import UnitNotInCorpus
 
 NAME = "semantic_neighbors"
 DESCRIPTION = (
@@ -46,9 +47,13 @@ def _snippet(index: AttributionIndex, uid: str, start: int) -> str:
 def semantic_neighbors(
     embeddings: EmbeddingIndex, index: AttributionIndex, args: SemanticNeighborsInput,
 ) -> dict[str, Any]:
-    out = embeddings.neighbors(
-        args.uid, top_k=args.top_k, max_windows=args.max_windows, labelled_only=args.labelled_only,
-    )
+    try:
+        out = embeddings.neighbors(
+            args.uid, top_k=args.top_k, max_windows=args.max_windows,
+            labelled_only=args.labelled_only,
+        )
+    except KeyError as e:
+        raise UnitNotInCorpus(e.args[0] if e.args else str(e)) from e
     for w in out["shown"]:
         w["excerpt"] = _snippet(index, args.uid, w["start"])
         for n in w["neighbors"]:

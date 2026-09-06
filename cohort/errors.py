@@ -157,6 +157,13 @@ class WrongNodeType(CohortError):
     """A tool was handed a node of a type it cannot act on."""
 
 
+class UnitNotInCorpus(CohortError):
+    """An evidence tool was asked about a unit id that Radich's catalogue does
+    not list or the corpus holds no text for. Raised by lookup, like
+    `NodeNotFound`, and for the same reason an agent sees it: the ids the
+    tools return are the only ids worth passing back."""
+
+
 class UngroundedClaim(CohortError):
     """A claim's grounding query returned no hits, so it could never be cited.
 
@@ -250,6 +257,7 @@ REFUSAL_CATEGORIES: dict[str, RefusalCategory] = {
     MissingRejectionReason.__name__: RefusalCategory.EXPRESSION,
     WrongNodeType.__name__: RefusalCategory.EXPRESSION,
     InvalidVerdict.__name__: RefusalCategory.EXPRESSION,
+    UnitNotInCorpus.__name__: RefusalCategory.EXPRESSION,
     # the corpus did not support it, from the tool layer
     UngroundedClaim.__name__: RefusalCategory.EVIDENCE,
     # the system's own preconditions

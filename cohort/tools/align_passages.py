@@ -17,6 +17,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from cohort.attribution import AttributionIndex, is_han
+from cohort.errors import UnitNotInCorpus
 
 NAME = "align_passages"
 DESCRIPTION = (
@@ -62,7 +63,7 @@ def align_passages(index: AttributionIndex, args: AlignPassagesInput) -> dict[st
         t = index.base_text(index.root, uid)
         if t is None:
             msg = f"{uid} has no base text in the corpus"
-            raise KeyError(msg)
+            raise UnitNotInCorpus(msg)
         texts[uid] = t
     ha, offs_a = _han_only(texts[args.uid_a])
     hb, offs_b = _han_only(texts[args.uid_b])

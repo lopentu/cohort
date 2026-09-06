@@ -23,6 +23,7 @@ from cohort.agents.attestation_worker import (
     AttestationWorker,
 )
 from cohort.agents.review_worker import ReviewWorker
+from cohort.errors import UnitNotInCorpus
 from cohort.graph import Graph
 from cohort.sources.local_reader import LocalReader
 from cohort.tools.align_passages import AlignPassagesInput, align_passages
@@ -141,7 +142,7 @@ def test_semantic_neighbors_excludes_the_unit_s_own_work(index, embeddings):
         assert isinstance(w["neighbors"][0]["excerpt"], str)
     own = semantic_neighbors(embeddings, index, SemanticNeighborsInput(uid="T0001", top_k=1))
     assert all(n["uid"] != "T0001" for w in own["shown"] for n in w["neighbors"])
-    with pytest.raises(KeyError):
+    with pytest.raises(UnitNotInCorpus):
         semantic_neighbors(embeddings, index, SemanticNeighborsInput(uid="T0099"))
 
 
