@@ -236,7 +236,7 @@ an argument.
 | `contradicts` | any to any | disagreement made visible |
 | `parallel_of` | passage or witness | shared transmission |
 | `descends_from` | passage or witness | makes agreement non-independent |
-| `quotes` | passage to passage | citation within the corpus |
+| `quotes` | passage to passage | citation within the corpus; makes agreement non-independent (a quotation is not a second witness) |
 | `tests` | query to conjecture | the falsifiability edge |
 | `supersedes` | same type to same type | revision |
 
