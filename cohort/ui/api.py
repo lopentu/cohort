@@ -133,10 +133,16 @@ def create_app(
                 "writes_enabled": allow_writes,
                 "corpus_enabled": source is not None,
                 "runs_enabled": run_manager is not None,
-                # So the browser can hide a tab that would be empty on every
-                # graph that is not an ascription study, without asking it to
-                # guess from node counts what kind of study this is.
-                "discriminators": len(ledger_json(graph)["features"]),
+                # Whether an ascription study is open on this server. It
+                # decides what an agent is offered — the four ascription tools
+                # are registered only when one is — so a client that wants to
+                # say what a run will be able to do needs it from here rather
+                # than inferring it from node counts.
+                #
+                # A `discriminators` count sat beside this until 2026-09-06,
+                # to gate a Ledger tab that no longer exists. It cost a full
+                # walk over every conjecture on every health poll, and the
+                # ledger route answers the same question for whoever asks it.
                 "study_enabled": study is not None,
             }
         finally:

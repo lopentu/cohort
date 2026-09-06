@@ -27,6 +27,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .catalogue import Catalogue
+from .measure import _Corpus
+from .sources.radich_reader import RadichReader
 from .delta import (
     DEFAULT_FEATURES,
     DEFAULT_MIN_CHARS,
@@ -55,6 +57,16 @@ class Study:
     space: DeltaSpace
     null: NullBand
     corpus_size: int
+    #: The catalogued works as a readable corpus — `works()`, `editions()`,
+    #: `fetch()`, which is all `cohort.measure` asks for. Held here so that
+    #: opening a study is the *one* act that makes an ascription question
+    #: answerable: the Delta space and the counting corpus are two views of
+    #: the same catalogue, and a caller who had to assemble them separately
+    #: could pair a space built over one corpus with counts taken from
+    #: another. Scoped to the catalogue rather than the canon, because
+    #: indexing 2.4 GB to count a feature in thirty-three works is minutes of
+    #: work for nothing — the space needs the canon, the counting does not.
+    corpus: _Corpus | None = None
 
     def benchmark(self) -> list[str]:
         return [
@@ -105,10 +117,16 @@ def load_study(
 ) -> Study:
     """Read one edition of every work in the corpus and build the space.
 
-    Reads the filesystem directly rather than going through `RadichReader`: the
-    reader's job is refs, editions and provenance for the graph, and this needs
-    one string per work and nothing else. Using it here would build an FTS
-    index over 2.4 GB to compute frequencies that never touch it.
+    The space reads the filesystem directly rather than going through
+    `RadichReader`: the reader's job is refs, editions and provenance for the
+    graph, and a Delta space needs one string per work and nothing else. Using
+    it for all 4,652 would build an FTS index over 2.4 GB to compute
+    frequencies that never touch it.
+
+    A reader *is* built, over the catalogued works alone — thirty-three
+    directories, seconds — because counting a feature needs every edition of a
+    work and the space keeps only one. So the study holds both: the canon as a
+    space, the catalogue as a corpus.
     """
     root = Path(corpus_root)
     if not root.is_dir():
@@ -137,4 +155,43 @@ def load_study(
     space = build_space(texts, labels=labels, features=features, min_chars=min_chars)
     bench = [w for w in catalogue.works(catalogue.benchmark_label) if w in space._z]
     null = space.null_band(bench, label=catalogue.benchmark_label)
-    return Study(catalogue=catalogue, space=space, null=null, corpus_size=len(texts))
+    # Only the catalogued works that actually have a directory. A catalogue
+    # naming a work this corpus does not hold is already reported by
+    # `check_against` above; passing it to the reader as well would turn that
+    # report into a crash from a different module.
+    return Study(
+        catalogue=catalogue, space=space, null=null, corpus_size=len(texts),
+        corpus=RadichReader(root, works=[w for w in catalogue.works() if w in texts]),
+    )
+
+
+#: Where a study directory keeps its two halves. Stated once because three
+#: callers used to spell it out independently — the CLI's `study` command, its
+#: `run` command and `serve_ui.py` — and a layout convention repeated three
+#: times is one that changes in two places.
+CATALOGUE_FILE = "P-catalogue.txt"
+CORPUS_SUBDIR = ("corpus", "T-stripped")
+
+
+def open_study(
+    root: str | Path, *, benchmark_label: str = "P-23",
+    control_label: str = "interloper", features: int = DEFAULT_FEATURES,
+    min_chars: int = DEFAULT_MIN_CHARS,
+) -> Study:
+    """A study from a directory laid out as `data/radich/` is.
+
+    Thin, and deliberately so: `load_study` takes a catalogue because a study
+    is not tied to one on-disk shape, and this is the shape this project's
+    corpus happens to have.
+    """
+    from .catalogue import load_catalogue
+
+    root = Path(root)
+    catalogue = load_catalogue(
+        root / CATALOGUE_FILE,
+        benchmark_label=benchmark_label, control_label=control_label,
+    )
+    return load_study(
+        root.joinpath(*CORPUS_SUBDIR), catalogue,
+        features=features, min_chars=min_chars,
+    )

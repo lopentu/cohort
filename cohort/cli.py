@@ -202,18 +202,32 @@ def cmd_citable(args) -> None:
     _emit(args, payload, render)
 
 
+def _open_study(args):
+    """The study named by `--radich`, or None when the flag was not given.
+
+    Shared by `study` and `run` so the terminal offers an agent exactly the
+    tools the browser does. Without it, `cohort run` would quietly hand every
+    agent a smaller toolset than the same graph served over HTTP — the kind of
+    asymmetry `tests/test_parity.py` exists to catch between the two front
+    ends, here between two callers of one run manager.
+    """
+    from .attribution import open_study
+
+    if not getattr(args, "radich", None):
+        return None
+    return open_study(
+        args.radich,
+        benchmark_label=args.benchmark_label,
+        control_label=args.control_label,
+    )
+
+
 def cmd_study(args) -> None:
     """The ascription study. Reads the corpus directly and holds no graph — a
     Delta space is a measurement over texts, not a record of anyone's claims."""
-    from .attribution import load_study
-    from .catalogue import load_catalogue
+    from .attribution import open_study
 
-    root = Path(args.radich)
-    catalogue = load_catalogue(
-        root / "P-catalogue.txt",
-        benchmark_label=args.benchmark_label, control_label=args.control_label,
-    )
-    payload = load_study(root / "corpus" / "T-stripped", catalogue).as_json(top=args.top)
+    payload = _open_study(args).as_json(top=args.top)
 
     def render(p):
         n = p["null"]
@@ -890,6 +904,7 @@ def cmd_run(args) -> None:
     manager = RunManager(
         Path(args.db), _log_path(args), source,
         max_budget_usd=args.budget, max_turns=args.max_turns,
+        study=_open_study(args),
     )
     try:
         manager.start(specs, budget_usd=args.budget, max_turns=args.max_turns,
@@ -1114,6 +1129,16 @@ def build_parser() -> argparse.ArgumentParser:
                         "it; alongside an explicit roster it just records what "
                         "the run was asked. Every claim or conjecture the run "
                         "proposes gets an `addresses` edge to it")
+    p.add_argument("--radich", metavar="DIR",
+                   help="open an ascription study from this directory and give "
+                        "every agent in the run the four tools that go with it: "
+                        "register a discriminator, run its negative control, "
+                        "apply a surviving one to disputed works, place a work "
+                        "in the Delta space. Without it those tools are not "
+                        "offered — an agent should not meet a tool that can "
+                        "only refuse")
+    p.add_argument("--benchmark-label", default="P-23")
+    p.add_argument("--control-label", default="interloper")
     p.add_argument("--budget", type=float, default=0.25, help="hard USD cap for the run")
     p.add_argument("--max-turns", type=int, default=8)
     p.add_argument("--max-agents", type=int, default=4,

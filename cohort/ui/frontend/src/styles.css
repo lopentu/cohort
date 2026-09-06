@@ -1605,9 +1605,22 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
 
 .findings { margin: 18px; }
 .findings h2 { margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+
+/* One rhythm between the page's top-level sections, stated here rather than as
+   a margin on each of them.
+
+   Each section used to carry its own, which held while the order was fixed and
+   broke the moment the page was reordered on 2026-09-06: Integrity moved to the
+   end, where it had no margin of its own, and butted straight against the two
+   cards above it. A gap that belongs to the page should not be a property of
+   whichever section happens to be adjacent.
+
+   The same 18px as `.findings-cols`'s own gutter, so Citable, Rejected and
+   Integrity read as three cards on one grid rather than two and then a third. */
+.findings > * + * { margin-top: 18px; }
+
 .findings-cols {
   display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-  margin-top: 18px;
 }
 .findings-cols > div {
   padding: 18px;
@@ -1761,7 +1774,6 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
 .run-history-agents { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
 
 /* Hypotheses — claims and conjectures as dossiers, not as node ids. */
-.hypotheses { margin-bottom: 1.5rem; }
 .hyp-list { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.6rem; }
 .hyp {
   border: 1px solid var(--line);
@@ -1967,17 +1979,29 @@ a.cbeta-link.block { display: inline-block; margin: 6px 0 2px; font-size: 12px;
 a.cbeta-link.block:hover { color: var(--text); }
 
 
-/* --- the feature ledger -------------------------------------------------- */
+/* --- the reading, and the ledger's numbers inside a hypothesis row ------- */
 
-.ledger { margin: 18px; }
-.ledger h2 { margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+/* The ledger stopped being a page of its own on 2026-09-06. What survives here
+   is what it was actually good at — the ratio, and the four numbers a control
+   test produced — now carried on the hypothesis row itself rather than on a
+   second description of the same node. `.ledger-row`, `.ledger-head`,
+   `.ledger-feature` and `.ledger-detail` went with the page; the classes below
+   are the ones Findings still uses. */
+
+.reading { display: grid; gap: 12px; }
+.reading .study-null {
+  margin: 0; padding: 12px 16px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+  font-size: 12.5px; line-height: 1.6; color: var(--text-dim);
+}
 
 /* The ratio, given the weight the finding actually has. A panel that led with
    the survivors would let "3 usable" read the same whether 4 or 90 features
    were tried, which is the difference between a discovery and an artefact. */
 .ledger-ratio {
   display: flex; align-items: center; gap: 16px;
-  margin: 14px 0 20px; padding: 14px 16px;
+  padding: 14px 16px;
   border: 1px solid var(--line); border-radius: var(--radius-lg);
   background: var(--bg-raised);
 }
@@ -1986,29 +2010,34 @@ a.cbeta-link.block:hover { color: var(--text); }
 .ratio-figure span { color: var(--text-dim); font-size: 13px; }
 .ledger-ratio p { margin: 0; color: var(--text-dim); font-size: 12.5px; line-height: 1.5; }
 
-.ledger-group { margin-bottom: 22px; }
-.ledger-group h3 {
-  display: flex; align-items: baseline; gap: 8px;
-  margin: 0 0 2px; font-size: 12px; text-transform: uppercase;
-  letter-spacing: 0.05em; color: var(--text-dim);
+/* A group of hypotheses that share a fate, as a disclosure. The discarded
+   group is the majority of a real ledger — twenty of twenty-two — and twenty
+   open rows would bury the survivors and the ratio both. Collapsed, never
+   omitted: the count stays on the header, which is the part carrying the
+   argument. */
+.hyp-group { margin-bottom: 20px; }
+.hyp-group-head {
+  display: flex; align-items: baseline; gap: 8px; width: 100%;
+  padding: 4px 0; background: none; border: 0; cursor: pointer;
+  color: var(--text-dim); text-align: left; font: inherit;
+  border-bottom: 1px solid var(--line-soft);
 }
+.hyp-group-head:hover { color: var(--text); }
+.hyp-group-head h3 {
+  margin: 0; font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: inherit;
+}
+.hyp-group-head .caret {
+  display: inline-block; font-size: 13px; line-height: 1; color: var(--text-faint);
+  transition: transform 160ms var(--ease, ease);
+}
+.hyp-group-head .caret.down { transform: rotate(90deg); }
+.hyp-group-head .ledger-n { margin-left: auto; }
+.group-licenses { margin: 8px 0 0; }
 .ledger-n {
   font-size: 11px; padding: 1px 7px; border-radius: 999px;
   background: var(--fill-2); color: var(--text-dim); letter-spacing: 0;
 }
-.ledger-rows { display: grid; gap: 6px; margin-top: 10px; }
-
-.ledger-row { border: 1px solid var(--line); border-radius: var(--radius); }
-.ledger-head {
-  display: grid; grid-template-columns: 7rem 1fr auto; gap: 14px;
-  align-items: center; width: 100%; padding: 9px 12px;
-  background: none; border: 0; text-align: left; cursor: pointer;
-  color: var(--text); font: inherit;
-  /* the global button rule clips and forbids wrapping, which is right for
-     compact controls and wrong for a row of prose */
-  white-space: normal; overflow: visible; text-overflow: clip;
-}
-.ledger-feature { font-size: 15px; font-weight: 600; }
 .ledger-pred { color: var(--text-faint); font-size: 11.5px; }
 .ledger-observed { display: flex; gap: 12px; align-items: baseline; }
 .tally { display: inline-flex; gap: 5px; align-items: baseline; font-size: 12px; }
@@ -2018,20 +2047,23 @@ a.cbeta-link.block:hover { color: var(--text); }
 /* Discarded features stay legible. Fading them to near-invisibility would be
    hiding them politely, which defeats the point of keeping them — but the
    surviving ones still have to be findable at a glance, so the distinction is
-   carried by the left border rather than by opacity. */
-.ledger-row.f-usable { border-left: 3px solid var(--accepted); }
-.ledger-row.f-discarded { border-left: 3px solid var(--rejected); }
-.ledger-row.f-untested { border-left: 3px solid var(--proposed); }
-.ledger-row.f-discarded .ledger-feature { color: var(--text-dim); }
+   carried by the outline rather than by opacity (docs/design.md §10: status is
+   the stroke). */
+.hyp.f-usable { border-color: var(--accepted); }
+.hyp.f-discarded { border-color: color-mix(in srgb, var(--rejected) 55%, var(--line)); }
+.hyp.f-untested { border-color: color-mix(in srgb, var(--proposed) 55%, var(--line)); }
+.hyp.f-discarded .hyp-text { color: var(--text-dim); }
 
-.ledger-detail {
-  padding: 2px 12px 12px; border-top: 1px solid var(--line-soft);
-  display: grid; gap: 8px; justify-items: start;
+/* The prediction and what was observed against it, side by side on the row.
+   A control test is four numbers and a threshold; a reader scanning twenty
+   candidates decides which to open on exactly these, so they are not behind
+   the click. */
+.hyp-test {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: 6px 18px; margin-top: 7px;
 }
-.ledger-detail p { margin: 8px 0 0; font-size: 12.5px; line-height: 1.55; }
 
 @media (max-width: 720px) {
-  .ledger-head { grid-template-columns: 1fr; gap: 6px; }
   .ledger-ratio { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
 
@@ -2059,10 +2091,55 @@ a.cbeta-link.block:hover { color: var(--text); }
 .swatch.e-test-undecided { border-color: var(--proposed); border-top-style: dashed; }
 
 
+/* --- a measurement, as the table it always was --------------------------- */
+
+/* These rendered as one English sentence each until 2026-09-06, so a reader
+   who wanted to know which work carried a feature had to parse the sentence,
+   and the counting rules the payload enforces were invisible. The table is
+   scoped to its own scroller: a work id plus five columns overflows a narrow
+   inspector, and the page body must never scroll sideways. */
+
+.measurements { margin-top: 12px; }
+.measurement {
+  margin-top: 10px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  border-left: 3px solid var(--line);
+}
+.measurement.k-placement { border-left-color: var(--tests); }
+.measurement.k-application { border-left-color: var(--supports); }
+.measurement .v-detail { margin: 0; font-size: 12.5px; line-height: 1.55; }
+
+.work-table {
+  width: 100%; margin: 10px 0 0; border-collapse: collapse;
+  font-size: 12px; display: block; overflow-x: auto;
+}
+.work-table th, .work-table td {
+  padding: 4px 10px 4px 0; text-align: left; white-space: nowrap;
+}
+.work-table th {
+  font-weight: 550; color: var(--text-faint); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--line);
+}
+.work-table td { border-bottom: 1px solid var(--line-soft); }
+.work-table .num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.work-table .dim { color: var(--text-faint); }
+/* A work below the character floor is reported, not dropped — this method
+   having nothing to say about it is a result. */
+.work-table tr.short td { color: var(--text-dim); }
+
+.mono-note {
+  margin: 8px 0 0; font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-faint); overflow-wrap: anywhere;
+}
+
+
 /* --- attribution: a distance against the spread it has to beat ----------- */
 
-.study { margin: 18px; max-width: 940px; }
-.study h2 { margin: 0 0 12px; font-size: 14px; font-weight: 650; }
+/* A section of Findings, not a page: the page supplies the margin. */
+.study { margin: 0; max-width: 940px; }
+.study h2 { margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+.study > .hint { margin: 0 0 12px; }
 
 .study-frame {
   padding: 13px 15px; margin-bottom: 12px;

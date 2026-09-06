@@ -42,14 +42,42 @@ from ..schemas import (
     QueryPayload,
     VerificationMethod,
     VerificationResult,
+    WorkOutcome,
 )
 
+#: Three tools, and the order they must be called in is the method. Each is
+#: named here rather than in three modules because splitting them would let a
+#: reader meet `apply_to_disputed` without meeting the gate in front of it.
 NAME = "register_discriminator"
 DESCRIPTION = (
     "Propose that a feature distinguishes the benchmark group from works that "
     "do not belong, with the two-sided prediction that would settle it recorded "
     "before anything is counted. The feature cannot be applied to a disputed "
     "work until it has survived the negative control."
+)
+
+#: `NAME`/`DESCRIPTION` are kept as the module's bare pair for consistency with
+#: every other tool module; these aliases exist so a reader of an import list
+#: containing all three can tell which one it is.
+REGISTER_NAME = NAME
+REGISTER_DESCRIPTION = DESCRIPTION
+
+CONTROL_NAME = "run_control_test"
+CONTROL_DESCRIPTION = (
+    "Count a registered feature across the benchmark and the negative control "
+    "and compare with the prediction recorded when it was registered. The "
+    "control is a group believed NOT to belong: a feature that lights up on "
+    "those tracks something other than membership and is finished. Expect "
+    "most candidates to fail here — that is what the test is for, and a "
+    "failure is a result worth having, not a wasted call."
+)
+
+APPLY_NAME = "apply_to_disputed"
+APPLY_DESCRIPTION = (
+    "Report where each disputed work falls on a feature that has already "
+    "survived its negative control, and record the per-work numbers. Refused "
+    "outright if the control has not been run or did not pass. One feature is "
+    "not an ascription; this observes, it does not place."
 )
 
 
@@ -138,6 +166,25 @@ def register_discriminator(
     )
     return {"conjecture_id": conjecture_id, "query_id": query_id,
             "prediction": prediction.model_dump(mode="json")}
+
+
+class RunControlTestInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    conjecture_id: str = Field(min_length=1)
+    base_edition: str = DEFAULT_BASE_EDITION
+    min_chars: int = Field(default=DEFAULT_MIN_CHARS, ge=0)
+
+
+class ApplyToDisputedInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    conjecture_id: str = Field(min_length=1)
+    disputed_label: str = Field(
+        min_length=1, description="the catalogue label of the works in doubt",
+    )
+    base_edition: str = DEFAULT_BASE_EDITION
+    min_chars: int = Field(default=DEFAULT_MIN_CHARS, ge=0)
 
 
 # --- the gate ---------------------------------------------------------------
@@ -279,13 +326,22 @@ def control_status(graph: Graph, conjecture_id: str) -> str:
 def apply_to_disputed(
     graph: Graph, corpus, conjecture_id: str, *, catalogue: Catalogue,
     disputed_label: str, base_edition: str = DEFAULT_BASE_EDITION,
-    min_chars: int = DEFAULT_MIN_CHARS,
+    min_chars: int = DEFAULT_MIN_CHARS, authored_by: str | None = None,
+    model_call_id: int | None = None,
 ) -> dict:
     """Where each disputed work sits on a feature that has survived its control.
 
     Refused outright until it has. This is the gate, and it is a refusal rather
     than a warning because a warning is something a hurried reader scrolls past
     on the way to the number they wanted.
+
+    Given `authored_by`, the rows are also written to the graph as a
+    `CORPUS_MEASUREMENT` verification. Without it this returns and the result
+    exists only in whatever printed it — which is what happened to the demo
+    seed: the one concrete output of the whole method, *which disputed works
+    this feature places where*, went to stdout and never reached the record it
+    was derived from. A measurement not written down is a story with figures
+    in it, which is the sentence `cohort.measure` opens with.
     """
     status = control_status(graph, conjecture_id)
     if status != "passed":
@@ -317,7 +373,7 @@ def apply_to_disputed(
         }
         for w in m.works if w.label == disputed_label
     ]
-    return {
+    out = {
         "feature": pred.feature,
         "benchmark": by_label.get(pred.benchmark_label),
         "disputed_label": disputed_label,
@@ -326,4 +382,50 @@ def apply_to_disputed(
         # was observed; whether that places the work with the benchmark is a
         # reading, and one feature is not an ascription.
         "measurement": m,
+        "verification_id": None,
     }
+    if authored_by is None:
+        return out
+
+    attesting = [r["work"] for r in rows if r["attests"]]
+    silent = [r["work"] for r in rows if r["attests"] is False]
+    short = [r["work"] for r in rows if r["attests"] is None]
+    out["verification_id"] = graph.verify(
+        conjecture_id,
+        method=VerificationMethod.CORPUS_MEASUREMENT,
+        # INDETERMINATE always, and not because the arithmetic is uncertain.
+        # Pass/fail is for a prediction meeting evidence, and no prediction was
+        # made about these works — the registered one was about the benchmark
+        # and the control, and it has already been settled. A verification that
+        # returned PASS here would read as "the disputed work is Paramārtha's",
+        # which is precisely the sentence nothing in this system may write.
+        result=VerificationResult.INDETERMINATE,
+        assurance_level=AssuranceLevel.A0_UNCHECKED,
+        detail=(
+            f"applied {pred.feature!r} to {len(rows)} {disputed_label} work(s) "
+            f"in edition {base_edition!r}, floor {min_chars} chars — "
+            f"attests in {', '.join(attesting) or 'none'}"
+            + (f"; absent from {', '.join(silent)}" if silent else "")
+            + (f"; {', '.join(short)} below the floor" if short else "")
+            + ". Observation, not a placement."
+        ),
+        limitations=(
+            "One feature is not an ascription. That a disputed work carries a "
+            f"feature {pred.benchmark_label} works carry says it resembles them "
+            "in one respect, on a corpus where the benchmark is dominated by "
+            "two Abhidharma commentaries — so the feature may be tracking "
+            "genre. Absence is weaker still: a translator need not use every "
+            "form they favour in every text."
+        ),
+        works=tuple(
+            WorkOutcome(
+                work=w.work, label=w.label, chars=w.chars, count=w.count,
+                per_10k=w.per_10k, editions_attesting=w.editions_attesting,
+                editions_total=w.editions_total, sufficient=w.sufficient,
+                note=w.note,
+            )
+            for w in m.works if w.label == disputed_label
+        ),
+        authored_by=authored_by, model_call_id=model_call_id,
+    )
+    return out

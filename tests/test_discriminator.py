@@ -239,3 +239,55 @@ def test_an_empty_ledger_says_so(graph):
     led = ledger_json(graph)
     assert led["tried"] == 0
     assert "no candidate discriminators" in led["reading"]
+
+
+# --- the application is a record, not a printout ----------------------------
+
+def test_applying_a_survivor_writes_nothing_without_an_author(graph, corpus, catalogue):
+    """The default stays read-only. `apply_to_disputed` is also a library call
+    made by scripts that print rather than write, and giving it an author it
+    did not ask for would put a verification into every one of those graphs."""
+    out = register(graph, catalogue)
+    run_control_test(graph, corpus, out["conjecture_id"], catalogue=catalogue,
+                     authored_by=AGENT)
+    before = len(graph.verifications(out["conjecture_id"]))
+    applied = apply_to_disputed(graph, corpus, out["conjecture_id"],
+                                catalogue=catalogue, disputed_label="disputed")
+    assert applied["verification_id"] is None
+    assert len(graph.verifications(out["conjecture_id"])) == before
+
+
+def test_an_authored_application_records_the_rows_it_measured(graph, corpus, catalogue):
+    """This is the one concrete output of the whole method — which works in
+    doubt a surviving feature places where — and until 2026-09-06 it went to
+    stdout and never reached the record it was derived from."""
+    out = register(graph, catalogue)
+    run_control_test(graph, corpus, out["conjecture_id"], catalogue=catalogue,
+                     authored_by=AGENT)
+    applied = apply_to_disputed(graph, corpus, out["conjecture_id"],
+                                catalogue=catalogue, disputed_label="disputed",
+                                authored_by=AGENT)
+
+    v = graph.get_node(applied["verification_id"])
+    rows = {w["work"]: w for w in v.payload["works"]}
+    assert set(rows) == {"D1", "D2"}
+    assert rows["D1"]["count"] > 0 and rows["D2"]["count"] == 0
+    # Per work and never pooled: the payload has no field for a group total,
+    # and the rows carry the edition tally separately from the count.
+    assert rows["D1"]["editions_total"] == 2
+
+
+def test_an_application_never_returns_pass_or_fail(graph, corpus, catalogue):
+    """Pass/fail is for a prediction meeting evidence. The registered
+    prediction was about the benchmark and the control and has already been
+    settled; a PASS here would read as 'the disputed work belongs', which is
+    the one sentence nothing in this system may write."""
+    out = register(graph, catalogue)
+    run_control_test(graph, corpus, out["conjecture_id"], catalogue=catalogue,
+                     authored_by=AGENT)
+    applied = apply_to_disputed(graph, corpus, out["conjecture_id"],
+                                catalogue=catalogue, disputed_label="disputed",
+                                authored_by=AGENT)
+    v = graph.get_node(applied["verification_id"])
+    assert v.payload["result"] == VerificationResult.INDETERMINATE
+    assert "not an ascription" in v.payload["limitations"]

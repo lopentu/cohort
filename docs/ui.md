@@ -22,6 +22,7 @@ a finding is a scholarly act, and starting an agent run spends money.
 | `--corpus` | corpus browse and search |
 | `--allow-writes` | accept / reject / reopen |
 | `--allow-runs` | the Inquiry launcher (`--max-budget` caps each run) |
+| `--radich DIR` | an ascription study: the placements in Findings, **and** the four ascription tools an agent may call |
 
 Without a flag the routes are **not mounted at all** — a disabled capability
 returns 404 rather than a 403, because the server simply doesn't have it.
@@ -104,11 +105,33 @@ reshuffle itself as a graph grows.
 
 - **Graph** — the evidence graph, its legend, provenance on click. The refusal
   count and the node/edge stats live here, because both describe this graph.
-- **Findings** — every claim and conjecture as a **hypothesis**, then what the
-  researcher has accepted (the only citable nodes) and what they rejected, with
-  reasons, side by side; plus the two integrity checks. Rejections sit next to
-  findings deliberately: showing conclusions without showing what was thrown out
-  and why would misrepresent the record.
+- **Findings** — everything the graph currently amounts to, in one page. It was
+  three (Findings, Ledger, Attribution) until 2026-09-06, and that was the
+  problem: the same conjecture appeared in two of them under two framings — once
+  as an unranked hypothesis, once as a ledger row carrying the fate that is the
+  single most informative thing about it — while the Delta study measuring the
+  works those hypotheses were about sat in a third. Nothing was missing and
+  nothing could be assembled.
+
+  Top to bottom the page is an argument:
+
+  1. **The reading** — how many candidate features were *tried* against how many
+     survived a negative control, and the benchmark's own internal spread that
+     every distance below is read against. The ratio leads because it is the
+     finding: three survivors out of four is a different claim from three out of
+     ninety, and a page opening with the survivors would make the second read
+     like the first.
+  2. **Hypotheses**, grouped by what became of them — survived, registered but
+     untested, discarded, and everything that is not a candidate discriminator.
+     Discarded features are collapsed, never omitted; the count stays on the
+     header, because those rows are what make the ratio mean anything.
+  3. **Where the works in doubt sit** — the standing Delta measurement over the
+     catalogue, with `--radich`. Not what any agent proposed: what their
+     hypotheses are read against.
+  4. **Citable** and **Rejected**, side by side. Rejections sit next to findings
+     deliberately: showing conclusions without showing what was thrown out and
+     why would misrepresent the record.
+  5. **Integrity** — the two self-checks, last, because they are not findings.
 
   Opening a hypothesis shows its dossier, all of which the graph already held
   and none of which was reachable without walking edges by hand: the
@@ -134,6 +157,16 @@ reshuffle itself as a graph grows.
   starts, not something that was found — and asking it in one tab to run
   against it in another made the connection between them something the
   researcher had to remember rather than something the tool did.
+
+  With `--radich`, agents in a run are additionally offered the four
+  **ascription tools**, and their order is the method: `register_discriminator`
+  records a prediction about a feature before anything is counted,
+  `run_control_test` counts and compares against it, `apply_to_disputed` is
+  refused outright until that control has passed, and `place_work` measures a
+  work's Delta from the benchmark. They are offered only when a study is open —
+  a worker on a graph with no catalogue would meet a tool that can do nothing
+  but refuse, and spend a paid turn learning that. Everything they write lands
+  in Findings, which is the whole reason those two tabs went away.
 
 Clicking an author in a node's provenance opens that agent's contribution
 counts. Counts, never a score: a reputation number would reward volume, so an

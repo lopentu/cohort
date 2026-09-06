@@ -1412,3 +1412,123 @@ it before looking is what stops it being quietly reshaped afterwards.
 question rather than with a list of node ids.
 
 **11 new tests** (439 total), one new module.
+
+---
+
+## Three pages become one, and the tools behind two of them go to the agents
+
+**2026-09-06.** The researcher's verdict on the six-tab UI was that it was "so
+scattered that i don't even know where to look or to piece together a complete
+picture", and that is the right diagnosis. Findings, Ledger and Attribution were
+three descriptions of overlapping material:
+
+- a candidate discriminator appeared in **Findings** as an unranked hypothesis
+  and in **Ledger** as a row carrying its fate — the single most informative
+  thing about it — with neither page mentioning the other;
+- **Attribution** measured the works those hypotheses were about, and lived
+  entirely outside the graph: `/api/study` computed a Delta space on demand and
+  rendered it. No node, no provenance, no fingerprint, nothing a later reader
+  could disagree with.
+
+Nothing was missing. Nothing could be assembled.
+
+### The tools were tabs when they should have been tools
+
+The deeper problem is that `register_discriminator`, `run_control_test`,
+`apply_to_disputed` and the Delta space were things *the UI did*, not things an
+agent could do. An agent had six tools, none of which could touch the method the
+whole Paramārtha question is about. So a "run" against an ascription question
+could propose claims and find attestations and never once register a prediction.
+
+They are now agent tools, offered when — and only when — the server was started
+against a study (`--radich`, and `cohort run --radich` so the terminal offers
+the same set). The conditional is the point: a worker on a graph with no
+catalogue would meet a tool that can do nothing but refuse, and spend a paid
+turn learning that. `AttestationWorker.TOOLS` stays the role's fixed set and the
+extension is per-instance, because whether a study is open is a property of the
+server, not of the role.
+
+The prompt supplement names the catalogue's groups and states the ordering,
+including the sentence that matters most: **a control failure is a result to
+record, not a call to retry with a lower threshold.** Moving the prediction
+after seeing the numbers is the error the whole ordering exists to prevent, and
+a model that has only met the refusal will read it as an obstacle.
+
+### `apply_to_disputed` wrote nothing
+
+The one concrete output of the entire method — *which works in doubt a surviving
+feature places where* — went to stdout from the demo seed and never reached the
+graph it was derived from. `復次: with benchmark ['T0669', 'T1529', 'T1584',
+'T1644']; without ['T0097', 'T2049']` was printed once, in a terminal, and lost.
+
+It now records a `CORPUS_MEASUREMENT` verification when given an author, and
+still writes nothing without one, so the scripts that print rather than write
+are unchanged. The result is `INDETERMINATE` always, and not because the
+arithmetic is uncertain: pass/fail is for a prediction meeting evidence, the
+registered prediction was about the benchmark and the control and has already
+been settled, and a `PASS` here would read as "the disputed work is
+Paramārtha's" — the one sentence nothing in this system may write.
+
+`WorkOutcome` is the new payload field that carries the rows, alongside
+`GroupOutcome` which carries the tallies. Same reasoning as when `GroupOutcome`
+was added four entries ago: prose is the right place for what a result *means*
+and the wrong place for what it *was*. The Findings dossier prints a table now
+instead of a sentence, and `per_10k` renders as an em dash rather than `0.0`
+below the character floor — a work this method cannot speak to, not a work with
+a rate of nothing.
+
+### `place_work`
+
+New tool: one work's Delta from the benchmark, recorded against a claim or
+conjecture with the null band in the same payload. The band is not optional and
+never was — `Profile` refuses to exist without one — because twice on this same
+day an apparent separation in this study turned out to be an artifact, and both
+would have been obvious at a glance against the benchmark's own spread. A
+renderer cannot drop the calibration because it never receives the distance
+separately from it.
+
+`CAVEAT` goes into `limitations`, which is the field both front ends already
+render under "Does not establish". Character n-grams over this corpus track
+subject matter heavily; a neighbourhood is evidence about resemblance, not
+authorship, and that sentence now travels with every placement rather than
+sitting in a panel's prose where a redesign can lose it.
+
+First call is `INDETERMINATE` — a baseline, which says only what the number is —
+and later calls PASS or FAIL against its fingerprint. Filtered by *work*, for
+the reason `measure_claim` filters by feature: two works on one hypothesis are
+two baselines, and comparing one against the other's would FAIL every time while
+looking like a finding.
+
+### What Findings looks like now
+
+The page is an argument top to bottom: the ratio, then hypotheses grouped by
+fate, then the standing placements, then citable and rejected, then integrity.
+
+Grouping by fate needed an argument of its own, because `findings_json` is
+explicitly *not* ranked — sorting by support count would be a confidence score
+under another name. A fate is a different kind of thing: it is a fact about a
+test that was run, not an estimate of how good a feature is, and `usable` means
+"survived one negative control" and nothing more. Grouping by it is allowed for
+exactly the reason ranking by support is not.
+
+Discarded features are collapsed by default and never omitted. Twenty-two
+candidates produced twenty-one discards; twenty-one open rows would bury the
+survivor and the ratio both, and hiding them would defeat the reason the ledger
+exists. The count stays on the header, which is the part carrying the argument.
+
+### Housekeeping this turned up
+
+- The system prompt said "you have exactly three tools" while six were
+  registered. It had been wrong for three stages. A count in prose is a fact
+  that rots; the schema list is the only place the number should live, and a
+  test now asserts the sentence is gone.
+- `/api/health` reported a `discriminators` count to gate the Ledger tab. It
+  cost a full walk over every conjecture on **every health poll**, the tab is
+  gone, and `/api/ledger` answers the same question for whoever asks it.
+- The study-directory layout (`P-catalogue.txt`, `corpus/T-stripped/`) was
+  spelled out independently in three callers. `open_study()` states it once.
+
+647 tests pass. Nothing here found a Paramārtha marker, and the surviving
+feature is still one discourse particle that separated a sixteen-work benchmark
+from a three-work control — which is what the ratio at the top of the page is
+for.

@@ -141,8 +141,14 @@ def main() -> None:
 
     print()
     for feature, cid in survivors:
+        # Authored, so the rows land in the graph rather than only in this
+        # printout. Which works in doubt a surviving feature places where is
+        # the one concrete output of the whole method, and it used to reach
+        # stdout and nothing else — invisible to the Findings page that is
+        # supposed to be where the result is read.
         applied = apply_to_disputed(
             graph, corpus, cid, catalogue=catalogue, disputed_label="P-weird",
+            authored_by=AGENT,
         )
         placed = [r["work"] for r in applied["works"] if r["attests"]]
         silent = [r["work"] for r in applied["works"] if r["attests"] is False]

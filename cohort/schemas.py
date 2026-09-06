@@ -461,6 +461,32 @@ class GroupOutcome(_Model):
     works_skipped_short: int = Field(ge=0)
 
 
+class WorkOutcome(_Model):
+    """What one work showed, as the row a table can print.
+
+    Added 2026-09-06, for the same reason `GroupOutcome` was: a check that
+    reached individual works — a feature applied to disputed texts, a Delta
+    placement — reported them only inside its `detail` sentence, so a reader
+    wanting the numbers had to parse English, and the Findings dossier could
+    only ever render prose.
+
+    Per work and never pooled, and `per_10k` is None rather than 0.0 below the
+    character floor — the same disciplines `cohort.measure` enforces, carried
+    into the record so a payload cannot state a rate the measurement itself
+    refused to give.
+    """
+
+    work: str = Field(min_length=1)
+    label: str | None = None
+    chars: int = Field(ge=0)
+    count: int = Field(ge=0)
+    per_10k: float | None = None
+    editions_attesting: int = Field(ge=0)
+    editions_total: int = Field(ge=0)
+    sufficient: bool = True
+    note: str | None = None
+
+
 class VerificationPayload(_Model):
     method: VerificationMethod
     result: VerificationResult
@@ -483,6 +509,10 @@ class VerificationPayload(_Model):
     #: discriminator's control test. Empty for everything else, and additive,
     #: so every verification written before this existed still validates.
     groups: tuple[GroupOutcome, ...] = ()
+    #: Populated only by checks that reached individual works — a feature
+    #: applied to disputed texts, a Delta placement. Additive alongside
+    #: `groups`, which tallies; this is what was tallied.
+    works: tuple[WorkOutcome, ...] = ()
 
 
 PAYLOAD_BY_TYPE: dict[NodeType, type[_Model]] = {

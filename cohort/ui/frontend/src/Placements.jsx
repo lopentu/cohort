@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { getStudy } from './api'
+import { useState } from 'react'
 
 // Where each disputed work sits, against the spread of the works nobody
 // disputes.
@@ -13,16 +12,14 @@ import { getStudy } from './api'
 // the distance being shown alone with the calibration a click away.
 //
 // One shared domain across every row, so two works can be compared by eye.
-export default function StudyPanel() {
-  const [data, setData] = useState(null)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    getStudy().then(setData).catch((e) => setError(e.message))
-  }, [])
-
-  if (error) return <section className="study"><p className="error">{error}</p></section>
-  if (!data) return <section className="study"><p className="hint">Building the space…</p></section>
+//
+// Takes its data as a prop and fetches nothing. This was a tab of its own
+// until 2026-09-06, which put a standing measurement over the catalogue on a
+// different page from the hypotheses it bears on — so a reader had to hold
+// one in their head while looking at the other. It is a section of Findings
+// now, and the owner of the fetch is the page.
+export default function Placements({ data }) {
+  if (!data) return null
 
   const rows = Object.entries(data.groups).flatMap(([, g]) => g.profiles)
   const deltas = rows.map((p) => p.mean_delta_to_benchmark)
@@ -33,20 +30,12 @@ export default function StudyPanel() {
 
   return (
     <section className="study">
-      <h2>Attribution</h2>
-
-      <div className="study-frame">
-        <p className="study-null">
-          The benchmark <strong>{data.benchmark_label}</strong> has {data.null.n} works,
-          and they sit <strong>Δ {data.null.min}–{data.null.max}</strong> from
-          each other (median {data.null.median}). Anything inside that band is no
-          further from {data.benchmark_label} than {data.benchmark_label} is from itself.
-        </p>
-        <p className="hint small">
-          {data.features} character-bigram features over {data.corpus_size} works;
-          works under {data.min_chars.toLocaleString()} characters are not profiled.
-        </p>
-      </div>
+      <h2>Where the works in doubt sit</h2>
+      <p className="hint small">
+        Every catalogued work outside the benchmark, measured the same way —
+        this is not what any agent proposed, it is the standing measurement
+        their hypotheses are read against.
+      </p>
 
       {/* Carried in the payload rather than written here, so it cannot be
           dropped by a renderer that finds it inconvenient. */}

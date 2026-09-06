@@ -357,11 +357,17 @@ class RunManager:
         *, max_budget_usd: float = DEFAULT_MAX_BUDGET_USD,
         max_turns: int = DEFAULT_MAX_TURNS,
         max_agents: int = DEFAULT_MAX_AGENTS,
-        transport_factory=None,
+        transport_factory=None, study=None,
     ) -> None:
         self.db_path = db_path
         self.log_path = log_path
         self.source = source
+        #: An open ascription study, handed to every worker this manager
+        #: builds. Its presence is what puts the four ascription tools in
+        #: front of an agent, so the answer to "can an agent run a control
+        #: test?" is decided once, when the server starts, by whether the
+        #: operator opened a study — not per run and not by the browser.
+        self.study = study
         self.max_budget_usd = max_budget_usd
         self.max_turns = max_turns
         self.max_agents = max_agents
@@ -384,6 +390,10 @@ class RunManager:
         return {
             "runs_enabled": True,
             "corpus_available": self.source is not None,
+            # Reported so the launcher can say what an agent will be able to
+            # do, rather than letting a researcher discover after paying for a
+            # run that the ascription tools were never on the table.
+            "study_available": self.study is not None,
             "model_configured": configured,
             "model": detail if configured else None,
             # The pool a multi-agent roster draws on. Agents in one run may not
@@ -597,7 +607,7 @@ class RunManager:
                 return cls(
                     graph, source=self.source, authored_by=spec.agent_id,
                     profile=profile, transport=transport, model=spec.model,
-                    question_id=run.question_id,
+                    question_id=run.question_id, study=self.study,
                 ), spec.instructions
 
             workers = [s for s in run.specs if not s.is_reviewer]

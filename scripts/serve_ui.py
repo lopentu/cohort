@@ -125,11 +125,31 @@ def main() -> None:
             )
             sys.exit(1)
 
+    study = None
+    if args.radich:
+        from cohort.attribution import open_study
+
+        print(f"building the Delta space over {args.radich} — about 35s, once",
+              file=sys.stderr)
+        study = open_study(
+            args.radich,
+            benchmark_label=args.benchmark_label,
+            control_label=args.control_label,
+        )
+        print(f"  {study.corpus_size} works read, {len(study.space.works())} "
+              f"long enough to profile, {len(study.space.features)} features; "
+              f"{len(study.catalogue.works())} catalogued works indexed for counting",
+              file=sys.stderr)
+
+    # After the study, because a run manager built without it would hand every
+    # agent a toolset missing the four ascription tools — silently, and only
+    # discoverable by paying for a run and reading the transcript.
     run_manager = None
     if args.allow_runs:
         log_path = Path(args.log) if args.log else db_path.with_suffix(".jsonl")
         run_manager = RunManager(
             db_path, log_path, source, max_budget_usd=args.max_budget,
+            study=study,
         )
 
     if not FRONTEND_DIR.is_dir():
@@ -145,24 +165,6 @@ def main() -> None:
             "view beyond this machine",
             file=sys.stderr,
         )
-
-    study = None
-    if args.radich:
-        from cohort.attribution import load_study
-        from cohort.catalogue import load_catalogue
-
-        radich = Path(args.radich)
-        catalogue = load_catalogue(
-            radich / "P-catalogue.txt",
-            benchmark_label=args.benchmark_label,
-            control_label=args.control_label,
-        )
-        print(f"building the Delta space over {radich / 'corpus' / 'T-stripped'} "
-              "— about 35s, once", file=sys.stderr)
-        study = load_study(radich / "corpus" / "T-stripped", catalogue)
-        print(f"  {study.corpus_size} works read, {len(study.space.works())} "
-              f"long enough to profile, {len(study.space.features)} features",
-              file=sys.stderr)
 
     modes = ["read-only"]
     if args.allow_writes:

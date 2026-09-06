@@ -7,8 +7,6 @@ import FindingsPanel from './FindingsPanel'
 import RefusalsPanel from './RefusalsPanel'
 import RunPanel from './RunPanel'
 import Settings, { applyTheme, loadTheme } from './Settings'
-import LedgerPanel from './LedgerPanel'
-import StudyPanel from './StudyPanel'
 import StatsBar from './StatsBar'
 import { EDGE_STYLE, legendFor } from './graph-model'
 import { usePresence, useSlidingIndicator } from './motion'
@@ -55,12 +53,18 @@ export default function App() {
   // The tab list, and the thumb that tracks it. Both live above the early
   // returns below: hooks must run on every render, and the list has to be a
   // value rather than inline JSX so a click can tell which way it is moving.
+  //
+  // Attribution and Ledger were tabs of their own until 2026-09-06 and are
+  // sections of Findings now. Three pages described the same nodes from three
+  // angles — a hypothesis here, its fate there, the measurement it was about
+  // somewhere else — and a reader could reach all of it without being able to
+  // assemble any of it. The tools behind those two pages are what an agent
+  // calls during a run; what they produce belongs with everything else the run
+  // produced.
   const tabs = [
     ['graph', 'Graph'],
     ['findings', 'Findings'],
     health?.corpus_enabled && ['corpus', 'Corpus'],
-    health?.study_enabled && ['study', 'Attribution'],
-    health?.discriminators > 0 && ['ledger', 'Ledger'],
     health?.runs_enabled && ['run', 'Inquiry'],
   ].filter(Boolean)
 
@@ -188,12 +192,6 @@ export default function App() {
             )}
             {tab === 'findings' && (
               <FindingsPanel
-                onSelect={(id) => { setSelectedId(id); goTab('graph') }}
-              />
-            )}
-            {tab === 'study' && <StudyPanel />}
-            {tab === 'ledger' && (
-              <LedgerPanel
                 onSelect={(id) => { setSelectedId(id); goTab('graph') }}
               />
             )}
