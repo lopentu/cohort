@@ -465,6 +465,7 @@ function Measurements({ rows }) {
           <p className="v-detail">
             <span className={`badge r-${m.result}`}>{m.result}</span> {m.detail}
           </p>
+          {m.association && <AssociationTable a={m.association} />}
           {m.works.length > 0 && (
             <table className="work-table">
               <thead>
@@ -506,6 +507,99 @@ function Measurements({ rows }) {
       ))}
     </div>
   )
+}
+
+// An association, as the three numbers that make it readable.
+//
+// The share is never shown without its calibration, because a share against
+// chance says only that the overlap is not an accident — not that it is as
+// strong as membership normally looks. `blind` is on screen for the same
+// reason: while a third of a group's undisputed members score zero, a zero is
+// not an exclusion, and a table that omitted that would be inviting one.
+function AssociationTable({ a }) {
+  return (
+    <div className="assoc-detail">
+      <p className="assoc-summary">
+        <code>{a.work}</code> against <strong>{a.group_label}</strong> over{' '}
+        {a.corpus_size.toLocaleString()} profiled works
+        {a.first_rank
+          ? <> — nearest {a.group_label} work at rank <strong>{a.first_rank}</strong></>
+          : <> — no {a.group_label} work anywhere in the ranking</>}
+      </p>
+
+      <table className="work-table">
+        <thead>
+          <tr>
+            <th>k nearest</th><th className="num">in group</th>
+            <th className="num">share</th><th className="num">p</th>
+            <th className="num">known members reach</th>
+            <th className="num">cannot see</th>
+          </tr>
+        </thead>
+        <tbody>
+          {a.enrichment.map((e) => (
+            <tr key={e.k} className={e.within_calibration ? 'assoc-strong' : ''}>
+              <td>{e.k}</td>
+              <td className="num">{e.hits}</td>
+              <td className="num">{(e.share * 100).toFixed(1)}%</td>
+              <td className="num">{e.p_value < 1 ? e.p_value.toExponential(1) : '—'}</td>
+              <td className="num dim">
+                {(e.calibration_min * 100).toFixed(0)}–{(e.calibration_max * 100).toFixed(0)}%
+                {' '}(med {(e.calibration_median * 100).toFixed(0)}%)
+              </td>
+              <td className="num dim">{e.calibration_blind}/{e.calibration_n}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <p className="hint small">
+        Chance would give {(a.expected_share * 100).toFixed(1)}%. &ldquo;Known
+        members reach&rdquo; is what an undisputed {a.group_label} work scores
+        with itself held out; &ldquo;cannot see&rdquo; is how many of them score
+        zero, which is what a null result here has to be read against.
+      </p>
+
+      {a.nearest_in_group && a.nearest_outside_group && (
+        <p className="assoc-control">
+          nearest {a.group_label}: <code>{a.nearest_in_group.work}</code> Δ{' '}
+          {a.nearest_in_group.delta}
+          <span className="sep" />
+          nearest outside: <code>{a.nearest_outside_group.work}</code> Δ{' '}
+          {a.nearest_outside_group.delta}
+        </p>
+      )}
+
+      {/* The second branch. Kept as its own block rather than folded into the
+          table above, because it is group-blind: these percentiles say where
+          the work sits in the canon and nothing about who wrote it, and across
+          sixteen undisputed members of one group they span almost the whole
+          range. */}
+      {a.neighbourhood && (
+        <div className={`hood-block ${a.neighbourhood.dominant ? 'lead' : ''}`}>
+          <p className="hood-reading">{a.neighbourhood.reading}</p>
+          <p className="hint small">
+            nearest Δ {a.neighbourhood.nearest_delta}{' '}
+            ({ordinal(a.neighbourhood.nearest_percentile)} pct) ·{' '}
+            gap to next {a.neighbourhood.gap_to_second}{' '}
+            ({ordinal(a.neighbourhood.gap_percentile)}) ·{' '}
+            neighbourhood cohesion {a.neighbourhood.cohesion}{' '}
+            ({ordinal(a.neighbourhood.cohesion_percentile)}).
+            Percentiles of this corpus&apos;s own distribution — they say where
+            the work sits, not who produced it.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+//: `63rd`, not `63th` — the same rule the server applies to the prose it
+//: writes, kept in step here because both end up on one screen.
+function ordinal(n) {
+  const i = Math.round(n)
+  if (i % 100 >= 11 && i % 100 <= 13) return `${i}th`
+  return `${i}${ { 1: 'st', 2: 'nd', 3: 'rd' }[i % 10] || 'th' }`
 }
 
 //: shares are fractions of *works*, shown as percentages because a threshold

@@ -150,9 +150,17 @@ def test_no_study_means_no_study_paragraph(graph):
     assert _study_context(None) == ""
 
 
-def test_the_tool_count_is_not_asserted_in_the_system_prompt():
-    """The prompt said 'exactly three tools' while six were registered, for
-    three stages. A count in prose is a fact that rots; the schema list is the
-    only place the number should live."""
-    assert "three tools" not in AttestationWorker.SYSTEM_PROMPT
-    assert len(STUDY_TOOLS) == 4
+def test_no_tool_count_is_asserted_in_the_system_prompt():
+    """The prompt said "exactly three tools" while six were registered, and had
+    been wrong for three stages. A count in prose is a fact that rots — the
+    schema list is the only place the number should live.
+
+    Checked as "no number followed by 'tools'" rather than as the one wrong
+    sentence, so the next person to write a count is caught too. (This test's
+    own first draft asserted `len(STUDY_TOOLS) == 4` and broke on the very next
+    tool added, which is the same mistake one layer out.)"""
+    words = ("one", "two", "three", "four", "five", "six", "seven", "eight",
+             "nine", "ten", "exactly")
+    prompt = AttestationWorker.SYSTEM_PROMPT.lower()
+    for w in (*words, *(str(i) for i in range(1, 21))):
+        assert f"{w} tools" not in prompt, f"the prompt states a tool count: {w!r}"

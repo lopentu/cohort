@@ -23,9 +23,17 @@ that sentence into every payload rather than trusting a renderer to remember.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
+from .association import (
+    Association,
+    CanonBaseline,
+    Calibration,
+    associate,
+    calibrate,
+    canon_baseline,
+)
 from .catalogue import Catalogue
 from .measure import _Corpus
 from .sources.radich_reader import RadichReader
@@ -67,6 +75,17 @@ class Study:
     #: indexing 2.4 GB to count a feature in thirty-three works is minutes of
     #: work for nothing — the space needs the canon, the counting does not.
     corpus: _Corpus | None = None
+    #: Leave-one-out calibration of the association measure, computed on first
+    #: use and kept. One full ranking of the corpus per benchmark member — half
+    #: a second for sixteen, and the same numbers every time, since the space is
+    #: frozen. Recomputing it per work would make a page of ten placements pay
+    #: for it ten times over.
+    _calibration: dict = field(default_factory=dict, repr=False, compare=False)
+    #: The canon's own distribution of neighbourhood statistics, on the
+    #: same terms and for the same reason: sampled once, reused, and
+    #: deterministic so that a re-measurement compares against the
+    #: baseline it was recorded under.
+    _baseline: list = field(default_factory=list, repr=False, compare=False)
 
     def benchmark(self) -> list[str]:
         return [
@@ -86,6 +105,54 @@ class Study:
         asked."""
         return [w for w in self.catalogue.works(label) if w not in self.space._z]
 
+    def calibration(self) -> dict[int, Calibration]:
+        """What a *known* benchmark work scores on the association measure,
+        each scored with itself held out.
+
+        Without this an enrichment is uninterpretable. A p-value says the
+        overlap is not chance; it does not say the association is as strong as
+        membership normally looks, and on this study six of sixteen undisputed
+        members score zero — so an unenriched work has not been shown to be an
+        outsider, and a measure that reported it as one would be manufacturing
+        exclusions.
+        """
+        if not self._calibration:
+            self._calibration.update(
+                calibrate(self.space, self.benchmark(),
+                          label=self.catalogue.benchmark_label)
+            )
+        return self._calibration
+
+    def baseline(self) -> CanonBaseline:
+        """How near works in this corpus generally are to their own nearest
+        neighbours, and how far the second one usually trails.
+
+        Without it, "its nearest work is at Δ 0.45" is unreadable — neither
+        near nor far — and the second branch of an ascription question, *what
+        else is this work near*, cannot be answered at all.
+        """
+        if not self._baseline:
+            self._baseline.append(canon_baseline(self.space))
+        return self._baseline[0]
+
+    def association(self, work: str, *, top: int = 15) -> Association:
+        """Whether the benchmark is over-represented among `work`'s nearest
+        neighbours in the whole corpus.
+
+        This is the measure Radich's brief actually asks for — associate a work
+        with the group *against texts by other translators in the canon* — and
+        it is not the same question as `profile()`, whose band asks only whether
+        a work sits inside the group's own spread. On this corpus the band
+        answers "not distinguishable" for every disputed work and every
+        interloper alike; the two are kept side by side because that contrast is
+        itself worth seeing.
+        """
+        return associate(
+            self.space, work, group=self.benchmark(),
+            label=self.catalogue.benchmark_label,
+            calibration=self.calibration(), baseline=self.baseline(), top=top,
+        )
+
     def as_json(self, *, top: int = 8) -> dict:
         groups = {}
         for label in self.catalogue.labels():
@@ -93,7 +160,14 @@ class Study:
                 continue
             groups[label] = {
                 "profiles": [
-                    self.profile(w, top=top).as_json()
+                    {
+                        **self.profile(w, top=top).as_json(),
+                        # The band says "not distinguishable" for almost
+                        # everything; the association is the measure with the
+                        # canon behind it. Both, because a reader comparing them
+                        # learns what the band is and is not good for.
+                        "association": self.association(w).as_json(),
+                    }
                     for w in self.catalogue.works(label) if w in self.space._z
                 ],
                 "unmeasurable": self.unmeasurable(label),
@@ -105,6 +179,8 @@ class Study:
             "features": len(self.space.features),
             "corpus_size": self.corpus_size,
             "min_chars": self.space.min_chars,
+            "calibration": [c.as_json() for c in self.calibration().values()],
+            "baseline": self.baseline().as_json(),
             "groups": groups,
             "caveat": CAVEAT,
         }

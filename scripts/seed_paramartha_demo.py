@@ -29,12 +29,22 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+from cohort.attribution import open_study                         # noqa: E402
 from cohort.catalogue import load_catalogue                       # noqa: E402
 from cohort.eventlog import EventLog                              # noqa: E402
 from cohort.graph import Graph                                    # noqa: E402
 from cohort.ledger import ledger_json                             # noqa: E402
-from cohort.schemas import RESEARCHER, QuestionPayload            # noqa: E402
+from cohort.schemas import (                                      # noqa: E402
+    RESEARCHER,
+    ConjecturePayload,
+    EdgeType,
+    QuestionPayload,
+)
 from cohort.sources.radich_reader import RadichReader             # noqa: E402
+from cohort.tools.associate_work import (                         # noqa: E402
+    AssociateWorkInput,
+    associate_work,
+)
 from cohort.tools.discriminator import (                          # noqa: E402
     RegisterDiscriminatorInput,
     apply_to_disputed,
@@ -77,7 +87,7 @@ def main() -> None:
     catalogue.check_against(corpus.works())
     graph = Graph(DB, event_log=EventLog(LOG))
 
-    graph.ask_question(
+    question_id = graph.ask_question(
         QuestionPayload(
             text=(
                 "Which of the P-weird works can be placed with or apart from "
@@ -155,6 +165,83 @@ def main() -> None:
         unmeasurable = [r["work"] for r in applied["works"] if r["attests"] is None]
         print(f"  {feature}: with benchmark {placed or '—'}; without {silent or '—'}"
               + (f"; too short {unmeasurable}" if unmeasurable else ""))
+
+    # --- association: the question Radich actually asked ---------------------
+    #
+    # The feature ledger above answers "which candidate features separate the
+    # benchmark from a control". That is a prerequisite, not the brief. The
+    # brief asks whether a P-weird work can be associated with P *against texts
+    # by other translators in the canon*, or associated with some other
+    # reference point suggesting an alternate ascription — a question about
+    # 1,464 profiled works, not about three measurable interlopers.
+    #
+    # One conjecture per work, phrased as the open question rather than as its
+    # answer, with the measurement recorded against it. A conjecture is allowed
+    # to exceed its evidence; what it may not do is state the finding in its own
+    # text and then be "confirmed" by a number computed afterwards.
+    print("\nbuilding the Delta space over the whole canon — about 60s, once")
+    study = open_study(REPO_ROOT / "data" / "radich")
+    print(f"  {study.corpus_size} works read, {len(study.space.works())} profiled")
+    cal = study.calibration()[25]
+    print(f"  calibration: a known {catalogue.benchmark_label} work reaches "
+          f"{cal.minimum:.0%}–{cal.maximum:.0%} (median {cal.median:.0%}); "
+          f"{cal.blind} of {cal.n} score zero\n")
+
+    for work in catalogue.works("P-weird"):
+        if work not in study.space.works():
+            print(f"  {work:<10} below the character floor — not profiled")
+            continue
+        cid = graph.propose_conjecture(
+            ConjecturePayload(
+                text=(
+                    f"{work} can be associated with {catalogue.benchmark_label} "
+                    "rather than with some other reference point in the canon."
+                ),
+                derivation=(
+                    "Burrows's Delta over the 300 most frequent character "
+                    "bigrams, computed across the whole Taisho corpus so that "
+                    "the comparison set is every profiled work rather than the "
+                    "catalogue. The question is whether "
+                    f"{catalogue.benchmark_label} members are over-represented "
+                    "among this work's nearest neighbours."
+                ),
+                corpus_boundary=(
+                    "Radich Taisho corpus (CC-BY-4.0), one edition per work "
+                    "(大), works under 5,000 characters not profiled."
+                ),
+                selection_risks=(
+                    "The benchmark is 59% two Abhidharma commentaries by "
+                    "character count, so its centroid sits in that genre and a "
+                    "work of the same genre may be drawn to it whoever "
+                    "translated it."
+                ),
+                alternative_explanations=(
+                    "Character n-grams track subject matter heavily. A "
+                    "neighbourhood is evidence about resemblance rather than "
+                    "authorship, and the measure reports the nearest work "
+                    "outside the group precisely so that this can be checked."
+                ),
+            ),
+            authored_by=AGENT,
+        )
+        graph.add_edge(EdgeType.ADDRESSES, cid, question_id, authored_by=AGENT)
+        out = associate_work(
+            graph, study,
+            AssociateWorkInput(claim_or_conjecture_id=cid, work=work),
+            authored_by=AGENT,
+        )
+        a = out["association"]
+        e, h = a["enrichment"][0], a["neighbourhood"]
+        # Both branches on one line. The verdict comes from the record rather
+        # than being re-derived here, so this printout cannot disagree with
+        # what the graph says.
+        print(f"  {a['verdict']:<10} {work:<10} "
+              f"{e['hits']:>2}/{e['k']} {catalogue.benchmark_label} "
+              f"(p={e['p_value']:.0e})   nearest {h['nearest']['work']} "
+              f"Δ{h['nearest_delta']} gap {h['gap_to_second']} "
+              f"[{h['gap_percentile']:.0f}th pct"
+              + (", dominant]" if h["dominant"] else
+                 ", diffuse]" if h["diffuse"] else "]"))
 
     led = ledger_json(graph)
     print(f"\n{led['reading']}")

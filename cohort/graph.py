@@ -661,7 +661,7 @@ class Graph:
         assurance_level: AssuranceLevel, detail: str, limitations: str | None = None,
         source_hash: str | None = None, excerpt_hash: str | None = None,
         span_start: int | None = None, span_end: int | None = None,
-        groups: tuple = (), works: tuple = (), authored_by: str,
+        groups: tuple = (), works: tuple = (), association=None, authored_by: str,
         model_call_id: int | None = None,
     ) -> str:
         """One verification attempt against a claim/conjecture/passage/
@@ -685,7 +685,7 @@ class Graph:
             method=method, result=result, assurance_level=assurance_level,
             detail=detail, limitations=limitations, source_hash=source_hash,
             excerpt_hash=excerpt_hash, span_start=span_start, span_end=span_end,
-            groups=groups, works=works,
+            groups=groups, works=works, association=association,
         )
         verification_id = f"{NodeType.VERIFICATION}:{uuid.uuid4().hex}"
         edge_id = f"edge:{uuid.uuid4().hex}"

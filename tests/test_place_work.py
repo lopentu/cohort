@@ -190,3 +190,30 @@ def test_a_work_the_corpus_does_not_hold_is_refused(graph, study):
     node = a_claim(graph)
     with pytest.raises(WrongNodeType, match="no profile in this space"):
         place(graph, study, node, work="T9999")
+
+
+# --- the two measures answer different questions ----------------------------
+
+def test_the_band_says_not_distinguishable_for_almost_everything(graph, study):
+    """Why `associate_work` exists beside this.
+
+    A null band's ceiling is the distance of the group's most eccentric member,
+    so it is a threshold almost nothing fails — on the real Paramārtha corpus
+    every disputed work and every interloper alike came back inside it. That is
+    a true statement and an answer to nothing, and it is the reason a second
+    measure with the whole canon behind it was needed rather than a tuned
+    version of this one.
+
+    Pinned rather than fixed: the band is still the right check against
+    *over*-reading a small distance, and narrowing it to a quantile would make
+    it a different statistic wearing the same name.
+    """
+    node = a_claim(graph)
+    inside = [
+        place(graph, study, node, work=w)["placement"]["inside_null"]
+        for w in ("D0", "D1")
+    ]
+    assert all(inside), (
+        "the fixture no longer reproduces the condition that motivated "
+        "cohort.association — check whether the band is still this permissive"
+    )

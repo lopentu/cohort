@@ -125,9 +125,37 @@ reshuffle itself as a graph grows.
      untested, discarded, and everything that is not a candidate discriminator.
      Discarded features are collapsed, never omitted; the count stays on the
      header, because those rows are what make the ratio mean anything.
-  3. **Where the works in doubt sit** — the standing Delta measurement over the
-     catalogue, with `--radich`. Not what any agent proposed: what their
-     hypotheses are read against.
+  3. **Where the works in doubt sit** — with `--radich`. Each work outside the
+     benchmark, measured two ways and in this order:
+
+     Every work carries a **verdict** — associates / weak association /
+     alternate reference point / not placed — because the question has two
+     branches and a row answering only the first was blank three times out of
+     four. *Not placed* is drawn quietest of the four: a work the method could
+     not place must not look like a work shown not to belong.
+
+     - **Association across the canon** (the headline). Of the works nearest
+       this one among all 1,464 profiled, are benchmark members more common
+       than chance? Drawn against a **calibration band**: what a *known*
+       benchmark work scores with itself held out. Beside it, the number a
+       reader must see before treating a zero as an exclusion — how many
+       undisputed members the method **cannot see** (six of sixteen on the
+       Paramārtha study). And the **nearest work outside the group** next to
+       the nearest one inside it, which is the genre control.
+     - **Where it sits regardless of the group** — how near its nearest work
+       is, how far the second trails, and how tightly the neighbourhood holds
+       together, each as a percentile of the corpus's own distribution. A work
+       whose nearest stands clear of the rest has a *dominant attractor*: one
+       reference point worth checking, which is the second branch of the
+       question. This is **not** a group signature and is never combined with
+       the one above — across sixteen undisputed members of one group these
+       percentiles span almost the whole range.
+     - **Distance against the benchmark's own spread** (behind the click). Its
+       ceiling is the distance of the group's most eccentric member, so almost
+       nothing falls outside it. Kept because it is a real check against
+       over-reading a small distance, demoted because on this corpus it
+       answers "not distinguishable" for every disputed work and every control
+       alike.
   4. **Citable** and **Rejected**, side by side. Rejections sit next to findings
      deliberately: showing conclusions without showing what was thrown out and
      why would misrepresent the record.
@@ -162,8 +190,10 @@ reshuffle itself as a graph grows.
   **ascription tools**, and their order is the method: `register_discriminator`
   records a prediction about a feature before anything is counted,
   `run_control_test` counts and compares against it, `apply_to_disputed` is
-  refused outright until that control has passed, and `place_work` measures a
-  work's Delta from the benchmark. They are offered only when a study is open —
+  refused outright until that control has passed, and `associate_work` /
+  `place_work` measure one work against the benchmark — the first by
+  neighbourhood across the whole canon, the second by distance against the
+  benchmark's own spread. They are offered only when a study is open —
   a worker on a graph with no catalogue would meet a tool that can do nothing
   but refuse, and spend a paid turn learning that. Everything they write lands
   in Findings, which is the whole reason those two tabs went away.

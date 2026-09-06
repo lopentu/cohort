@@ -200,6 +200,7 @@ def dossier_json(graph: Graph, node_id: str) -> dict[str, Any]:
 #: The distinction is recoverable from `detail`'s opening verb, which each tool
 #: fixes deliberately, rather than from a field nothing validates.
 MEASUREMENT_KINDS = (
+    ("associated ", "association"),
     ("placed ", "placement"),
     ("applied ", "application"),
     ("counted ", "count"),
@@ -230,6 +231,7 @@ def _measurements(graph: Graph, node_id: str) -> list[dict[str, Any]]:
             "limitations": p.get("limitations"),
             "fingerprint": p.get("excerpt_hash"),
             "works": list(p.get("works") or ()),
+            "association": p.get("association"),
         })
     return out
 

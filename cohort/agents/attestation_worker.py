@@ -64,6 +64,9 @@ from ..tools.discriminator import (
 from ..tools.place_work import DESCRIPTION as PLACE_WORK_DESCRIPTION
 from ..tools.place_work import NAME as PLACE_WORK_NAME
 from ..tools.place_work import PlaceWorkInput, place_work
+from ..tools.associate_work import DESCRIPTION as ASSOCIATE_WORK_DESCRIPTION
+from ..tools.associate_work import NAME as ASSOCIATE_WORK_NAME
+from ..tools.associate_work import AssociateWorkInput, associate_work
 from .openrouter import (
     DEFAULT_MAX_OUTPUT_TOKENS,
     complete,
@@ -246,6 +249,14 @@ STUDY_TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": ASSOCIATE_WORK_NAME,
+            "description": ASSOCIATE_WORK_DESCRIPTION,
+            "parameters": AssociateWorkInput.model_json_schema(),
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": PLACE_WORK_NAME,
             "description": PLACE_WORK_DESCRIPTION,
             "parameters": PlaceWorkInput.model_json_schema(),
@@ -283,9 +294,30 @@ def _study_context(study) -> str:
         "to record, not a call to retry with a lower threshold — moving the "
         "prediction after seeing the numbers is the error this whole ordering "
         "exists to prevent. apply_to_disputed is refused outright until the "
-        "control has passed. place_work measures a work's distance from the "
-        "benchmark and is independent of that chain, but needs a claim or "
-        "conjecture to record against, so propose one first.\n\n"
+        "control has passed. associate_work and place_work are independent of "
+        "that chain, but each needs a claim or conjecture to record against, "
+        "so propose one first.\n\n"
+        "An ascription question has two branches and you are expected to "
+        "answer both for every work you are asked about. Branch one: can this "
+        "work be associated with the benchmark, against the rest of the canon? "
+        "Branch two: if not, what IS it nearest to — is there some other "
+        "reference point in the corpus that stands clearly ahead of the rest, "
+        "suggesting a different ascription? associate_work answers both in one "
+        "call and you should call it on every work in doubt.\n\n"
+        "Read its result carefully, because two of its outcomes are easy to "
+        "confuse. A work with no benchmark enrichment has NOT been shown to be "
+        "outside the group: the calibration reports how many undisputed "
+        "members the method also fails to recover, and where that number is "
+        "high a null says only that this work is somewhere the method cannot "
+        "see. Do not write that a work is excluded, does not belong, or is not "
+        "by the benchmark's author. What you may write is what its own "
+        "neighbourhood shows — a dominant nearest work is a lead worth naming, "
+        "and a diffuse neighbourhood is a result too.\n\n"
+        "place_work reports a distance against the benchmark's own internal "
+        "spread. That spread is set by the group's most eccentric member, so "
+        "almost nothing falls outside it and 'not distinguishable' there is "
+        "close to uninformative on its own — prefer associate_work, and use "
+        "place_work only as a check against over-reading a small distance.\n\n"
         "Prefer features that could track a translator's register — discourse "
         "particles, connectives, formulaic openings — over doctrinal "
         "vocabulary, which tracks what a text is about rather than who "
@@ -608,6 +640,11 @@ class AttestationWorker:
                 "disputed_label": out["disputed_label"],
                 "works": out["works"],
             }
+        if name == ASSOCIATE_WORK_NAME:
+            return False, associate_work(
+                self.graph, study, AssociateWorkInput.model_validate(args),
+                authored_by=self.authored_by, model_call_id=model_call_id,
+            )
         if name == PLACE_WORK_NAME:
             return False, place_work(
                 self.graph, study, PlaceWorkInput.model_validate(args),

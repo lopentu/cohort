@@ -231,10 +231,21 @@ def cmd_study(args) -> None:
 
     def render(p):
         n = p["null"]
+        cal = next((c for c in p["calibration"] if c["k"] == 25), None)
         print(f"benchmark {p['benchmark_label']}: {n['n']} works, "
               f"Δ to each other {n['min']}–{n['max']} (median {n['median']})")
         print(f"{p['features']} features over {p['corpus_size']} works, "
-              f"floor {p['min_chars']} chars\n")
+              f"floor {p['min_chars']} chars")
+        if cal:
+            # The calibration first, because every share below is unreadable
+            # without it — and `blind` most of all: while a third of the
+            # group's undisputed members score zero, a zero is not an
+            # exclusion.
+            print(f"calibration: a known {p['benchmark_label']} work has "
+                  f"{cal['min']:.0%}–{cal['max']:.0%} of its 25 nearest in "
+                  f"{p['benchmark_label']} (median {cal['median']:.0%}); "
+                  f"{cal['blind']} of {cal['n']} score zero")
+        print()
         for label, group in p["groups"].items():
             print(f"{label}:")
             for prof in group["profiles"]:
@@ -244,7 +255,15 @@ def cmd_study(args) -> None:
                     f" {q['delta']}"
                     for q in prof["neighbours"][:4]
                 )
-                print(f"  {prof['work']:<12} Δ={prof['mean_delta_to_benchmark']:.3f} "
+                a = prof.get("association")
+                if a:
+                    e = a["enrichment"][0]
+                    mark = ("associates" if e["within_calibration"] and e["hits"]
+                            else "weak" if e["hits"] else "not seen")
+                    print(f"  {prof['work']:<12} {e['hits']:>2}/{e['k']} nearest are "
+                          f"{p['benchmark_label']}  p={e['p_value']:.1e}  [{mark}]")
+                    print(f"               {a['reading']}")
+                print(f"               Δ={prof['mean_delta_to_benchmark']:.3f} "
                       f"[{where} the benchmark's own spread]  nearest: {near}")
             if group["unmeasurable"]:
                 print(f"  below the floor, not profiled: "

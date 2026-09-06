@@ -487,6 +487,110 @@ class WorkOutcome(_Model):
     note: str | None = None
 
 
+class NeighbourOutcome(_Model):
+    """One work in another work's neighbourhood, with where it ranked.
+
+    `label` is the group label when this neighbour belongs to the group being
+    tested and None otherwise, so a renderer can mark group members without
+    being handed a second parallel list to keep in step with this one.
+    """
+
+    work: str = Field(min_length=1)
+    label: str | None = None
+    delta: float
+    rank: int = Field(ge=1)
+
+
+class EnrichmentOutcome(_Model):
+    """How many of the `k` nearest works belong to the group, at one `k`, with
+    what known members of that group score at the same `k`.
+
+    The calibration fields are not decoration. A share is uninterpretable
+    against chance alone — chance says the enrichment is unlikely, not that it
+    is as strong as membership normally looks — and `calibration_blind` is the
+    one a reader must see before treating a zero as an exclusion: it counts
+    undisputed members of the group that the method also fails to recover.
+    """
+
+    k: int = Field(ge=1)
+    hits: int = Field(ge=0)
+    share: float = Field(ge=0.0, le=1.0)
+    p_value: float = Field(ge=0.0, le=1.0)
+    within_calibration: bool
+    calibration_n: int = Field(ge=0)
+    calibration_blind: int = Field(ge=0)
+    calibration_min: float = Field(ge=0.0, le=1.0)
+    calibration_median: float = Field(ge=0.0, le=1.0)
+    calibration_max: float = Field(ge=0.0, le=1.0)
+
+
+class NeighbourhoodOutcome(_Model):
+    """Where a work sits in the corpus, independent of any group.
+
+    The second branch of an ascription question — *what else is this near* —
+    and the reason three works showing no group enrichment are not three blanks.
+    Percentiles rather than raw distances, because a Δ of 0.45 is neither near
+    nor far until the corpus says so.
+
+    Not a group signature, and must not be rendered as one: across sixteen
+    undisputed members of one group these percentiles span almost the whole
+    range. It says where a work sits, never who wrote it.
+    """
+
+    nearest: NeighbourOutcome | None = None
+    nearest_delta: float
+    gap_to_second: float
+    cohesion: float
+    nearest_percentile: float = Field(ge=0.0, le=100.0)
+    gap_percentile: float = Field(ge=0.0, le=100.0)
+    cohesion_percentile: float = Field(ge=0.0, le=100.0)
+    #: one reference point clearly ahead of the rest — an alternate-ascription
+    #: lead. `diffuse` is its opposite and they are never both true.
+    dominant: bool = False
+    diffuse: bool = False
+    reading: str = Field(min_length=1)
+
+
+class AssociationOutcome(_Model):
+    """A work measured against a group across the whole corpus.
+
+    Distinct from a `NullBand` reading and deliberately so: a band asks whether
+    a work is inside a group's own spread, which almost nothing fails, and this
+    asks whether the group is over-represented among the work's nearest
+    neighbours, which is the question with the corpus behind it. See
+    `cohort.association` for the full argument.
+
+    `nearest_outside_group` is the genre control and travels in the same
+    payload as `nearest_in_group` for the reason a `NullBand` travels with a
+    Delta: separated, the comparison is one a renderer can decline to make.
+    """
+
+    work: str = Field(min_length=1)
+    group_label: str = Field(min_length=1)
+    group_size: int = Field(ge=0)
+    corpus_size: int = Field(ge=0)
+    expected_share: float = Field(ge=0.0, le=1.0)
+    #: rank of the nearest group member, or None when the group has none in
+    #: the corpus at all — never 0, so "no member anywhere" cannot be confused
+    #: with "a member at the top".
+    first_rank: int | None = None
+    nearest_in_group: NeighbourOutcome | None = None
+    nearest_outside_group: NeighbourOutcome | None = None
+    enrichment: tuple[EnrichmentOutcome, ...] = ()
+    neighbours: tuple[NeighbourOutcome, ...] = ()
+    neighbourhood: NeighbourhoodOutcome | None = None
+    #: One word for what this work is, so that every work gets a determinate
+    #: row: associates / weak / alternate / unplaced. Rendering the three
+    #: unenriched works of a four-work study as one blank made the method look
+    #: unable to answer, when "not here, and here is where it does sit" is an
+    #: answer.
+    verdict: str = ""
+    #: The group half of the reading on its own, so a renderer can show the two
+    #: branches as two statements rather than one paragraph.
+    group_reading: str = ""
+    reading: str = Field(min_length=1)
+
+
 class VerificationPayload(_Model):
     method: VerificationMethod
     result: VerificationResult
@@ -513,6 +617,12 @@ class VerificationPayload(_Model):
     #: applied to disputed texts, a Delta placement. Additive alongside
     #: `groups`, which tallies; this is what was tallied.
     works: tuple[WorkOutcome, ...] = ()
+    #: Populated only by an association measure. One field holding a
+    #: nested model rather than three parallel tuples, because its parts
+    #: are meaningless apart: a share without its calibration, or a
+    #: nearest group member without the nearest work outside the group,
+    #: is the half of the measure that flatters it.
+    association: AssociationOutcome | None = None
 
 
 PAYLOAD_BY_TYPE: dict[NodeType, type[_Model]] = {
