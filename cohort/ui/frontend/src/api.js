@@ -80,3 +80,11 @@ export const askQuestion = (body) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
+
+// --- attribution evidence (read-only; the same AttributionIndex the CLI uses) -
+export const getEvidenceUnits = () => json('/api/evidence/units')
+export const getEvidence = (uid, features = 'radich', { withhold = '', offset = 0, pair = '' } = {}) =>
+  json(
+    `/api/evidence?uid=${encodeURIComponent(uid)}&features=${encodeURIComponent(features)}` +
+    `&withhold=${encodeURIComponent(withhold)}&offset=${offset}&pair=${encodeURIComponent(pair)}`,
+  )

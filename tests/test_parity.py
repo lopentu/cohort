@@ -46,6 +46,10 @@ ROUTE_TO_COMMAND = {
     ("POST", "/api/reopen"): "reopen",
     ("GET", "/api/corpus/search"): "search",
     ("GET", "/api/corpus/fetch"): "fetch",
+    # One command, two routes: `--list` is the units listing, a unit id is the
+    # evidence for it. The browser needs the list first to offer a picker.
+    ("GET", "/api/evidence/units"): "evidence",
+    ("GET", "/api/evidence"): "evidence",
     # The web launcher is asynchronous because a browser cannot block, so it
     # needs separate routes to poll and to stop. A terminal can block, so one
     # foreground `run` command covers all four: it waits, prints the same
@@ -80,10 +84,18 @@ def app_routes(tmp_path):
         def fetch(self, ref):
             raise KeyError(ref)
 
+    class _Attribution:
+        def units(self):
+            return {"units": []}
+
+        def evidence(self, uid, features="radich"):
+            raise KeyError(uid)
+
     source = _Source()
     app = create_app(
         db, log, allow_writes=True, source=source,
         run_manager=RunManager(db, log, source),
+        attribution=_Attribution(),
     )
     routes = set()
     for route in app.routes:

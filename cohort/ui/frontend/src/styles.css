@@ -1965,3 +1965,63 @@ a.cbeta-link.block { display: inline-block; margin: 6px 0 2px; font-size: 12px;
                      color: var(--addresses); text-decoration: underline;
                      text-underline-offset: 2px; }
 a.cbeta-link.block:hover { color: var(--text); }
+
+/* --- evidence (translator attribution over Radich's corpus) --------------- */
+/* Two hues that are neither the graph's `supports` blue nor its `discounts`
+   orange: a leaning toward a candidate is not an edge and must not read as one.
+   RGB triplets, because saturation is set per character from the data. Alpha
+   is capped in the component at 0.55: above that the body text fails 4.5:1 on
+   both grounds. */
+:root { --ev-a-rgb: 32, 178, 170; --ev-b-rgb: 226, 122, 63; --ev-a: rgb(var(--ev-a-rgb)); --ev-b: rgb(var(--ev-b-rgb)); }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --ev-a-rgb: 10, 106, 116; --ev-b-rgb: 181, 80, 31; } }
+:root[data-theme="light"] { --ev-a-rgb: 10, 106, 116; --ev-b-rgb: 181, 80, 31; }
+
+.evidence { margin: 18px; display: flex; flex-direction: column; gap: 12px; }
+.evidence h2 { margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+.evidence h3 { margin: 0; font-size: 15px; font-weight: 650; }
+.evidence > .btn { align-self: flex-start; }   /* a toggle, not a bar: do not stretch to the column */
+.evidence .btn.on { background: var(--fill-4); color: var(--text); border-color: var(--hairline); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ev-how { max-width: 72ch; font-size: 13px; color: var(--text-dim); border-left: 2px solid var(--line); padding-left: 12px; }
+.ev-how p { margin: 0 0 8px; }
+.ev-how b { color: var(--text); }
+.ev-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -2px; }
+.ev-swatch.a { background: var(--ev-a); } .ev-swatch.b { background: var(--ev-b); }
+.ev-controls { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
+.ev-filter { flex: 1; min-width: 240px; display: flex; }
+.ev-filter .corpus-input { flex: 1; }
+.ev-features { display: flex; gap: 6px; flex-wrap: wrap; }
+.ev-picker { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 700px) { .ev-picker { grid-template-columns: minmax(0, 1fr); } }
+.ev-units { margin: 0; padding: 0; list-style: none; max-height: 240px; overflow: auto; border: 1px solid var(--line-soft); border-radius: var(--radius-sm); }
+.ev-unit { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; width: 100%; text-align: left; padding: 5px 10px; background: none; border: 0; color: var(--text); font: inherit; font-size: 13px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.ev-unit:hover { background: var(--fill-1); }
+.ev-unit.on { background: var(--fill-3); }
+.ev-uid { font-family: var(--mono); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-label { color: var(--text-dim); } .ev-label.grey { color: var(--proposed); font-style: italic; }
+.ev-chars { color: var(--text-faint); }
+.ev-reading { display: flex; flex-direction: column; gap: 10px; }
+.ev-withhold { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+.ev-withhold label { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 240px; }
+.ev-verdict { display: flex; gap: 28px; flex-wrap: wrap; align-items: baseline; }
+.ev-verdict > div { display: flex; flex-direction: column; gap: 2px; }
+.ev-verdict b { font-size: 17px; }
+.ev-a { color: var(--ev-a); } .ev-b { color: var(--ev-b); }
+.ev-ranking summary { cursor: pointer; }
+.ev-ranking table { max-width: 640px; margin-top: 6px; }
+.ev-ranking tr.thin td { color: var(--text-dim); }
+.ev-strip { display: flex; height: 22px; border: 1px solid var(--line); border-radius: 3px; overflow: hidden; background: var(--bg-sunken); }
+.ev-cell { flex: 1; min-width: 1px; border: 0; padding: 0; cursor: pointer; }
+.ev-cell:hover, .ev-cell:focus-visible { outline: 2px solid var(--text); outline-offset: -2px; }
+.ev-cell.here { box-shadow: inset 0 -3px 0 var(--text); }
+.ev-text { font-family: "Noto Serif TC", "Noto Serif CJK TC", "Songti TC", "PMingLiU", "Noto Sans CJK TC", serif; font-size: 19px; line-height: 1.95; text-align: justify; padding: 14px 18px; background: var(--bg-raised); border: 1px solid var(--line-soft); border-radius: var(--radius-sm); max-width: 64em; }
+.ev-text mark { color: inherit; border-radius: 2px; padding: 0 1px; }
+.ev-text mark.a { box-shadow: inset 0 -2px 0 rgba(var(--ev-a-rgb), .9); }   /* direction survives without colour */
+.ev-text mark.b { box-shadow: inset 0 -2px 0 rgba(var(--ev-b-rgb), .9); }
+.ev-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+.ev-cols > div { overflow-x: auto; min-width: 0; }
+.ev-table { width: 100%; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.ev-table th, .ev-table td { padding: 3px 8px; text-align: left; border-bottom: 1px solid var(--line-soft); }
+.ev-table th { color: var(--text-dim); font-weight: 500; }
+.ev-table .num, .ev-table th:not(.g) { text-align: right; white-space: nowrap; }
+.ev-table td.g { font-family: "Noto Serif TC", "Noto Serif CJK TC", "Noto Sans CJK TC", serif; font-size: 15px; }

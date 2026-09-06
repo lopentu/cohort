@@ -29,10 +29,12 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
 
+from .attribution import FEATURE_SETS
 from .errors import (
     CohortError,
     EdgeNotFound,
@@ -711,6 +713,83 @@ def cmd_fetch(args) -> None:
     _emit(args, payload, render)
 
 
+# --- attribution evidence ---------------------------------------------------
+
+def _attribution(args):
+    from .attribution import AttributionIndex
+    root = args.radich or os.environ.get("RADICH_ROOT", "data/radich")
+    try:
+        return AttributionIndex.load(root)
+    except FileNotFoundError as e:
+        raise SystemExit(f"no Radich data at {root}: {e}\n(pass --radich PATH or set RADICH_ROOT)") from e
+
+
+def cmd_evidence(args) -> None:
+    index = _attribution(args)
+    if args.list:
+        payload = index.units()
+
+        def render_list(p):
+            for row in p["units"]:
+                flag = "  profiled" if row["profiled"] else ""
+                print(f"{row['uid']:<40}{row['label']:<16}{row['han_chars']:>8}{flag}")
+            print("\nledger")
+            for k, v in p["ledger"].items():
+                print(f"  {k:<58}{v:>7}")
+            for n in p["notes"]:
+                print(f"  note: {n}")
+        _emit(args, payload, render_list)
+        return
+    if not args.uid:
+        raise SystemExit("give a unit id (e.g. T0603), or --list")
+    pinned = tuple(x.strip() for x in args.pair.split(",")) if args.pair else None
+    if pinned is not None and len(pinned) != 2:
+        raise SystemExit("--pair takes exactly two class labels, e.g. --pair ASg,pre-Dhr-other")
+    try:
+        payload = index.evidence(
+            args.uid, args.features,
+            withhold=[u.strip() for u in args.withhold.split(",") if u.strip()],
+            offset=args.offset, pair=pinned,  # type: ignore[arg-type]
+        )
+    except (KeyError, ValueError) as e:
+        raise SystemExit(str(e.args[0] if e.args else e)) from e
+
+    def render(p):
+        print(f"{p['uid']}  catalogue label: {p['label']}  "
+              f"features: {p['features']} ({p['n_features']:,} strings)")
+        print(f"{p['han_chars']:,} Han characters ({p['code_points']:,} code points), "
+              f"{p['hits']:,} feature hits, {p['distinct']:,} distinct; "
+              f"{p['withheld_units']} unit(s) withheld from the profiles"
+              + (f" (incl. {', '.join(p['withheld_extra'])})" if p["withheld_extra"] else ""))
+        if p["verdict"] == "no evidence":
+            print("\nno evidence: not one string of this vocabulary occurs in the text. "
+                  "Nothing is ranked.")
+            return
+        flag = "  (LOW EVIDENCE: fewer than 10 distinct strings)" if p["verdict"] == "low evidence" else ""
+        print(f"\nleans {p['first']} over {p['second']}  "
+              f"margin {p['margin']:+.2f} log-odds per distinct string{flag}")
+        print("ranking: " + "  ".join(f"{r['label']} {r['delta']:+.0f}" for r in p["ranking"]))
+        thin = [f"{lab} ({v['units']} of {v['units_before_withholding']} units left)"
+                for lab, v in p["profiles"].items() if v["thin"]]
+        if thin:
+            print("thin profiles after withholding: " + "; ".join(thin))
+        if p["no_profile"]:
+            print("not judged: " + "; ".join(f"{n['label']} ({n['reason']})" for n in p["no_profile"]))
+        a, b = p["pair"]["a"], p["pair"]["b"]
+        print(f"\npainted pair: {a} (A) vs {b} (B); profiles hold "
+              f"{p['profiles'][a]['feature_tokens']:,} and {p['profiles'][b]['feature_tokens']:,} feature tokens")
+        w = max(len(a), len(b)) + 10
+        for side, key in ((a, "for"), (b, "against")):
+            print(f"\n  {'for ' + side:<20}{'hits':>6}{a + ' n /100k':>{w}}{b + ' n /100k':>{w}}{'weight':>8}")
+            for r in p[key]:
+                print(f"  {r['gram']:<20}{r['hits']:>6}"
+                      f"{str(r['count_a']) + ' ' + format(r['rate_a'], '.1f'):>{w}}"
+                      f"{str(r['count_b']) + ' ' + format(r['rate_b'], '.1f'):>{w}}{r['weight']:>+8.1f}")
+        print("\nRates are per 100,000 feature tokens in that profile (n = raw count), not per "
+              "100,000 characters.\nA leaning, not an attribution: the researcher reads the strings above.")
+    _emit(args, payload, render)
+
+
 # --- agent runs -------------------------------------------------------------
 
 def cmd_run(args) -> None:
@@ -1004,6 +1083,21 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-chars", type=int, default=8000)
     p.add_argument("--strip-markup", action="store_true",
                    help="display only — this breaks offsets, so never store the result")
+
+    p = add("evidence", cmd_evidence,
+            "where one text leans between translator profiles, and the strings that make it lean")
+    p.add_argument("uid", nargs="?", help="a unit id from Radich's catalogue, e.g. T0603")
+    p.add_argument("--features", choices=list(FEATURE_SETS), default="radich",
+                   help="his curated strings, the corpus's commonest strings, or both")
+    p.add_argument("--list", action="store_true",
+                   help="every unit with a base text, and the ledger of what was discarded")
+    p.add_argument("--withhold", default="", metavar="UNITS",
+                   help="comma-separated profiled unit ids to withhold as well (the sensitivity test)")
+    p.add_argument("--pair", default="", metavar="A,B",
+                   help="paint A vs B instead of the catalogue label vs its strongest rival")
+    p.add_argument("--offset", type=int, default=0, help="first character of the painted excerpt")
+    p.add_argument("--radich", default=None,
+                   help="the Radich data folder (default: $RADICH_ROOT, else data/radich)")
 
     p = add("run", cmd_run, "run one or more agents against the graph (spends money)")
     p.add_argument("--agent", action="append", metavar="INSTRUCTIONS",

@@ -43,6 +43,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
+from cohort.attribution import FEATURE_SETS, AttributionIndex
 from cohort.errors import (
     CohortError,
     EdgeNotFound,
@@ -79,6 +80,7 @@ def create_app(
     allow_writes: bool = False,
     source: Source | None = None,
     run_manager: RunManager | None = None,
+    attribution: AttributionIndex | None = None,
 ) -> FastAPI:
     """Build the app around one projection path.
 
@@ -102,7 +104,12 @@ def create_app(
     of this layer is parity.
 
     `run_manager` mounts the agent-run endpoints — the one part of the API that
-    can spend money. Off unless passed; see `cohort/ui/runs.py`."""
+    can spend money. Off unless passed; see `cohort/ui/runs.py`.
+
+    `attribution` mounts the translator-evidence endpoints over Radich's
+    pre-450 corpus (`cohort/attribution.py`). Read-only and lock-free like the
+    corpus routes; opt-in because the data behind it is licence-restricted
+    and lives outside the repository."""
     db_path = Path(db_path)
     log_path = Path(log_path) if log_path is not None else db_path.with_suffix(".jsonl")
     app = FastAPI(
@@ -130,6 +137,7 @@ def create_app(
                 "writes_enabled": allow_writes,
                 "corpus_enabled": source is not None,
                 "runs_enabled": run_manager is not None,
+                "evidence_enabled": attribution is not None,
             }
         finally:
             graph.close()
@@ -679,6 +687,55 @@ def create_app(
                 "text": text[:max_chars],
             }
 
+    # --- attribution evidence (read-only; parity with `cohort evidence`) ------
+
+    if attribution is not None:
+
+        @app.get("/api/evidence/units")
+        def evidence_units() -> dict[str, Any]:
+            """Every unit in Radich's catalogue that has a base text, with the
+            ledger of what profiling discarded and why. The ledger travels
+            with the list on purpose: a reader choosing a text should see how
+            many were dropped before trusting any leaning reported for one."""
+            return attribution.units()
+
+        @app.get("/api/evidence")
+        def evidence(
+            uid: str = Query(..., min_length=1),
+            features: str = Query(default="radich"),
+            withhold: str = Query(default="", description="comma-separated profiled unit ids to withhold as well"),
+            offset: int = Query(default=0, ge=0, description="first character of the painted excerpt"),
+            pair: str = Query(default="", description="'A,B': paint A vs B instead of label vs strongest rival"),
+        ) -> dict[str, Any]:
+            """Where one text leans between translator profiles, and the
+            strings and spans that make it lean. A leaning, never a verdict:
+            every profiled class is ranked and the margin is stated, and the
+            target's own Taishō work is withheld from the profiles before
+            anything is counted — see `cohort/attribution.py` for why.
+
+            `withhold` is the sensitivity test: remove further units (a
+            commentary suspected of quoting the target, say) and see whether
+            the leaning survives. `pair` pins which two classes the colours
+            compare, so the same text painted under two vocabularies means the
+            same thing in both."""
+            if features not in FEATURE_SETS:
+                raise HTTPException(
+                    status_code=422, detail=f"features must be one of {list(FEATURE_SETS)}",
+                )
+            extra = [u.strip() for u in withhold.split(",") if u.strip()]
+            pinned = tuple(p.strip() for p in pair.split(",") if p.strip()) if pair else None
+            if pinned is not None and len(pinned) != 2:
+                raise HTTPException(status_code=422, detail="pair must be exactly two class labels, 'A,B'")
+            try:
+                return attribution.evidence(
+                    uid, features, withhold=extra, offset=offset, pair=pinned,  # type: ignore[arg-type]
+                )
+            except KeyError as e:
+                # str(KeyError) wraps the message in quotes; the message is the detail.
+                raise HTTPException(status_code=404, detail=e.args[0]) from e
+            except ValueError as e:
+                raise HTTPException(status_code=422, detail=str(e)) from e
+
     # --- agent runs (the only endpoints that can spend money) ---------------
 
     if run_manager is not None:
@@ -835,6 +892,9 @@ def create_app(
 
         @app.get("/")
         def index() -> FileResponse:
-            return FileResponse(FRONTEND_DIR / "index.html")
+            # The bundle it references is content-hashed, so the only thing a
+            # browser must not cache is this page: a stale index.html loads a
+            # stale bundle after every rebuild (seen live, 2026-09-06).
+            return FileResponse(FRONTEND_DIR / "index.html", headers={"Cache-Control": "no-cache"})
 
     return app

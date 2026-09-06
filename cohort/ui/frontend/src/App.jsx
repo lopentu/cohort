@@ -3,6 +3,7 @@ import { getGraph, getHealth, getRefusals } from './api'
 import DetailPanel from './DetailPanel'
 import GraphView, { NODE_LEGEND } from './GraphView'
 import CorpusPanel from './CorpusPanel'
+import EvidencePanel from './EvidencePanel'
 import FindingsPanel from './FindingsPanel'
 import RefusalsPanel from './RefusalsPanel'
 import RunPanel from './RunPanel'
@@ -57,6 +58,7 @@ export default function App() {
     ['graph', 'Graph'],
     ['findings', 'Findings'],
     health?.corpus_enabled && ['corpus', 'Corpus'],
+    health?.evidence_enabled && ['evidence', 'Evidence'],
     health?.runs_enabled && ['run', 'Inquiry'],
   ].filter(Boolean)
 
@@ -192,6 +194,7 @@ export default function App() {
                 onCite={(phrase) => { setAgentSeed(phrase); goTab('run') }}
               />
             )}
+            {tab === 'evidence' && <EvidencePanel />}
             {tab === 'run' && (
               <RunPanel instructionSeed={agentSeed} onGraphChanged={reload} />
             )}
