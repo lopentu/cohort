@@ -2025,3 +2025,16 @@ a.cbeta-link.block:hover { color: var(--text); }
 .ev-table th { color: var(--text-dim); font-weight: 500; }
 .ev-table .num, .ev-table th:not(.g) { text-align: right; white-space: nowrap; }
 .ev-table td.g { font-family: "Noto Serif TC", "Noto Serif CJK TC", "Noto Sans CJK TC", serif; font-size: 15px; }
+
+/* --- tab intros ------------------------------------------------------------ */
+/* One short explainer at the top of every tab, collapsible and remembered.
+   Quiet by design: a border and dim text, never a card, so it reads as a
+   caption to the tab rather than as content competing with it. */
+.tab-intro { margin: 14px 18px 0; border-left: 2px solid var(--line); padding-left: 12px; flex: none; }
+.tab-intro-toggle { display: flex; gap: 12px; align-items: baseline; width: 100%; background: none; border: 0; padding: 2px 0; color: var(--text); font: inherit; cursor: pointer; text-align: left; }
+.tab-intro-toggle:focus-visible { outline: 2px solid var(--supports); outline-offset: 2px; border-radius: 3px; }
+.tab-intro-title { font-size: 13px; font-weight: 650; }
+.tab-intro-hint { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
+.tab-intro-body { margin: 6px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 6px 20px; max-width: 1100px; }
+.tab-intro-body dt { font-size: 12px; font-weight: 600; color: var(--text-dim); margin: 0; }
+.tab-intro-body dd { font-size: 12.5px; line-height: 1.5; color: var(--text-dim); margin: 1px 0 0; }

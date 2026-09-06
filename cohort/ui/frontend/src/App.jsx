@@ -9,6 +9,7 @@ import RefusalsPanel from './RefusalsPanel'
 import RunPanel from './RunPanel'
 import Settings, { applyTheme, loadTheme } from './Settings'
 import StatsBar from './StatsBar'
+import TabIntro from './TabIntro'
 import { EDGE_STYLE, legendFor } from './graph-model'
 import { usePresence, useSlidingIndicator } from './motion'
 
@@ -172,6 +173,7 @@ export default function App() {
           <div className="tab-panel" key={tab} data-dir={tabDir}>
             {tab === 'graph' && (
               <>
+                <TabIntro tab="graph" />
                 <Legend data={data} showAudit={showAudit} />
                 <GraphView
                   data={data}
@@ -184,17 +186,21 @@ export default function App() {
                 )}
               </>
             )}
+            {tab === 'findings' && <TabIntro tab="findings" />}
             {tab === 'findings' && (
               <FindingsPanel
                 onSelect={(id) => { setSelectedId(id); goTab('graph') }}
               />
             )}
+            {tab === 'corpus' && <TabIntro tab="corpus" />}
             {tab === 'corpus' && (
               <CorpusPanel
                 onCite={(phrase) => { setAgentSeed(phrase); goTab('run') }}
               />
             )}
+            {tab === 'evidence' && <TabIntro tab="evidence" />}
             {tab === 'evidence' && <EvidencePanel />}
+            {tab === 'run' && <TabIntro tab="run" />}
             {tab === 'run' && (
               <RunPanel instructionSeed={agentSeed} onGraphChanged={reload} />
             )}
