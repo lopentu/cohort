@@ -29,6 +29,12 @@ from typing import Any
 from cohort.graph import Graph
 from cohort.schemas import AgentProfile, EdgeType, NodeType
 from cohort.sources.base import Source
+from cohort.tools.align_passages import DESCRIPTION as ALIGN_PASSAGES_DESCRIPTION
+from cohort.tools.align_passages import NAME as ALIGN_PASSAGES_NAME
+from cohort.tools.align_passages import AlignPassagesInput, align_passages
+from cohort.tools.attribution_evidence import DESCRIPTION as ATTRIBUTION_EVIDENCE_DESCRIPTION
+from cohort.tools.attribution_evidence import NAME as ATTRIBUTION_EVIDENCE_NAME
+from cohort.tools.attribution_evidence import AttributionEvidenceInput, attribution_evidence
 from cohort.tools.collate_editions import DESCRIPTION as COLLATE_EDITIONS_DESCRIPTION
 from cohort.tools.collate_editions import NAME as COLLATE_EDITIONS_NAME
 from cohort.tools.collate_editions import CollateEditionsInput, collate_editions
@@ -47,6 +53,9 @@ from cohort.tools.propose_conjecture import ProposeConjectureInput, propose_conj
 from cohort.tools.record_contradiction import DESCRIPTION as RECORD_CONTRADICTION_DESCRIPTION
 from cohort.tools.record_contradiction import NAME as RECORD_CONTRADICTION_NAME
 from cohort.tools.record_contradiction import RecordContradictionInput, record_contradiction
+from cohort.tools.semantic_neighbors import DESCRIPTION as SEMANTIC_NEIGHBORS_DESCRIPTION
+from cohort.tools.semantic_neighbors import NAME as SEMANTIC_NEIGHBORS_NAME
+from cohort.tools.semantic_neighbors import SemanticNeighborsInput, semantic_neighbors
 
 from .openrouter import (
     DEFAULT_MAX_OUTPUT_TOKENS,
@@ -58,7 +67,7 @@ from .openrouter import (
 
 #: bump whenever SYSTEM_PROMPT or TOOLS changes shape, so logged model_call
 #: events can be grouped by which prompt/tool contract actually produced them.
-PROMPT_VERSION = "attestation_worker/v5-stage4-tools"
+PROMPT_VERSION = "attestation_worker/v6-evidence-tools"
 
 SYSTEM_PROMPT = (
     "You are an attestation worker in COHORT, an evidence graph for textual "
@@ -194,6 +203,56 @@ TOOLS = [
 ]
 
 
+#: The evidence tools are read-only views over Radich's corpus and its
+#: embeddings. They are registered per worker, only when the server was given
+#: that data (`attribution`, `embeddings`), because a tool that always answers
+#: "not configured" teaches a model to stop calling tools.
+EVIDENCE_TOOLS = {
+    ATTRIBUTION_EVIDENCE_NAME: {
+        "type": "function",
+        "function": {
+            "name": ATTRIBUTION_EVIDENCE_NAME,
+            "description": ATTRIBUTION_EVIDENCE_DESCRIPTION,
+            "parameters": AttributionEvidenceInput.model_json_schema(),
+        },
+    },
+    ALIGN_PASSAGES_NAME: {
+        "type": "function",
+        "function": {
+            "name": ALIGN_PASSAGES_NAME,
+            "description": ALIGN_PASSAGES_DESCRIPTION,
+            "parameters": AlignPassagesInput.model_json_schema(),
+        },
+    },
+    SEMANTIC_NEIGHBORS_NAME: {
+        "type": "function",
+        "function": {
+            "name": SEMANTIC_NEIGHBORS_NAME,
+            "description": SEMANTIC_NEIGHBORS_DESCRIPTION,
+            "parameters": SemanticNeighborsInput.model_json_schema(),
+        },
+    },
+}
+
+#: Appended to the system prompt when the evidence tools are present: the
+#: contract that keeps a model from turning a frequency table into a verdict.
+EVIDENCE_CONTRACT = (
+    "\n\nYou also have read-only evidence tools over Radich's corpus. "
+    "attribution_evidence reports where one unit's short strings lean between "
+    "translator profiles, with raw counts; semantic_neighbors finds passages in "
+    "other works with the same content; align_passages measures verbatim overlap "
+    "between two units, with offsets you can cite. Chain them: a leaning, then the "
+    "texts it might depend on, then the overlap that would explain it, then "
+    "attribution_evidence again with the dependent unit withheld. Never propose a "
+    "translator as a claim: the tools give a leaning, not an attribution. Propose "
+    "what the corpus can settle -- that one text reproduces another's wording, "
+    "cited by the shared run -- as a claim, and anything about who translated a "
+    "text only as a conjecture whose refutation test is the recomputation with the "
+    "dependent unit withheld. State two explanations where two exist: a shared hand, "
+    "and a shared source or quotation."
+)
+
+
 class AttestationWorker:
     #: The three pieces that make this worker *this* role, as class attributes
     #: so a differently-roled agent can be a subclass rather than a copy of the
@@ -204,6 +263,7 @@ class AttestationWorker:
     SYSTEM_PROMPT = SYSTEM_PROMPT
     TOOLS = TOOLS
     PROMPT_VERSION = PROMPT_VERSION
+    EVIDENCE_TOOLS_ALLOWED = True
 
     def __init__(
         self,
@@ -218,7 +278,21 @@ class AttestationWorker:
         max_output_tokens: int | None = DEFAULT_MAX_OUTPUT_TOKENS,
         reasoning_effort: str | None = None,
         question_id: str | None = None,
+        attribution=None,
+        embeddings=None,
     ) -> None:
+        self.attribution = attribution
+        self.embeddings = embeddings
+        # The tool list is per instance: the role's tools, plus the evidence
+        # tools when their data is present. A reviewer keeps its own list.
+        self.tools = list(self.TOOLS)
+        self.system_prompt = self.SYSTEM_PROMPT
+        if self.EVIDENCE_TOOLS_ALLOWED and attribution is not None:
+            self.tools.append(EVIDENCE_TOOLS[ATTRIBUTION_EVIDENCE_NAME])
+            self.tools.append(EVIDENCE_TOOLS[ALIGN_PASSAGES_NAME])
+            if embeddings is not None:
+                self.tools.append(EVIDENCE_TOOLS[SEMANTIC_NEIGHBORS_NAME])
+            self.system_prompt = self.SYSTEM_PROMPT + EVIDENCE_CONTRACT
         if model is None or api_key is None:
             config_key, config_model = load_openrouter_config()
             api_key = api_key if api_key is not None else config_key
@@ -295,7 +369,7 @@ class AttestationWorker:
         ]
         full_instructions = "\n\n".join([*parts, instructions]) if parts else instructions
         messages: list[dict] = [
-            {"role": "system", "content": self.SYSTEM_PROMPT},
+            {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": full_instructions},
         ]
         log: list[dict[str, Any]] = []
@@ -305,7 +379,7 @@ class AttestationWorker:
                 break
             started = time.monotonic()
             response = await asyncio.to_thread(
-                complete, self.model, messages, self.TOOLS, api_key=self.api_key,
+                complete, self.model, messages, self.tools, api_key=self.api_key,
                 transport=self.transport, max_output_tokens=self.max_output_tokens,
                 reasoning_effort=self.reasoning_effort,
             )
@@ -428,6 +502,21 @@ class AttestationWorker:
                 return False, record_contradiction(
                     self.graph, parsed, authored_by=self.authored_by,
                     model_call_id=model_call_id,
+                )
+            # The evidence tools read and never write, so a failure is reported
+            # to the model and logged like any other refused call, but it is
+            # not a write-boundary refusal.
+            if name == ATTRIBUTION_EVIDENCE_NAME and self.attribution is not None:
+                return False, attribution_evidence(
+                    self.attribution, AttributionEvidenceInput.model_validate(args),
+                )
+            if name == ALIGN_PASSAGES_NAME and self.attribution is not None:
+                return False, align_passages(
+                    self.attribution, AlignPassagesInput.model_validate(args),
+                )
+            if name == SEMANTIC_NEIGHBORS_NAME and self.embeddings is not None and self.attribution is not None:
+                return False, semantic_neighbors(
+                    self.embeddings, self.attribution, SemanticNeighborsInput.model_validate(args),
                 )
             return True, f"unknown tool: {name}"
         except Exception as e:

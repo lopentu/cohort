@@ -106,6 +106,8 @@ class ReviewWorker(AttestationWorker):
     SYSTEM_PROMPT = REVIEW_PROMPT
     TOOLS = REVIEW_TOOLS
     PROMPT_VERSION = REVIEW_PROMPT_VERSION
+    #: A reviewer checks citations; it does not gather evidence of its own.
+    EVIDENCE_TOOLS_ALLOWED = False
 
     def _dispatch(self, name: str, args: dict, model_call_id: int | None = None) -> tuple[bool, object]:
         try:

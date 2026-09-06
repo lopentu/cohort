@@ -17,6 +17,10 @@ dev = ["pytest>=8.0", "httpx>=0.27"]
 # already made"), same pattern as `dev`. `cohort/ui/` is the only place that
 # may import from it.
 ui = ["fastapi>=0.110", "uvicorn[standard]>=0.27"]
+# The semantic-neighbours tool reads precomputed window embeddings (an .npz
+# written by a frozen encoder elsewhere). numpy is needed only to read them
+# and take dot products; the core and every other tool stay standard-library.
+evidence = ["numpy>=1.26"]
 # The agent/LLM layer (cohort/agents/) uses OpenRouter over stdlib
 # urllib.request, not a client library — see cohort/agents/openrouter.py's
 # module docstring for why. No extra needed for it.

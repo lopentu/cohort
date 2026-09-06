@@ -155,6 +155,51 @@ confirmations is precisely the error this system exists to prevent, so it is
 reported as one shared-descent family. The verification always carries
 `limitations` stating what collation did not establish.
 
+## The evidence tools a worker may call (with `--radich`)
+
+Three read-only tools over Radich's pre-450 corpus, registered on a worker only
+when the server was started with `--radich PATH` (and, for the third, with
+`EVIDENCE_EMBEDDINGS_PATH` set). They write nothing, so the write boundary
+never sees them; what a model reads from them becomes structure only through
+`propose_claim` and `propose_conjecture`, where the rules bite. Their system
+prompt addendum (`EVIDENCE_CONTRACT`) forbids proposing a translator as a
+claim: the tools give a leaning, not an attribution.
+
+They are meant to be chained, and each output carries what the next needs:
+
+    attribution_evidence(uid)              -> a leaning, and the strings behind it
+    semantic_neighbors(uid)                -> other works whose passages read like it
+    align_passages(uid, neighbour)         -> verbatim overlap, with citable offsets
+    attribution_evidence(uid, withhold=[neighbour])  -> does the leaning survive?
+
+### `attribution_evidence`
+
+What the Evidence tab shows, minus the painted text: verdict (`leans` /
+`low evidence` / `no evidence`), leader and runner-up with margin, the painted
+pair and the strings pulling each way with **raw counts** in each profile, the
+units and feature tokens left in every class after the target's own Taishō
+work was withheld, and provenance (file hashes, code version). `withhold`
+removes further units first — the sensitivity test. `features` chooses Radich's
+curated strings or the label-free vocabulary drawn from grey texts.
+
+### `semantic_neighbors`
+
+For each 400-character window of the unit, the most similar windows in *other*
+works by a frozen Buddhist-Chinese encoder, with excerpts of both sides, and a
+tally of which unit the nearest window belongs to across all windows. Same-work
+windows are always excluded. The encoder is at the largest-class baseline for
+translator identity, so the tally is content likeness, never attribution; its
+use is to surface quotation, parallels and commentary — the dependencies that
+make string counts non-independent.
+
+### `align_passages`
+
+The share of one unit's ten-character strings found verbatim in another, both
+ways, and the longest shared runs with offsets into each original text.
+Computed on Han characters only: CBETA's punctuation and line breaks are
+editorial and would break every run (T0603/T1694 read as 11% with them in and
+65% with a 279-character run without). Under 1% is what unrelated texts show.
+
 ## The reviewer's tool
 
 ### `review_claim`

@@ -350,10 +350,16 @@ class RunManager:
         max_turns: int = DEFAULT_MAX_TURNS,
         max_agents: int = DEFAULT_MAX_AGENTS,
         transport_factory=None,
+        attribution=None,
+        embeddings=None,
     ) -> None:
         self.db_path = db_path
         self.log_path = log_path
         self.source = source
+        #: Radich's attribution index and the window embeddings, when the
+        #: server has them; workers register the evidence tools only then.
+        self.attribution = attribution
+        self.embeddings = embeddings
         self.max_budget_usd = max_budget_usd
         self.max_turns = max_turns
         self.max_agents = max_agents
@@ -593,6 +599,7 @@ class RunManager:
                     graph, source=self.source, authored_by=spec.agent_id,
                     profile=profile, transport=transport, model=spec.model,
                     question_id=run.question_id,
+                    attribution=self.attribution, embeddings=self.embeddings,
                 ), spec.instructions
 
             workers = [s for s in run.specs if not s.is_reviewer]

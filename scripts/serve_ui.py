@@ -142,6 +142,19 @@ def main() -> None:
         led = attribution.units()["ledger"]
         print(f"evidence: {led['kept for profiling']} units in {led['classes profiled']} classes "
               f"profiled ({time.time() - t0:.0f}s; cached beside the data for next time)")
+        if run_manager is not None:
+            # Agents get the evidence tools only when the data behind them is here.
+            from cohort.embeddings import EmbeddingIndex
+
+            run_manager.attribution = attribution
+            try:
+                run_manager.embeddings = EmbeddingIndex.from_env()
+            except (FileNotFoundError, ValueError, RuntimeError) as e:
+                print(f"note: semantic_neighbors disabled — {e}", file=sys.stderr)
+            tools = ["attribution_evidence", "align_passages"] + (
+                ["semantic_neighbors"] if run_manager.embeddings is not None else []
+            )
+            print(f"  agent evidence tools: {', '.join(tools)}")
 
     if not FRONTEND_DIR.is_dir():
         print(
