@@ -70,7 +70,7 @@ Everything below is rebased onto that and open as pull requests, in this order:
 | #7 | `feat/tab-intros` | #5 | a collapsible plain-language intro at the top of every tab |
 | #8 | `feat/experiment-scripts` | #5 | `scripts/experiments/`: every number in the talk as a script over the library |
 | #9 | `feat/evidence-pair-link` | #7 | `#uid=…&pair=A,B` pins the painted pair; a repaint box in the tab |
-| #10 | `docs/handoff-2026-09-07` | #9 | this document and the doc updates around it |
+| #11 | `docs/handoff-2026-09-07` | #9 | this document and the doc updates around it |
 
 Merge in numeric order; #6 can go any time after #2. `data/` is git-ignored and
 must stay so (Radich's corpus is his unpublished modification of CBETA).
