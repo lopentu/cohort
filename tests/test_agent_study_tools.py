@@ -164,3 +164,62 @@ def test_no_tool_count_is_asserted_in_the_system_prompt():
     prompt = AttestationWorker.SYSTEM_PROMPT.lower()
     for w in (*words, *(str(i) for i in range(1, 21))):
         assert f"{w} tools" not in prompt, f"the prompt states a tool count: {w!r}"
+
+
+def test_a_registered_discriminator_is_linked_to_the_question_it_answers(
+    graph, study,
+):
+    """Every other assertion this worker proposes gets an `addresses` edge;
+    `register_discriminator` was the one that skipped it, and the cost was
+    visible on the graph view — twenty-two candidate features, each floating
+    with its own query and connected to nothing else, drawn as twenty-two
+    disconnected pairs. A candidate feature IS an answer to the question that
+    prompted it."""
+    from cohort.schemas import RESEARCHER, EdgeType, QuestionPayload
+
+    qid = graph.ask_question(
+        QuestionPayload(
+            text="Which features distinguish the bench group?",
+            answerable_by="feature counts over the fixture corpus",
+        ),
+        authored_by=RESEARCHER,
+    )
+    w = worker(graph, study=study, question_id=qid)
+    is_error, out = w._dispatch(
+        "register_discriminator",
+        {
+            "feature": "阿黎耶",
+            "derivation": "a discourse particle, not doctrinal vocabulary",
+            "corpus_boundary": "the fixture corpus, base edition 大",
+            "selection_risks": "chosen by hand",
+            "alternative_explanations": "may track subject matter",
+            "min_benchmark_share": 0.6,
+            "max_control_share": 0.1,
+        },
+        None,
+    )
+    assert not is_error, out
+    cid = out["conjecture_id"]
+    addressed = [
+        e.dst for e in graph.edges(edge_type=EdgeType.ADDRESSES, src=cid)
+    ]
+    assert addressed == [qid]
+
+
+def test_a_run_with_no_question_still_registers(graph, study):
+    """`_address` is a no-op without a question id and swallows its own
+    failures on purpose — a missing edge must not turn a successful proposal
+    into a tool error and invite the model to propose it again."""
+    w = worker(graph, study=study)
+    is_error, out = w._dispatch(
+        "register_discriminator",
+        {
+            "feature": "波羅蜜",
+            "derivation": "d", "corpus_boundary": "b",
+            "selection_risks": "r", "alternative_explanations": "a",
+            "min_benchmark_share": 0.6, "max_control_share": 0.1,
+        },
+        None,
+    )
+    assert not is_error, out
+    assert graph.get_node(out["conjecture_id"]).type == "conjecture"

@@ -164,7 +164,7 @@ const GROUPS = [
   ['discarded', 'Discarded by the control',
     'Failed against works believed not to belong, so it tracks something other than membership of the group. Kept on the page: these are the rows that make the ratio above mean anything.'],
   ['other', 'Other hypotheses',
-    'Claims and conjectures that are not candidate discriminators, so no control applies to them.'],
+    'Hypotheses that are not candidate discriminators, so no control applies to them.'],
 ]
 
 //: Discarded features are the majority of a real ledger — twenty-two candidates
@@ -206,7 +206,7 @@ function Hypotheses({ findings, onSelect }) {
         Hypotheses <span className="refusal-total">{findings.count}</span>
       </h2>
       <p className="hint small">
-        Every claim and conjecture, grouped by what became of it and{' '}
+        Every hypothesis, grouped by what became of it and{' '}
         <strong>not ranked</strong> inside a group. Sorting these by how much
         attests them would be a confidence score under another name.
       </p>

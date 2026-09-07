@@ -33,8 +33,8 @@ const ACTIVE = new Set(['starting', 'running'])
 // browser cannot know it at configuration time. So this is a real default, not
 // placeholder text the researcher has to replace.
 const REVIEWER_TASK =
-  'Review each pending claim: re-check that its cited passages say what it '
-  + 'claims they say, and give a verdict.'
+  'Review each pending hypothesis: re-check that its cited passages say what '
+  + 'it claims they say, and give a verdict.'
 
 export default function RunPanel({ instructionSeed, onGraphChanged }) {
   const [config, setConfig] = useState(null)
@@ -193,7 +193,7 @@ export default function RunPanel({ instructionSeed, onGraphChanged }) {
               <span>Task</span>
               <textarea
                 rows={3}
-                placeholder="e.g. Find attestations for 色即是空 and propose one claim about how it is distributed."
+                placeholder="e.g. Find attestations for 色即是空 and propose one hypothesis about how it is distributed."
                 value={a.instructions}
                 onChange={(e) => update(i, { instructions: e.target.value })}
               />
@@ -277,7 +277,7 @@ export default function RunPanel({ instructionSeed, onGraphChanged }) {
             other&apos;s work. Each needs its own model family: two agents on
             one model share priors, so their agreement would be one observation
             reported twice. No agent may attest a claim it wrote, so without a
-            reviewer a run&apos;s claims stop at <em>proposed</em> &mdash;
+            reviewer a run&apos;s hypotheses stop at <em>proposed</em> &mdash;
             waiting for a reviewer on another provider, or for you to check
             them yourself.
             {agents.length > 1 && (config.models || []).length < agents.length && (
@@ -537,13 +537,13 @@ function AutoPlan({ config, question }) {
         <p className="hint small">
           The last seat is a reviewer rather than a third worker. No agent may
           attest a claim it wrote, so without one on another provider every
-          claim this run proposes stops at <em>proposed</em> &mdash; a pile of
+          hypothesis this run proposes stops at <em>proposed</em> &mdash; a pile of
           assertions with nothing having checked them.
         </p>
       ) : (
         <p className="warn small">
           One model family is configured, so there is no reviewer to be had and
-          this run's claims will stop at <em>proposed</em>. Set
+          this run's hypotheses will stop at <em>proposed</em>. Set
           <code>OPENROUTER_MODELS</code> to a second provider, or check them
           yourself afterwards.
         </p>

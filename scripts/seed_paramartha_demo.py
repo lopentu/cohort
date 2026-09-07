@@ -139,6 +139,13 @@ def main() -> None:
             ),
             catalogue=catalogue, authored_by=AGENT,
         )
+        # The seed writes tools directly rather than through a worker, so the
+        # `addresses` edge the worker's `_address` would draw has to be drawn
+        # here. Without it the graph is a starfield: every candidate feature
+        # floating with its own query, connected to nothing.
+        graph.add_edge(
+            EdgeType.ADDRESSES, out["conjecture_id"], question_id, authored_by=AGENT,
+        )
         res = run_control_test(
             graph, corpus, out["conjecture_id"], catalogue=catalogue, authored_by=AGENT,
         )

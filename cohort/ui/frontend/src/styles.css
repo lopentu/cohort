@@ -2274,21 +2274,28 @@ a.cbeta-link.block:hover { color: var(--text); }
 /* Every work gets one, because the question has two branches and a row that
    answered only the first was blank three times out of four. `unplaced` is
    deliberately the quietest: a work the method could not place must not look
-   like a work shown not to belong. */
-.verdict {
+   like a work shown not to belong.
+
+   `assoc-verdict`, not `verdict`: that name was already the researcher-decision
+   <section> in DetailPanel, and this rule landed on it — a 999px radius, a
+   filled background and `white-space: nowrap` applied to a whole panel, which
+   drew a giant pill behind the Attest/Accept/Reject buttons and clipped the
+   ladder explanation instead of wrapping it. A generic name in a single global
+   stylesheet is a collision waiting for whichever component is styled second. */
+.assoc-verdict {
   flex: none; font-size: 10.5px; letter-spacing: 0.02em;
   padding: 2px 8px; border-radius: 999px; white-space: nowrap;
   border: 1px solid var(--line); color: var(--text-dim); background: var(--fill-1);
 }
-.verdict.v-associates {
+.assoc-verdict.v-associates {
   border-color: color-mix(in srgb, var(--accepted) 55%, transparent);
   color: var(--accepted);
 }
-.verdict.v-weak {
+.assoc-verdict.v-weak {
   border-color: color-mix(in srgb, var(--discounts) 50%, transparent);
   color: var(--discounts);
 }
-.verdict.v-alternate {
+.assoc-verdict.v-alternate {
   border-color: color-mix(in srgb, var(--tests) 50%, transparent);
   color: var(--tests);
 }

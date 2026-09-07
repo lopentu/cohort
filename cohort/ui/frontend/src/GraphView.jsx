@@ -41,7 +41,8 @@ const TYPE_SHAPE = {
 }
 
 // Node colour carries MEANING, not just status, so the types stop reading alike:
-//   * a claim/conjecture is GREEN only when >=2 independent witnesses corroborate
+//   * a hypothesis (claim or conjecture) is GREEN only when >=2 independent
+//     witnesses corroborate
 //     it, YELLOW when nothing attests it / it is single-sourced / its witnesses
 //     collapse to one via shared descent, RED when it is contradicted or
 //     rejected — computed here from the edges;
@@ -63,16 +64,79 @@ const NODE_COLORS = {
   against:      { fill: '#ff453a', text: INK_LIGHT },
 }
 
-// The node-colour key, for the legend.
-export const NODE_LEGEND = [
-  { key: 'claim — supported', color: NODE_COLORS.supported.fill },
-  { key: 'claim — insufficient evidence', color: NODE_COLORS.insufficient.fill },
-  { key: 'claim — contradicted', color: NODE_COLORS.against.fill },
-  { key: 'source text', color: NODE_COLORS.witness.fill },
-  { key: 'passage', color: NODE_COLORS.passage.fill },
-  { key: 'query', color: NODE_COLORS.query.fill },
-  { key: 'question', color: NODE_COLORS.question.fill },
+// What a conjecture turned out to be, when the server says so — see
+// `views.assessments`. This channel exists because the edge-derived verdict
+// below is blind to an ascription study: those conjectures are settled by
+// measurement and carry no attesting passages, so all twenty-two of them
+// rendered identical yellow whether their control had been survived, failed,
+// or never run.
+//
+// `unplaced` is deliberately the same yellow as `insufficient`: in both cases
+// the method could not see the thing, which is not a finding against it.
+// `alternate` gets violet — the `tests` hue — because it points somewhere
+// else rather than confirming or denying anything here.
+const ASSESSMENT_COLORS = {
+  survived:   NODE_COLORS.supported,
+  discarded:  NODE_COLORS.against,
+  untested:   { fill: '#8e8e96', text: INK_LIGHT },
+  associates: NODE_COLORS.supported,
+  weak:       { fill: '#ff9f0a', text: INK_DARK },
+  alternate:  { fill: '#bf5af2', text: INK_LIGHT },
+  unplaced:   NODE_COLORS.insufficient,
+}
+
+//: The whole node-colour vocabulary. `types` is what has to be on screen for
+//: an entry to be worth showing, and `states` likewise — see `nodeLegendFor`.
+//:
+//: **`hypothesis`, not `claim`.** These three entries colour a `claim` *or* a
+//: `conjecture`, and calling the pair "claim" was wrong twice over: it is the
+//: name of one of the two, and Findings has always called them hypotheses.
+//: `claim` and `conjecture` stay the node types in the graph and in the
+//: vocabulary — they carry different rules, and a refusal still names which —
+//: but where the UI means "either of them" it now says hypothesis.
+//:
+//: `feature` and `work` name what a hypothesis is *about* rather than
+//: repeating `hypothesis` ten times down a horizontal key. They are
+//: hypotheses too; the subject is the informative half.
+const NODE_LEGEND_ALL = [
+  { key: 'hypothesis — supported', color: NODE_COLORS.supported.fill, types: ['claim', 'conjecture'] },
+  { key: 'hypothesis — insufficient evidence', color: NODE_COLORS.insufficient.fill, types: ['claim', 'conjecture'] },
+  { key: 'hypothesis — contradicted', color: NODE_COLORS.against.fill, types: ['claim', 'conjecture'] },
+  { key: 'feature — survived its control', color: ASSESSMENT_COLORS.survived.fill, states: ['survived'] },
+  { key: 'feature — discarded by its control', color: ASSESSMENT_COLORS.discarded.fill, states: ['discarded'] },
+  { key: 'feature — control not run', color: ASSESSMENT_COLORS.untested.fill, states: ['untested'] },
+  { key: 'work — associates with the benchmark', color: ASSESSMENT_COLORS.associates.fill, states: ['associates'] },
+  { key: 'work — weak association', color: ASSESSMENT_COLORS.weak.fill, states: ['weak'] },
+  { key: 'work — alternate reference point', color: ASSESSMENT_COLORS.alternate.fill, states: ['alternate'] },
+  { key: 'work — not placed', color: ASSESSMENT_COLORS.unplaced.fill, states: ['unplaced'] },
+  { key: 'source text', color: NODE_COLORS.witness.fill, types: ['witness'] },
+  { key: 'passage', color: NODE_COLORS.passage.fill, types: ['passage'] },
+  { key: 'query', color: NODE_COLORS.query.fill, types: ['query'] },
+  { key: 'question', color: NODE_COLORS.question.fill, types: ['question'] },
 ]
+
+// The key for *this* graph, not the vocabulary — the same discipline
+// `legendFor` applies to edges. Ten node colours listed against a graph that
+// draws four is a legend a reader has to filter by hand, and one that offers
+// "survived its control" where no control was ever run is describing a
+// different study.
+export function nodeLegendFor(nodes, showAudit) {
+  const shown = nodes.filter((n) => isVisible(n, showAudit))
+  const types = new Set(shown.map((n) => n.type))
+  const states = new Set(shown.map((n) => n.assessment?.state).filter(Boolean))
+  return NODE_LEGEND_ALL.filter((entry) => {
+    // A conjecture the server has assessed is drawn by its assessment, so the
+    // three edge-derived entries must not claim it.
+    if (entry.types) {
+      const assessed = entry.types.some((t) => t === 'claim' || t === 'conjecture')
+      if (assessed && !shown.some((n) => entry.types.includes(n.type) && !n.assessment)) {
+        return false
+      }
+      return entry.types.some((t) => types.has(t))
+    }
+    return entry.states.some((st) => states.has(st))
+  })
+}
 
 // A claim/conjecture's verdict from the graph edges: contradicted or rejected ->
 // 'against'; nothing attests it (or only shared-descent witnesses do) ->
@@ -121,6 +185,15 @@ function claimVerdicts(nodes, edges) {
   return verdict
 }
 
+// Which colour a node takes, and the precedence when two channels both have
+// something to say.
+//
+// A server-side `assessment` wins over the edge-derived verdict, because it is
+// the result of a test that was actually run — a negative control, or a
+// measurement against the canon — while the edge count is an inference from
+// what happens to be drawn. But `rejected` and `contradicted` still win over
+// both: a researcher's rejection is not overturned by a feature having
+// survived its control.
 function nodeColorKey(node, verdicts) {
   switch (node.type) {
     case 'witness': return 'witness'
@@ -130,9 +203,25 @@ function nodeColorKey(node, verdicts) {
     case 'verification':
     case 'decision': return 'audit'
     case 'claim':
-    case 'conjecture': return verdicts.get(node.id) || 'insufficient'
+    case 'conjecture': {
+      const edgeVerdict = verdicts.get(node.id)
+      if (edgeVerdict === 'against') return 'against'
+      if (node.assessment && ASSESSMENT_COLORS[node.assessment.state]) {
+        return `assessment:${node.assessment.state}`
+      }
+      return edgeVerdict || 'insufficient'
+    }
     default: return 'audit'
   }
+}
+
+//: One lookup over both palettes, so `buildNodes` does not have to know which
+//: channel produced the key.
+function colorFor(key) {
+  if (key.startsWith('assessment:')) {
+    return ASSESSMENT_COLORS[key.slice('assessment:'.length)]
+  }
+  return NODE_COLORS[key]
 }
 
 // edge type -> colour / weight / dash, mirroring EDGE_STYLE + styles.css.
@@ -157,7 +246,7 @@ function truncate(s, n) {
 
 function buildNodes(nodes, showAudit, p, verdicts) {
   return nodes.filter((n) => isVisible(n, showAudit)).map((n) => {
-    const c = NODE_COLORS[nodeColorKey(n, verdicts)]
+    const c = colorFor(nodeColorKey(n, verdicts))
     const dashes = n.status === 'proposed' ? [4, 3] : false   // unchecked cue
     const width = n.status === 'accepted' ? 3.5 : 1.5          // citable weight
     return {
@@ -176,8 +265,12 @@ function buildNodes(nodes, showAudit, p, verdicts) {
       font: { color: c.text, size: 14, face: 'system-ui' },
       margin: 7,
       widthConstraint: { maximum: 150 },
-      // hover tooltip; the click opens the full DetailPanel inspector
-      title: `${n.type} · ${n.status}${n.assurance ? ' · ' + n.assurance : ''}`,
+      // hover tooltip; the click opens the full DetailPanel inspector.
+      // The assessment's own sentence rather than its state
+      // word, because "unplaced" and "discarded" are easy to read as the
+      // same kind of negative and are not.
+      title: `${n.type} · ${n.status}${n.assurance ? ' · ' + n.assurance : ''}`
+        + (n.assessment ? `\n${n.assessment.detail}` : ''),
     }
   })
 }

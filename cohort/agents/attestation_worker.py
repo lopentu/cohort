@@ -706,11 +706,20 @@ class AttestationWorker:
             )
         study, catalogue = self.study, self.study.catalogue
         if name == REGISTER_NAME:
-            return False, register_discriminator(
+            out = register_discriminator(
                 self.graph, RegisterDiscriminatorInput.model_validate(args),
                 catalogue=catalogue, authored_by=self.authored_by,
                 model_call_id=model_call_id,
             )
+            # Through `_address`, like every other assertion this worker
+            # proposes. It was the one that skipped it, and the cost showed on
+            # the graph view: twenty-two registered discriminators, each with
+            # its query and attached to nothing else, drew as twenty-two
+            # disconnected dyads. A candidate feature IS an answer to the
+            # question that prompted it, and saying so is what makes the
+            # picture one inquiry rather than scattered debris.
+            self._address(out["conjecture_id"], model_call_id)
+            return False, out
         if name == CONTROL_NAME:
             parsed = RunControlTestInput.model_validate(args)
             out = run_control_test(

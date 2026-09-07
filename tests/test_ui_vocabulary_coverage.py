@@ -127,3 +127,52 @@ def test_a_run_prediction_is_not_drawn_as_an_open_one(model):
             f"{outcome} reuses the unrun style, so a run prediction still "
             "draws as an open one"
         )
+
+
+# --- one word for the pair ---------------------------------------------------
+
+GRAPH_VIEW = SRC / "GraphView.jsx"
+
+
+def test_the_node_legend_calls_the_pair_a_hypothesis(model):
+    """`claim` and `conjecture` are two node types, and the legend's colours
+    apply to both. Calling that pair "claim" was wrong twice: it is the name of
+    one of the two, and the Findings page has always called them hypotheses —
+    so the same node was a claim on one tab and a hypothesis on another.
+
+    The types themselves stay: they carry different rules (a claim needs an
+    attested passage, a conjecture needs a query that would refute it), a
+    refusal still names which, and `StatsBar` still counts them separately.
+    This is only about the word used where the UI means *either of them*.
+    """
+    src = GRAPH_VIEW.read_text(encoding="utf-8")
+    keys = re.findall(r"\{ key: '([^']+)'", src)
+    pair_entries = [k for k in keys if k.split(" —")[0] in {"claim", "conjecture", "hypothesis"}]
+    assert pair_entries, "no legend entry for a claim/conjecture colour at all"
+    wrong = [k for k in pair_entries if not k.startswith("hypothesis")]
+    assert not wrong, (
+        f"these legend entries name the pair after one of its members: {wrong}. "
+        "Where the UI means a claim *or* a conjecture, it says hypothesis."
+    )
+
+
+def test_no_panel_says_claim_and_conjecture_as_a_collective(model):
+    """The phrase itself, in prose. Allowed exactly where it is *teaching* the
+    two types — TabIntro glosses "hypotheses (claims and conjectures)" once so
+    a reader meets the vocabulary — and nowhere else, because everywhere else
+    it is the long way of saying hypothesis."""
+    offenders = []
+    for path in sorted(SRC.glob("*.jsx")):
+        src = path.read_text(encoding="utf-8")
+        for m in re.finditer(r"[Cc]laims? and conjectures?", src):
+            line = src[: m.start()].count("\n") + 1
+            window = src[max(0, m.start() - 60): m.end() + 20]
+            # a gloss attaches the pair to the word it defines
+            if "hypothes" in window.lower():
+                continue
+            offenders.append(f"{path.name}:{line} {m.group(0)!r}")
+    assert not offenders, (
+        "these read as the collective noun rather than as a gloss:\n  "
+        + "\n  ".join(offenders)
+        + "\nSay 'hypothesis', or keep the pair only where it is defining them."
+    )

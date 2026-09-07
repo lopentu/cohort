@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getGraph, getHealth, getRefusals } from './api'
 import DetailPanel from './DetailPanel'
-import GraphView, { NODE_LEGEND } from './GraphView'
+import GraphView, { nodeLegendFor } from './GraphView'
 import CorpusPanel from './CorpusPanel'
 import EvidencePanel from './EvidencePanel'
 import FindingsPanel from './FindingsPanel'
@@ -255,6 +255,11 @@ function Legend({ data, showAudit }) {
   // contradicted, a source text is black, a passage and a query blue. A dashed
   // outline still marks a proposed (unchecked) node on the canvas.
   const { edges } = legendFor(data.nodes, data.edges, { showAudit })
+  // The node key for *this* graph, not the whole vocabulary — ten colours
+  // listed against a graph that draws four is a legend the reader has to
+  // filter by hand, and one offering "survived its control" where no control
+  // was run describes a different study.
+  const nodeKey = nodeLegendFor(data.nodes, showAudit)
 
   return (
     <div className="legend">
@@ -263,8 +268,8 @@ function Legend({ data, showAudit }) {
           <i className={`swatch ${e.klass}`} /> {emphasise(e.text, e.strong)}
         </span>
       ))}
-      {!!edges.length && <span className="sep" />}
-      {NODE_LEGEND.map((n) => (
+      {!!edges.length && !!nodeKey.length && <span className="sep" />}
+      {nodeKey.map((n) => (
         <span className="li" key={n.key}>
           <i className="dot" style={{ background: n.color }} /> {n.key}
         </span>

@@ -5,8 +5,8 @@ const INTROS = {
   graph: {
     title: 'What the Graph shows',
     body: [
-      ['What it is', 'Every piece of evidence and every assertion, as a chain read left to right: witnesses (source texts) → passages (located spans of them) → claims and conjectures → the research questions they address. The layout is fixed, not a physics simulation, so the same graph always draws the same way.'],
-      ['Edges', 'Blue attests: a passage supports an assertion. Orange dashed parallel of / descends from / quotes: two sources are not independent (copies, the same passage in two texts, or one text quoting another) — this discounts support rather than adding it. Red contradicts. Violet dotted tests: the query that would refute a conjecture, recorded before the evidence was in. Cyan addresses: which question an assertion answers. Grey: structure and audit.'],
+      ['What it is', 'Every piece of evidence and every assertion, as a chain read left to right: witnesses (source texts) → passages (located spans of them) → hypotheses (claims and conjectures) → the research questions they address. The layout is fixed, not a physics simulation, so the same graph always draws the same way.'],
+      ['Edges', 'Blue attests: a passage supports an assertion. Orange dashed parallel of / descends from / quotes: two sources are not independent (copies, the same passage in two texts, or one text quoting another) — this discounts support rather than adding it. Red contradicts. Violet dotted tests: the query that would refute a hypothesis, recorded before the evidence was in. Cyan addresses: which question an assertion answers. Grey: structure and audit.'],
       ['Nodes', 'The outline is the status: dashed = proposed by an agent, solid = attested (its citations were checked by a different agent), heavier = accepted by the researcher — the only citable state; a struck-through title = rejected. Click any node for its provenance: who wrote it, what attests it, and whether that support is independent.'],
       ['Refused writes', 'The counter in the top bar is an output, not an error log: every write the rules refused, and which rule. Zero is a fact worth showing.'],
     ],
@@ -14,7 +14,7 @@ const INTROS = {
   findings: {
     title: 'What Findings shows',
     body: [
-      ['What it is', 'Every claim and conjecture as a hypothesis, beside what the researcher has accepted (the only citable nodes) and what they rejected, with reasons. Rejections sit next to findings on purpose: conclusions without the discards would misrepresent the record.'],
+      ['What it is', 'Every hypothesis — every claim and conjecture — beside what the researcher has accepted (the only citable nodes) and what they rejected, with reasons. Rejections sit next to findings on purpose: conclusions without the discards would misrepresent the record.'],
       ['Not ranked', 'Sorting by how much attests a hypothesis would be a confidence score under another name, which is the habit this system exists to break. Where support does not survive the independence check the row says so; the count of citations is left unchanged.'],
       ['The dossier', 'Open a hypothesis for how it was derived, the corpus boundary it was framed against, its selection risks, the alternative explanations, the prior-art search actually run, the prediction recorded at proposal time and what the query found, the evidence with excerpts, and the verifications — the machine\'s finding and the reviewer\'s reading in separate fields.'],
       ['Integrity', 'Two checks, on demand: re-hash every stored payload against its recorded hash, and replay the event log to confirm the database matches it.'],
@@ -41,7 +41,7 @@ const INTROS = {
     title: 'What Inquiry does',
     body: [
       ['What it is', 'The only tab that spends money. It opens on a research question — what is being asked and what would count as an answer, stated before looking — and runs agents against it with a hard budget per run that the browser cannot raise.'],
-      ['The roster', 'Workers search the corpus and propose claims and conjectures through tools whose rules are enforced by the graph; a reviewer, which must be a different model family, checks that their citations resolve and attests or withholds. An agent cannot check its own work.'],
+      ['The roster', 'Workers search the corpus and propose hypotheses through tools whose rules are enforced by the graph; a reviewer, which must be a different model family, checks that their citations resolve and attests or withholds. An agent cannot check its own work.'],
       ['What you see', 'Spend, tool calls, and refusals as the run proceeds. Everything an agent writes lands in the graph as proposed; nothing becomes citable here. The researcher accepts or rejects in Findings.'],
     ],
   },

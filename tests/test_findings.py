@@ -348,3 +348,64 @@ def test_every_measurement_is_kept_not_the_latest_one(graph, tmp_path):
         )
     finally:
         corpus.close()
+
+
+# --- what a conjecture turned out to be, for the graph view -----------------
+
+def test_a_measured_conjecture_is_assessed_even_with_nothing_attesting_it(
+    graph, tmp_path,
+):
+    """The bug this replaced. The graph view coloured a conjecture by counting
+    `attests` edges, which is right for a citation study and blind to an
+    ascription one: these are settled by measurement and carry no attesting
+    passages, so twenty-two candidates rendered identical yellow whether their
+    control had been survived, failed, or never run."""
+    from cohort.views import assessments
+
+    corpus, _, out = _registered(graph, tmp_path)
+    try:
+        cid = out["conjecture_id"]
+        assert graph.independent_support(cid).attesting_count == 0
+        a = assessments(graph)[cid]
+        assert a["kind"] == "control"
+        assert a["state"] == "survived"
+        assert a["detail"]
+    finally:
+        corpus.close()
+
+
+def test_a_failed_control_reads_as_discarded_not_as_unsupported(graph, tmp_path):
+    from cohort.tools.discriminator import run_control_test
+    from cohort.views import assessments
+
+    corpus, catalogue, out = _registered(graph, tmp_path)
+    try:
+        # re-register at a threshold the feature cannot meet
+        from cohort.tools.discriminator import (
+            RegisterDiscriminatorInput,
+            register_discriminator,
+        )
+        doomed = register_discriminator(
+            graph,
+            RegisterDiscriminatorInput(
+                feature="阿黎耶識", min_benchmark_share=0.99, max_control_share=0.0,
+                derivation="d", corpus_boundary="b", selection_risks="r",
+                alternative_explanations="a",
+            ),
+            catalogue=catalogue, authored_by=AGENT,
+        )
+        run_control_test(graph, corpus, doomed["conjecture_id"],
+                         catalogue=catalogue, authored_by=AGENT)
+        assert assessments(graph)[doomed["conjecture_id"]]["state"] == "discarded"
+    finally:
+        corpus.close()
+
+
+def test_an_unassessed_conjecture_is_simply_absent(graph, source):
+    """Absent rather than a state meaning "nothing known": a view that received
+    a word for every node would have to invent one for the ordinary case, and
+    the ordinary case is that no test of this kind applies to it."""
+    from cohort.views import assessments
+
+    cid = conjecture(graph, source, text="an ordinary conjecture")
+    assert cid not in assessments(graph)

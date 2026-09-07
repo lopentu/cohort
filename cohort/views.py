@@ -43,6 +43,76 @@ def node_json(graph: Graph, node) -> dict[str, Any]:
     }
 
 
+#: What a conjecture turned out to be, as a small closed set of states a view
+#: can colour. Two vocabularies, because two different tests reach a
+#: conjecture: a registered feature meets its negative control, and a work in
+#: doubt meets the canon. Kept apart rather than flattened into one word,
+#: because "discarded" and "unplaced" are opposite kinds of negative — the
+#: first is a feature shown to track something else, the second is a work the
+#: method could not see, which is not a finding against it.
+ASSESSMENT_STATES = {
+    "survived": "the feature separated the benchmark from its negative control",
+    "discarded": "the feature failed that control, so it tracks something else",
+    "untested": "a prediction is registered and nothing has been counted yet",
+    "associates": "the benchmark is over-represented among this work's nearest neighbours",
+    "weak": "an enrichment, but below what a known benchmark work reaches",
+    "alternate": "no benchmark association, but one other reference point stands clear",
+    "unplaced": "no benchmark association and no dominant neighbour — not an exclusion",
+}
+
+
+def assessments(graph: Graph) -> dict[str, dict[str, str]]:
+    """Per conjecture, what became of it — computed **once for a whole payload**.
+
+    Served rather than re-derived in the browser, and the reason is a bug this
+    replaced. The force graph coloured a claim green/yellow/red by counting
+    `attests` edges client-side, which is right for a citation study and blind
+    to this one: an ascription conjecture is settled by *measurement*, carries
+    no attesting passages at all, and so rendered identical yellow whether its
+    control had been survived, failed, or never run. Twenty-two candidates, one
+    colour, the survivor indistinguishable from the discards.
+
+    Computing it here also means the canvas and the Findings page cannot
+    disagree about what a node is, which two independent implementations of the
+    same judgement eventually would.
+
+    One pass over the ledger and one over each conjecture's verifications, so a
+    500-node payload costs one traversal rather than one per node — which is
+    why this returns a map instead of taking a node.
+    """
+    out: dict[str, dict[str, str]] = {}
+
+    # A work in doubt, measured against the canon. Read first so that a
+    # registered feature's own control verdict below takes precedence: the
+    # control is the prediction that node was created to make.
+    for node in graph.nodes(node_type=NodeType.CONJECTURE):
+        latest = None
+        for v in graph.verifications(node.id):
+            p = v.payload
+            if p.get("method") != VerificationMethod.CORPUS_MEASUREMENT:
+                continue
+            association = p.get("association")
+            if association and association.get("verdict"):
+                latest = association["verdict"]
+        if latest in ASSESSMENT_STATES:
+            out[node.id] = {
+                "kind": "association", "state": latest,
+                "detail": ASSESSMENT_STATES[latest],
+            }
+
+    # A registered discriminator, measured against its control.
+    fate_to_state = {"usable": "survived", "discarded": "discarded",
+                     "untested": "untested"}
+    for row in ledger_json(graph)["features"]:
+        state = fate_to_state.get(row["fate"])
+        if state:
+            out[row["conjecture_id"]] = {
+                "kind": "control", "state": state,
+                "detail": ASSESSMENT_STATES[state],
+            }
+    return out
+
+
 def test_outcome(graph: Graph, conjecture_id: str) -> str:
     """`held`, `broke`, `undecided` or `unrun` for a conjecture's prospective
     test — the latest one, for the reason `assurance_for` takes the latest per

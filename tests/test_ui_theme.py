@@ -262,3 +262,74 @@ def test_the_floating_panels_stay_opaque(css):
             assert "var(--bg-raised)" in rule, (
                 f"{sel} must use the opaque raised surface"
             )
+
+
+# --- one global sheet, one owner per class name ------------------------------
+
+#: Class names deliberately defined twice, each with a reason. A bare entry is
+#: the drift this check exists to catch.
+DUPLICATE_CLASSES: dict[str, str] = {
+    ".plan-row": (
+        "layered on purpose: the first rule is a `min-width: 0` overflow guard "
+        "grouped with the other min-width guards, the second is the grid "
+        "itself. Neither sets a property the other does."
+    ),
+    ".verification": (
+        "pre-existing collision between the DetailPanel's verification card "
+        "and the Findings dossier's. Both are 'a verification card' so the "
+        "result is survivable, but the Findings rule wins on margin, padding "
+        "and border for both. Recorded rather than fixed: splitting them is a "
+        "visual change to the inspector that wants looking at, not a rename."
+    ),
+}
+
+
+def test_no_class_is_styled_by_two_unrelated_components(css):
+    """One global stylesheet and no CSS modules, so a class name is a shared
+    namespace — and a generic one is a collision waiting for whichever
+    component is styled second.
+
+    This is not hypothetical. On 2026-09-07 the association chip in Placements
+    was named `.verdict`, which was already the researcher-decision `<section>`
+    in DetailPanel. The chip's rule — a 999px radius, a filled background and
+    `white-space: nowrap` — landed on the whole panel: a giant pill behind the
+    Attest/Accept/Reject buttons, with the ladder explanation clipped instead
+    of wrapped. It built cleanly, every test passed, and it was found by
+    looking at the screen.
+    """
+    import re
+    from collections import defaultdict
+
+    defs: dict[str, list[int]] = defaultdict(list)
+    for m in re.finditer(r"^(\.[A-Za-z][\w-]*)\s*\{", css, re.M):
+        defs[m.group(1)].append(css[: m.start()].count("\n") + 1)
+
+    unexplained = {
+        cls: lines for cls, lines in defs.items()
+        if len(lines) > 1 and cls not in DUPLICATE_CLASSES
+    }
+    assert not unexplained, (
+        "these class names are styled by more than one rule block:\n  "
+        + "\n  ".join(f"{c} at lines {ls}" for c, ls in sorted(unexplained.items()))
+        + "\nOne global sheet means one owner per name. Scope the newer one "
+          "(`.assoc-verdict`, not `.verdict`), or record the overlap in "
+          "DUPLICATE_CLASSES with the reason it is safe."
+    )
+
+
+def test_every_recorded_duplicate_still_exists():
+    """So the allowlist cannot outlive the overlap it excuses."""
+    import re
+
+    src = CSS_PATH.read_text(encoding="utf-8")
+    for cls in DUPLICATE_CLASSES:
+        found = re.findall(rf"^{re.escape(cls)}\s*\{{", src, re.M)
+        assert len(found) > 1, (
+            f"{cls} is recorded in DUPLICATE_CLASSES but is no longer defined "
+            "twice — drop the entry."
+        )
+
+
+def test_each_recorded_duplicate_carries_a_reason():
+    blank = sorted(k for k, v in DUPLICATE_CLASSES.items() if not v.strip())
+    assert not blank, f"duplicates recorded without a reason: {blank}"

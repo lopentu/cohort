@@ -66,6 +66,7 @@ from cohort.views import (
     questions_json,
 )
 from cohort.ledger import ledger_json
+from cohort.views import assessments as _assessments
 from cohort.views import edge_json as _edge_json
 from cohort.views import node_json as _node_json
 from cohort.views import test_outcome as _test_outcome
@@ -173,8 +174,17 @@ def create_app(
             nodes = nodes[:limit]
             ids = {n.id for n in nodes}
             edges = [e for e in graph.edges() if e.src in ids and e.dst in ids]
+            # One traversal for the whole payload, merged in here rather than
+            # inside `node_json` — the same shape as the `tests` outcome below,
+            # and for the same reason: it is a property of this view, and
+            # computing it per node would cost one ledger walk per node.
+            verdicts = _assessments(graph)
             return {
-                "nodes": [_node_json(graph, n) for n in nodes],
+                "nodes": [
+                    {**_node_json(graph, n),
+                     **({"assessment": verdicts[n.id]} if n.id in verdicts else {})}
+                    for n in nodes
+                ],
                 # A `tests` edge carries its own outcome. Without it, a study
                 # whose findings are predictions rather than citations renders
                 # as a wall of identical lines — every prediction looking alike

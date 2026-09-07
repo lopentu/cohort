@@ -115,7 +115,7 @@ function Work({ profile, domain, band, benchmark }) {
     <div className={`study-work v-${v}`}>
       <button className="study-head" onClick={() => setOpen(!open)}>
         <span className="study-id">{profile.work}</span>
-        {v && <span className={`verdict v-${v}`}>{VERDICT[v]}</span>}
+        {v && <span className={`assoc-verdict v-${v}`}>{VERDICT[v]}</span>}
 
         {e ? (
           <>
