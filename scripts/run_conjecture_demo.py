@@ -33,8 +33,8 @@ from cohort.graph import Graph
 from cohort.schemas import AgentKind, AgentProfile, NodeType
 from cohort.sources.cbeta_fts import CbetaFtsIndex
 from cohort.sources.cbeta_reader import CbetaArchiveError, CbetaReader
-
 from cohort.sources.env import CBETA_V061_SHA256  # one definition; see docs/corpus.md
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 AGENT = "agent:worker-conjecture"
 

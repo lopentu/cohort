@@ -43,7 +43,7 @@ def _document(docnumber: str, body: str, apparatus: str = "") -> bytes:
         "<TEI><teiHeader><fileDesc>synthetic fixture</fileDesc></teiHeader>"
         f"<text><cb:docNumber>{docnumber}</cb:docNumber>{apparatus}"
         f"<p>{body}</p></text></TEI>\n"
-    ).encode("utf-8")
+    ).encode()
 
 
 APPARATUS = (

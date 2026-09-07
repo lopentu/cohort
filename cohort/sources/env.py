@@ -38,25 +38,52 @@ def open_corpus_from_env(
     `search()` would raise on first use; a caller that only needs `fetch()`
     can pass False and get a reader without one.
     """
-    from ..agents.openrouter import _load_dotenv
+    from cohort.agents.openrouter import _load_dotenv
+
     from .cbeta_fts import CbetaFtsIndex
     from .cbeta_reader import CbetaArchiveError, CbetaReader
 
     root = repo_root or Path.cwd()
     _load_dotenv(root / ".env")
 
+    # A folder of plain-text files with a manifest.csv (LocalReader) is the
+    # other kind of corpus this system reads. It takes precedence when set,
+    # because the point of setting it is to make the Corpus tab, the agents'
+    # verify_exact_span and the Evidence tab read the *same bytes* -- Radich's
+    # paratext-stripped files rather than the CBETA archive they derive from.
+    local_root = os.environ.get("LOCAL_CORPUS_ROOT")
+    if local_root:
+        from .local_reader import LocalReader, ManifestError
+
+        manifest = os.environ.get("LOCAL_CORPUS_MANIFEST") or None
+        try:
+            return LocalReader(local_root, manifest), None
+        except ManifestError as e:
+            return None, f"LOCAL_CORPUS_ROOT is set but unusable: {e}"
+
     archive = os.environ.get("CBETA_ARCHIVE_PATH")
     if not archive:
-        return None, "CBETA_ARCHIVE_PATH is not set"
+        return None, "neither LOCAL_CORPUS_ROOT nor CBETA_ARCHIVE_PATH is set"
+
+    # The archive is pinned by hash so that a witness node names the exact
+    # bytes it came from. The pin defaults to the v061 release; an operator
+    # holding a different build (the xml-p5 repository at a tag, re-zipped
+    # into the Bookcase layout) pins *that* instead of loosening the check.
+    expected = (os.environ.get("CBETA_ARCHIVE_SHA256") or CBETA_V061_SHA256).strip().lower()
+    if len(expected) != 64 or any(c not in "0123456789abcdef" for c in expected):
+        return None, "CBETA_ARCHIVE_SHA256 must be a 64-character hex SHA-256"
 
     fts_path = Path(os.environ.get("CBETA_FTS_PATH") or (root / DEFAULT_FTS_FILENAME))
     try:
-        fts = CbetaFtsIndex(fts_path, CBETA_V061_SHA256) if fts_path.is_file() else None
+        fts = CbetaFtsIndex(fts_path, expected) if fts_path.is_file() else None
         if fts is None and require_search:
             return None, (
                 f"no FTS index at {fts_path}, so search would raise. "
                 "Build it: .venv/bin/python scripts/build_cbeta_index.py"
             )
-        return CbetaReader(archive, CBETA_V061_SHA256, fts=fts), None
+        # The version label rides on every witness's provenance note, so an
+        # archive that is not v061 must say what it is.
+        version = (os.environ.get("CBETA_ARCHIVE_VERSION") or "v061").strip()
+        return CbetaReader(archive, expected, fts=fts, version=version), None
     except CbetaArchiveError as e:
         return None, str(e)

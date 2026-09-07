@@ -20,7 +20,7 @@ VERIFIED = {
 }
 
 
-@pytest.mark.parametrize("ref,expected", [(k, v[0]) for k, v in VERIFIED.items()])
+@pytest.mark.parametrize(("ref", "expected"), [(k, v[0]) for k, v in VERIFIED.items()])
 def test_work_ids_match_what_cbeta_returns(ref, expected):
     assert work_id(ref) == expected
 

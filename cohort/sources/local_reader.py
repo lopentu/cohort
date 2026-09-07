@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import csv
 import sqlite3
-import threading
 import tempfile
+import threading
 from pathlib import Path
 
 from .base import SearchHit, Source, SourceRecord
@@ -62,6 +62,12 @@ class LocalReader(Source):
         self.stats: dict = {}
         self._load()
 
+    def _db(self) -> sqlite3.Connection:
+        if self.conn is None:
+            msg = "this reader has been closed"
+            raise ManifestError(msg)
+        return self.conn
+
     def close(self) -> None:
         """Tear down the index. The corpus files themselves are untouched."""
         if self.conn is not None:
@@ -71,7 +77,7 @@ class LocalReader(Source):
             self._tempdir_obj.cleanup()
             self._tempdir_obj = None
 
-    def __enter__(self) -> "LocalReader":
+    def __enter__(self) -> LocalReader:
         return self
 
     def __exit__(self, *exc) -> None:
@@ -106,8 +112,9 @@ class LocalReader(Source):
                 for r in reader
             ]
 
-        self.conn.execute("CREATE VIRTUAL TABLE corpus_fts USING fts5(ref UNINDEXED, tokens)")
-        self.conn.execute(
+        conn = self._db()
+        conn.execute("CREATE VIRTUAL TABLE corpus_fts USING fts5(ref UNINDEXED, tokens)")
+        conn.execute(
             "CREATE TABLE corpus_meta (ref TEXT PRIMARY KEY, path TEXT, witness_ref TEXT, "
             "label TEXT, note TEXT, text TEXT, chars INTEGER)"
         )
@@ -134,14 +141,14 @@ class LocalReader(Source):
                 "chars": len(text),
             }
             self._meta[ref] = meta
-            self.conn.execute(
+            conn.execute(
                 "INSERT INTO corpus_meta VALUES "
                 "(:ref, :path, :witness_ref, :label, :note, :text, :chars)", meta,
             )
-            self.conn.execute(
+            conn.execute(
                 "INSERT INTO corpus_fts (ref, tokens) VALUES (?, ?)", (ref, _unigrams(text))
             )
-        self.conn.commit()
+        conn.commit()
 
         on_disk = {p.resolve() for p in self.root.rglob("*.txt") if p.is_file()}
         unlisted = sorted(str(p.relative_to(self.root)) for p in on_disk - listed)

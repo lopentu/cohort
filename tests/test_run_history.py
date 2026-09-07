@@ -54,10 +54,13 @@ def test_events_written_inside_a_run_carry_its_id_and_others_do_not(graph):
 def test_a_run_that_raises_still_owns_what_it_wrote(graph):
     """A crashed run wrote events, and they still belong to it. Restoring the
     stamp in a `finally` is what makes that true."""
-    with pytest.raises(RuntimeError):
+    def crash_after_writing():
         with graph.during_run("run-crash"):
             graph.propose_claim(ClaimPayload(text="written"), authored_by=AGENT)
             raise RuntimeError("the model went away")
+
+    with pytest.raises(RuntimeError):
+        crash_after_writing()
 
     assert graph.event_log.run_id is None
     stamped = [ev for ev in read_events(graph.event_log.path) if ev.run_id == "run-crash"]

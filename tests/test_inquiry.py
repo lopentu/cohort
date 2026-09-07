@@ -39,7 +39,7 @@ THREE = ["alpha/m1", "beta/m2", "gamma/m3"]
 
 
 def plan(**over):
-    args = dict(question=QUESTION, answerable_by=ANSWERABLE, models=THREE, max_agents=4)
+    args = {"question": QUESTION, "answerable_by": ANSWERABLE, "models": THREE, "max_agents": 4}
     args.update(over)
     return plan_inquiry(**args)
 
@@ -162,7 +162,7 @@ def test_a_run_with_no_question_records_none(tmp_path):
     log = EventLog(tmp_path / "events.jsonl")
     g = Graph(tmp_path / "g.sqlite", event_log=log)
     g.log_run_started("run-1", authored_by="run:run-1", agents=[])
-    ev = [e for e in read_events(log.path) if e.event == "run_started"][0]
+    ev = next(e for e in read_events(log.path) if e.event == "run_started")
     assert "question_id" not in ev.detail
     assert read_runs(log.path)[0].question_id is None
     g.close()

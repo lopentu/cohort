@@ -34,7 +34,7 @@ def _document(*runs: str) -> bytes:
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         "<TEI><teiHeader><fileDesc>synthetic fixture</fileDesc></teiHeader>"
         f"<text><p>{body}</p></text></TEI>\n"
-    ).encode("utf-8")
+    ).encode()
 
 
 ENTRIES = {

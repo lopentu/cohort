@@ -28,8 +28,8 @@ from pathlib import Path
 from cohort.agents.openrouter import _load_dotenv
 from cohort.sources.cbeta_fts import build_index
 from cohort.sources.cbeta_reader import CBETA_ENTRY_PREFIX, CbetaArchiveError
-
 from cohort.sources.env import CBETA_V061_SHA256  # one definition; see docs/corpus.md
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -65,7 +65,7 @@ def main() -> None:
 
     def progress(count: int, name: str) -> None:
         elapsed = time.monotonic() - started
-        print(f"  {count:>6} entries  {elapsed:7.1f}s  {name.split('/')[-1]}", flush=True)
+        print(f"  {count:>6} entries  {elapsed:7.1f}s  {name.rsplit('/', maxsplit=1)[-1]}", flush=True)
 
     try:
         report = build_index(

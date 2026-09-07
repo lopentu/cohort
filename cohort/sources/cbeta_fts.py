@@ -40,8 +40,8 @@ import re
 import sqlite3
 import threading
 import zipfile
+from collections.abc import Callable, Iterator
 from pathlib import Path
-from typing import Callable, Iterator
 
 from pydantic import BaseModel, ConfigDict
 
@@ -255,7 +255,7 @@ class CbetaFtsIndex:
     def close(self) -> None:
         self.conn.close()
 
-    def __enter__(self) -> "CbetaFtsIndex":
+    def __enter__(self) -> CbetaFtsIndex:
         return self
 
     def __exit__(self, *exc) -> None:

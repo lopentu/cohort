@@ -87,7 +87,7 @@ def main() -> None:
         elapsed = time.monotonic() - started
         print(f"Both agents finished in {elapsed:.2f}s (real overlap, not {len(assignments)}x sequential)\n")
 
-        for (worker, _instructions), result in zip(assignments, results):
+        for (worker, _instructions), result in zip(assignments, results, strict=False):
             print(f"--- {worker.authored_by} ---")
             if isinstance(result, BaseException):
                 print(f"  failed: {type(result).__name__}: {result}")

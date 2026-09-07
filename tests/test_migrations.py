@@ -75,7 +75,7 @@ def test_migration_2_backfills_payload_hash_for_pre_existing_rows(tmp_path):
     apply_migrations(conn, MIGRATIONS)  # upgrade to migration 2
 
     row = conn.execute("SELECT payload_hash FROM nodes WHERE id='claim:x'").fetchone()
-    expected = hashlib.sha256('{"text": "hi"}'.encode("utf-8")).hexdigest()
+    expected = hashlib.sha256(b'{"text": "hi"}').hexdigest()
     assert row["payload_hash"] == expected
     conn.close()
 

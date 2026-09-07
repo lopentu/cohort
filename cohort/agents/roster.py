@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from ..families import model_family
+from cohort.families import model_family
 
 __all__ = ["RosterNotIndependent", "check_distinct_model_families", "model_family"]
 

@@ -30,3 +30,6 @@ cohort/ui/static/
 data/
 *.zip
 wget-log
+
+# Playwright MCP scratch (screenshots, snapshots) from browser checks
+.playwright-mcp/

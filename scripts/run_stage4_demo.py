@@ -37,10 +37,10 @@ from cohort.schemas import (
     WitnessPayload,
 )
 from cohort.sources.cbeta_reader import CbetaArchiveError, CbetaReader
+from cohort.sources.env import CBETA_V061_SHA256  # one definition; see docs/corpus.md
 from cohort.tools.collate_editions import CollateEditionsInput, collate_editions
 from cohort.tools.link_parallels import LinkParallelsInput, link_parallels
 
-from cohort.sources.env import CBETA_V061_SHA256  # one definition; see docs/corpus.md
 REPO_ROOT = Path(__file__).resolve().parent.parent
 INDEX_PATH = REPO_ROOT / "cbeta_index.json"
 

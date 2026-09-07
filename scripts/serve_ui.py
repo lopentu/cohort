@@ -72,11 +72,16 @@ def main() -> None:
     )
     parser.add_argument(
         "--corpus", action="store_true",
-        help="mount corpus browse/search (needs CBETA_ARCHIVE_PATH and CBETA_FTS_PATH)",
+        help="mount corpus browse/search (needs LOCAL_CORPUS_ROOT, or CBETA_ARCHIVE_PATH and CBETA_FTS_PATH)",
     )
     parser.add_argument(
         "--allow-runs", action="store_true",
         help="mount the agent run launcher — these endpoints spend money (implies --corpus)",
+    )
+    parser.add_argument(
+        "--radich", default=None, metavar="PATH",
+        help="mount the translator-evidence tab over Radich's pre-450 corpus at PATH "
+             "(licence-restricted; never inside the repository)",
     )
     parser.add_argument(
         "--max-budget", type=float, default=DEFAULT_MAX_BUDGET_USD,
@@ -123,6 +128,34 @@ def main() -> None:
             db_path, log_path, source, max_budget_usd=args.max_budget,
         )
 
+    attribution = None
+    if args.radich:
+        import time
+
+        from cohort.attribution import AttributionIndex
+        t0 = time.time()
+        try:
+            attribution = AttributionIndex.load(args.radich)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"error: --radich {args.radich}: {e}", file=sys.stderr)
+            sys.exit(1)
+        led = attribution.units()["ledger"]
+        print(f"evidence: {led['kept for profiling']} units in {led['classes profiled']} classes "
+              f"profiled ({time.time() - t0:.0f}s; cached beside the data for next time)")
+        if run_manager is not None:
+            # Agents get the evidence tools only when the data behind them is here.
+            from cohort.embeddings import EmbeddingIndex
+
+            run_manager.attribution = attribution
+            try:
+                run_manager.embeddings = EmbeddingIndex.from_env()
+            except (FileNotFoundError, ValueError, RuntimeError) as e:
+                print(f"note: semantic_neighbors disabled — {e}", file=sys.stderr)
+            tools = ["attribution_evidence", "align_passages"] + (
+                ["semantic_neighbors"] if run_manager.embeddings is not None else []
+            )
+            print(f"  agent evidence tools: {', '.join(tools)}")
+
     if not FRONTEND_DIR.is_dir():
         print(
             f"note: no built frontend at {FRONTEND_DIR} — serving the JSON API only.\n"
@@ -144,6 +177,8 @@ def main() -> None:
         modes.append("corpus")
     if run_manager is not None:
         modes.append(f"agent runs (max ${args.max_budget:.2f}/run)")
+    if attribution is not None:
+        modes.append("evidence")
     mode = " + ".join(modes)
     print(f"serving {db_path} at http://{args.host}:{args.port} ({mode})")
     if args.allow_writes:
@@ -162,7 +197,7 @@ def main() -> None:
     uvicorn.run(
         create_app(
             db_path, args.log, allow_writes=args.allow_writes,
-            source=source, run_manager=run_manager,
+            source=source, run_manager=run_manager, attribution=attribution,
         ),
         host=args.host, port=args.port,
     )

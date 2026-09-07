@@ -16,10 +16,10 @@ from __future__ import annotations
 
 import hashlib
 
-from ..errors import WrongNodeType
-from ..graph import Graph
-from ..schemas import AssuranceLevel, VerificationMethod, VerificationResult
-from ..sources.base import Source
+from cohort.errors import WrongNodeType
+from cohort.graph import Graph
+from cohort.schemas import AssuranceLevel, VerificationMethod, VerificationResult
+from cohort.sources.base import Source
 
 
 def verify_exact_span(

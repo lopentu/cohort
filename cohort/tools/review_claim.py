@@ -36,9 +36,9 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..errors import CohortError, InvalidVerdict, WrongNodeType
-from ..graph import Graph
-from ..schemas import (
+from cohort.errors import CohortError, InvalidVerdict, WrongNodeType
+from cohort.graph import Graph
+from cohort.schemas import (
     AssuranceLevel,
     EdgeType,
     NodeStatus,
@@ -46,7 +46,8 @@ from ..schemas import (
     VerificationMethod,
     VerificationResult,
 )
-from ..sources.base import Source
+from cohort.sources.base import Source
+
 from .verify_exact_span import verify_exact_span
 
 NAME = "review_claim"

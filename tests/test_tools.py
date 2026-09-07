@@ -30,11 +30,11 @@ from cohort.sources.cbeta_reader import CbetaReader
 from cohort.sources.local_reader import LocalReader
 from cohort.tools.find_attestations import FindAttestationsInput, find_attestations
 from cohort.tools.propose_claim import ProposeClaimInput, propose_claim
+from cohort.tools.propose_conjecture import ProposeConjectureInput, propose_conjecture
 from cohort.tools.record_contradiction import (
     RecordContradictionInput,
     record_contradiction,
 )
-from cohort.tools.propose_conjecture import ProposeConjectureInput, propose_conjecture
 
 AGENT = "agent:worker-1"
 #: A second agent, because an agent may not attest what it authored
@@ -123,7 +123,7 @@ def test_find_attestations_carries_restrictive_license_terms_onto_the_witness(gr
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         "<TEI><teiHeader><fileDesc>synthetic fixture</fileDesc></teiHeader>"
         "<text>諸行無常。是生滅法。</text></TEI>\n"
-    ).encode("utf-8")
+    ).encode()
     buf = BytesIO()
     with zipfile.ZipFile(buf, "w") as zf:
         zf.writestr(entry_path, document)
@@ -145,17 +145,17 @@ def test_find_attestations_carries_restrictive_license_terms_onto_the_witness(gr
 
 
 def _conjecture_input(**overrides):
-    defaults = dict(
-        text="An earlier Kuchean recension underlies this passage",
-        derivation="vocabulary matches Kuchean loanword patterns",
-        corpus_boundary="only the local_corpus fixture was searched",
-        selection_risks="none identified",
-        alternative_explanations="a later redactor independently chose similar vocabulary",
-        prior_art_query="Kuchean recension",
-        tests_query_text="search Kuchean fragment catalogues for a parallel",
-        tests_expectation="at_most",
-        tests_expected_hits=0,
-    )
+    defaults = {
+        "text": "An earlier Kuchean recension underlies this passage",
+        "derivation": "vocabulary matches Kuchean loanword patterns",
+        "corpus_boundary": "only the local_corpus fixture was searched",
+        "selection_risks": "none identified",
+        "alternative_explanations": "a later redactor independently chose similar vocabulary",
+        "prior_art_query": "Kuchean recension",
+        "tests_query_text": "search Kuchean fragment catalogues for a parallel",
+        "tests_expectation": "at_most",
+        "tests_expected_hits": 0,
+    }
     defaults.update(overrides)
     return ProposeConjectureInput(**defaults)
 

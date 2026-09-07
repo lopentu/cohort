@@ -42,9 +42,9 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..errors import WrongNodeType
-from ..graph import Graph
-from ..schemas import EdgeType, NodeType
+from cohort.errors import WrongNodeType
+from cohort.graph import Graph
+from cohort.schemas import EdgeType, NodeType
 
 NAME = "record_contradiction"
 DESCRIPTION = (

@@ -35,16 +35,12 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..errors import WrongNodeType
-from ..graph import Graph
-from ..schemas import (
-    AssuranceLevel,
-    NodeType,
-    VerificationMethod,
-    VerificationResult,
-)
-from ..sources.base import Source
-from ..sources.cbeta_markup import edition_families, parse_apparatus
+from cohort.errors import WrongNodeType
+from cohort.graph import Graph
+from cohort.schemas import AssuranceLevel, NodeType, VerificationMethod, VerificationResult
+from cohort.sources.base import Source
+from cohort.sources.cbeta_markup import edition_families, parse_apparatus
+
 from ._witness_source import source_ref_for_witness
 
 NAME = "collate_editions"

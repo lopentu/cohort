@@ -11,9 +11,9 @@ from __future__ import annotations
 
 import os
 from collections import Counter, defaultdict
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
 
 from .errors import RefusalCategory, UnknownEventType, refusal_category
 from .schemas import (

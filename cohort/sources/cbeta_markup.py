@@ -257,7 +257,7 @@ def parse_parallel_refs(document: str) -> ParallelRefs:
 
 
 def _attrs(raw: str) -> dict[str, str]:
-    return {k: v for k, v in _ATTR_RE.findall(raw)}
+    return dict(_ATTR_RE.findall(raw))
 
 
 def _sigla(wit: str | None) -> list[str]:
