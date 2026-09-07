@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DataSet, Network } from 'vis-network/standalone'
 import { EDGE_STYLE, isVisible, nodeTitle } from './graph-model'
 
@@ -211,6 +211,17 @@ function buildEdges(edges, visibleIds, p) {
     })
 }
 
+// The force-simulation config, reused on every re-layout. Kept as one const so
+// re-enabling physics after a freeze restores the same solver, not vis defaults.
+const PHYSICS = {
+  barnesHut: {
+    gravitationalConstant: -12000, springLength: 135,
+    springConstant: 0.045, avoidOverlap: 0.35, damping: 0.28,
+  },
+  stabilization: { enabled: true, iterations: 400, updateInterval: 25, fit: true },
+}
+const SETTLE_CAP_MS = 10000   // freeze the layout after at most this long
+
 export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   const containerRef = useRef(null)
   const networkRef = useRef(null)
@@ -222,6 +233,9 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   const selectedRef = useRef(selectedId)
   onSelectRef.current = onSelect
   selectedRef.current = selectedId
+  const capRef = useRef(null)      // hard-cap timer -> freeze after SETTLE_CAP_MS
+  const settleRef = useRef(null)   // freeze physics + reveal the stationary graph
+  const [laying, setLaying] = useState(true)
 
   // create the network once
   useEffect(() => {
@@ -233,13 +247,7 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
       containerRef.current,
       { nodes, edges },
       {
-        physics: {
-          stabilization: { iterations: 180 },
-          barnesHut: {
-            gravitationalConstant: -12000, springLength: 135,
-            springConstant: 0.045, avoidOverlap: 0.35, damping: 0.28,
-          },
-        },
+        physics: { enabled: true, ...PHYSICS },
         interaction: { hover: true, tooltipDelay: 120, dragNodes: true, dragView: true, zoomView: true },
         nodes: { shadow: false, scaling: { min: 10, max: 30 } },
         edges: { smooth: { enabled: true, type: 'dynamic' } },
@@ -254,13 +262,26 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
         onSelectRef.current(id === selectedRef.current ? null : id)
       }
     })
-    // Fit the whole graph into view once physics settles, and again whenever the
-    // container resizes (the canvas height tracks the viewport), so the graph is
-    // never left zoomed into a corner.
-    network.on('stabilizationIterationsDone', () => network.fit({ animation: false }))
+    // Simulate to a layout, then FREEZE physics so the graph is stationary when
+    // the reader sees it — they can still drag individual nodes, but nothing
+    // drifts on its own. The canvas is held invisible until then (see `laying`),
+    // so the stabilization jiggle is never shown.
+    const settle = () => {
+      const net = networkRef.current
+      if (!net) return
+      net.setOptions({ physics: false })
+      net.fit({ animation: false })
+      if (capRef.current) { clearTimeout(capRef.current); capRef.current = null }
+      setLaying(false)
+    }
+    settleRef.current = settle
+    network.on('stabilizationIterationsDone', settle)
     const ro = new ResizeObserver(() => networkRef.current && networkRef.current.fit({ animation: false }))
     ro.observe(containerRef.current)
-    return () => { ro.disconnect(); network.destroy(); networkRef.current = null }
+    return () => {
+      if (capRef.current) clearTimeout(capRef.current)
+      ro.disconnect(); network.destroy(); networkRef.current = null
+    }
   }, [])
 
   // (re)load the data whenever it or the audit toggle changes
@@ -275,8 +296,16 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
     edgesRef.current.clear()
     nodesRef.current.add(visNodes)
     edgesRef.current.add(visEdges)
+    // re-run the simulation for the new data (hidden), then freeze it stationary
+    // via settle(); the cap guarantees it freezes even if it never fully settles.
+    setLaying(true)
+    const net = networkRef.current
+    net.setOptions({ physics: { enabled: true, ...PHYSICS } })
+    net.stabilize()
+    if (capRef.current) clearTimeout(capRef.current)
+    capRef.current = setTimeout(() => settleRef.current && settleRef.current(), SETTLE_CAP_MS)
     if (selectedRef.current && idsRef.current.has(selectedRef.current)) {
-      networkRef.current.selectNodes([selectedRef.current])
+      net.selectNodes([selectedRef.current])
     }
   }, [data, showAudit])
 
@@ -293,14 +322,28 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   }, [selectedId])
 
   return (
-    <div className="graph-scroll">
+    <div className="graph-scroll" style={{ position: 'relative' }}>
       <div
         ref={containerRef}
         className="graph-canvas"
         role="img"
         aria-label="Evidence graph (draggable)"
-        style={{ width: '100%', height: 'calc(100vh - 150px)', minHeight: '420px' }}
+        style={{
+          width: '100%', height: 'calc(100vh - 150px)', minHeight: '420px',
+          opacity: laying ? 0 : 1, transition: 'opacity 160ms ease',
+        }}
       />
+      {laying && (
+        <div
+          style={{
+            position: 'absolute', inset: 0, display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            pointerEvents: 'none', color: 'var(--text-dim)', fontSize: 13,
+          }}
+        >
+          laying out the graph…
+        </div>
+      )}
     </div>
   )
 }
