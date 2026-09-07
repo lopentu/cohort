@@ -13,7 +13,8 @@ from __future__ import annotations
 from typing import Any
 
 from .graph import Graph
-from .schemas import EdgeType, NodeType
+from .ledger import ledger_json
+from .schemas import EdgeType, NodeType, VerificationMethod, VerificationResult
 from .sources.cbeta_refs import reader_url
 
 #: The two edge types that *discount* support rather than adding it: witnesses
@@ -40,6 +41,28 @@ def node_json(graph: Graph, node) -> dict[str, Any]:
         # corpus browser cannot disagree about where a passage lives.
         "cbeta_url": reader_url(node.payload.get("canonical_ref") or ""),
     }
+
+
+def test_outcome(graph: Graph, conjecture_id: str) -> str:
+    """`held`, `broke`, `undecided` or `unrun` for a conjecture's prospective
+    test — the latest one, for the reason `assurance_for` takes the latest per
+    method.
+
+    Reported on the `tests` edge rather than on the conjecture, because the
+    edge *is* the test: it points from the query that would settle something to
+    the thing it would settle, and whether it did is a fact about that
+    relation. Putting it on the node would also collide with status, which is
+    the promotion ladder and must not start meaning "a prediction held".
+    """
+    latest = None
+    for v in graph.verifications(conjecture_id):
+        if v.payload.get("method") == VerificationMethod.PROSPECTIVE_TEST:
+            latest = v.payload["result"]
+    return {
+        VerificationResult.PASS: "held",
+        VerificationResult.FAIL: "broke",
+        VerificationResult.INDETERMINATE: "undecided",
+    }.get(latest, "unrun")
 
 
 def edge_json(edge) -> dict[str, Any]:
@@ -163,8 +186,54 @@ def dossier_json(graph: Graph, node_id: str) -> dict[str, Any]:
         latest[v["payload"]["method"]] = v
     detail["latest_verifications"] = list(latest.values())
     detail["prospective_test"] = latest.get("prospective_test")
+    # All of them, not the latest — see `_measurements`. A hypothesis can carry
+    # a placement of four works, and "the latest measurement" is not a thing a
+    # reader of that wants.
+    detail["measurements"] = _measurements(graph, node_id)
 
     return detail
+
+
+#: A `CORPUS_MEASUREMENT` verification is written by three different tools, and
+#: a reader needs to know which — a feature count, a feature applied to works in
+#: doubt, and a Delta placement say different things and are read differently.
+#: The distinction is recoverable from `detail`'s opening verb, which each tool
+#: fixes deliberately, rather than from a field nothing validates.
+MEASUREMENT_KINDS = (
+    ("associated ", "association"),
+    ("placed ", "placement"),
+    ("applied ", "application"),
+    ("counted ", "count"),
+)
+
+
+def _measurements(graph: Graph, node_id: str) -> list[dict[str, Any]]:
+    """Every measurement recorded against a hypothesis, newest last.
+
+    Not latest-per-method, unlike `latest_verifications`. A node can carry a
+    placement of four different works and a count of two different features,
+    and collapsing them to one would show whichever happened to be written
+    last — which is the bug that made a stale pass outrank a later failure,
+    committed on an axis where "latest" is not even the right idea.
+    """
+    out = []
+    for v in graph.verifications(node_id):
+        p = v.payload
+        if p.get("method") != VerificationMethod.CORPUS_MEASUREMENT:
+            continue
+        detail = p.get("detail") or ""
+        kind = next((k for prefix, k in MEASUREMENT_KINDS if detail.startswith(prefix)), "other")
+        out.append({
+            "id": v.id,
+            "kind": kind,
+            "result": p["result"],
+            "detail": detail,
+            "limitations": p.get("limitations"),
+            "fingerprint": p.get("excerpt_hash"),
+            "works": list(p.get("works") or ()),
+            "association": p.get("association"),
+        })
+    return out
 
 
 def findings_json(graph: Graph, *, limit: int | None = None) -> dict[str, Any]:
@@ -172,12 +241,26 @@ def findings_json(graph: Graph, *, limit: int | None = None) -> dict[str, Any]:
 
     Ordered newest first and reported with the numbers a reader needs to decide
     what to open: where it sits on the ladder, whether its support survives the
-    independence check, and whether its prospective query has been run.
+    independence check, whether its prospective query has been run, and — for a
+    registered discriminator — what became of it.
+
+    That last field is why the ledger's contents are here rather than only on
+    their own page. A candidate feature was showing up in two places under two
+    framings: once as an unranked hypothesis, and once as a ledger row with the
+    fate that is the single most informative thing about it. The same node
+    described twice in two places is how a reader ends up unable to assemble
+    one picture, so `fate` travels with the hypothesis.
 
     Deliberately not scored or ranked by support count. A list sorted by
     "most attested" would be a confidence ranking wearing a different hat, and
-    the whole argument is that counting agreement is the wrong move.
+    the whole argument is that counting agreement is the wrong move. Grouping
+    by `fate` is a different thing and is allowed: a fate is a fact about a
+    test that was run, not an estimate of how good a feature is.
     """
+    fates = {
+        row["conjecture_id"]: row
+        for row in ledger_json(graph)["features"]
+    }
     rows: list[dict[str, Any]] = []
     for node_type in (NodeType.CONJECTURE, NodeType.CLAIM):
         for node in graph.nodes(node_type=node_type):
@@ -205,6 +288,10 @@ def findings_json(graph: Graph, *, limit: int | None = None) -> dict[str, Any]:
                 "has_prospective_query": bool(tests),
                 "prospective_result": prospective.payload["result"] if prospective else None,
                 "created_seq": node.created_seq,
+                # Present only on a registered discriminator: its fate, the
+                # prediction it made, and the tallies the control observed.
+                "ledger": fates.get(node.id),
+                "measurements": _measurements(graph, node.id),
             })
     rows.sort(key=lambda r: -r["created_seq"])
     return {"count": len(rows), "findings": rows[:limit] if limit else rows}

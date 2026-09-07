@@ -87,6 +87,15 @@ export const LEGEND_EDGES = [
   },
 ]
 
+//: Shown instead of the plain `tests` entry once any prediction has been run.
+//: Keyed by outcome rather than by edge type, because after a test is run the
+//: outcome is the thing a reader is looking for.
+export const LEGEND_OUTCOMES = [
+  { key: 'held', klass: 'e-test-held', text: 'prediction held', strong: 'held' },
+  { key: 'broke', klass: 'e-test-broke', text: 'prediction broke', strong: 'broke' },
+  { key: 'undecided', klass: 'e-test-undecided', text: 'test did not decide' },
+]
+
 //: One rule for what the reader can see, used by both `layout` and
 //: `legendFor`. Two copies of this test is how `question` nodes came to be
 //: absent from the graph while present in every other view: a node type
@@ -115,10 +124,49 @@ export function legendFor(nodes, edges, { showAudit }) {
   const statuses = new Set(
     nodes.filter((n) => visible.has(n.id)).map((n) => n.status),
   )
+  const outcomes = new Set(
+    edges
+      .filter((e) => visible.has(e.src) && visible.has(e.dst))
+      .filter((e) => e.type === 'tests' && e.outcome && e.outcome !== 'unrun')
+      .map((e) => e.outcome),
+  )
+  // A `tests` entry is dropped once every tests edge on screen has been run:
+  // it would be explaining a dotted line the reader cannot see.
+  const anyUnrun = edges.some(
+    (e) => visible.has(e.src) && visible.has(e.dst)
+      && e.type === 'tests' && (!e.outcome || e.outcome === 'unrun'),
+  )
   return {
-    edges: LEGEND_EDGES.filter((entry) => entry.types.some((t) => drawn.has(t))),
+    edges: LEGEND_EDGES.filter(
+      (entry) => entry.types.some((t) => drawn.has(t))
+        && !(entry.key === 'tests' && !anyUnrun),
+    ),
+    outcomes: LEGEND_OUTCOMES.filter((o) => outcomes.has(o.key)),
     statuses: STATUS_ORDER.filter((s) => statuses.has(s)),
   }
+}
+
+// A `tests` edge is the only edge whose meaning changes after it is drawn.
+// Every other relation states something that is either true or retracted; this
+// one states a prediction, and a prediction that has been run either held or
+// broke. Rendering all of them alike turns twenty-two tested predictions into
+// twenty-two identical lines — which is precisely the flattening §10 forbids,
+// on the axis a prediction-driven study actually turns on.
+//
+// Dotted stays the *unrun* case, which is what dotted was always saying: still
+// open, not yet asked.
+export const TEST_OUTCOME = {
+  held:      { klass: 'e-test-held',      label: 'prediction held' },
+  broke:     { klass: 'e-test-broke',     label: 'prediction broke' },
+  undecided: { klass: 'e-test-undecided', label: 'test did not decide' },
+  unrun:     { klass: 'e-tests',          label: 'tests — not yet run' },
+}
+
+export function edgeClass(edge) {
+  if (edge.type === 'tests' && edge.outcome) {
+    return (TEST_OUTCOME[edge.outcome] || TEST_OUTCOME.unrun).klass
+  }
+  return (EDGE_STYLE[edge.type] || EDGE_STYLE.part_of).klass
 }
 
 export const NODE_W = 190

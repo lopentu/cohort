@@ -22,6 +22,7 @@ a finding is a scholarly act, and starting an agent run spends money.
 | `--corpus` | corpus browse and search |
 | `--allow-writes` | accept / reject / reopen |
 | `--allow-runs` | the Inquiry launcher (`--max-budget` caps each run) |
+| `--radich DIR` | an ascription study: the placements in Findings, **and** the four ascription tools an agent may call |
 
 Without a flag the routes are **not mounted at all** — a disabled capability
 returns 404 rather than a 403, because the server simply doesn't have it.
@@ -104,11 +105,61 @@ reshuffle itself as a graph grows.
 
 - **Graph** — the evidence graph, its legend, provenance on click. The refusal
   count and the node/edge stats live here, because both describe this graph.
-- **Findings** — every claim and conjecture as a **hypothesis**, then what the
-  researcher has accepted (the only citable nodes) and what they rejected, with
-  reasons, side by side; plus the two integrity checks. Rejections sit next to
-  findings deliberately: showing conclusions without showing what was thrown out
-  and why would misrepresent the record.
+- **Findings** — everything the graph currently amounts to, in one page. It was
+  three (Findings, Ledger, Attribution) until 2026-09-06, and that was the
+  problem: the same conjecture appeared in two of them under two framings — once
+  as an unranked hypothesis, once as a ledger row carrying the fate that is the
+  single most informative thing about it — while the Delta study measuring the
+  works those hypotheses were about sat in a third. Nothing was missing and
+  nothing could be assembled.
+
+  Top to bottom the page is an argument:
+
+  1. **The reading** — how many candidate features were *tried* against how many
+     survived a negative control, and the benchmark's own internal spread that
+     every distance below is read against. The ratio leads because it is the
+     finding: three survivors out of four is a different claim from three out of
+     ninety, and a page opening with the survivors would make the second read
+     like the first.
+  2. **Hypotheses**, grouped by what became of them — survived, registered but
+     untested, discarded, and everything that is not a candidate discriminator.
+     Discarded features are collapsed, never omitted; the count stays on the
+     header, because those rows are what make the ratio mean anything.
+  3. **Where the works in doubt sit** — with `--radich`. Each work outside the
+     benchmark, measured two ways and in this order:
+
+     Every work carries a **verdict** — associates / weak association /
+     alternate reference point / not placed — because the question has two
+     branches and a row answering only the first was blank three times out of
+     four. *Not placed* is drawn quietest of the four: a work the method could
+     not place must not look like a work shown not to belong.
+
+     - **Association across the canon** (the headline). Of the works nearest
+       this one among all 1,464 profiled, are benchmark members more common
+       than chance? Drawn against a **calibration band**: what a *known*
+       benchmark work scores with itself held out. Beside it, the number a
+       reader must see before treating a zero as an exclusion — how many
+       undisputed members the method **cannot see** (six of sixteen on the
+       Paramārtha study). And the **nearest work outside the group** next to
+       the nearest one inside it, which is the genre control.
+     - **Where it sits regardless of the group** — how near its nearest work
+       is, how far the second trails, and how tightly the neighbourhood holds
+       together, each as a percentile of the corpus's own distribution. A work
+       whose nearest stands clear of the rest has a *dominant attractor*: one
+       reference point worth checking, which is the second branch of the
+       question. This is **not** a group signature and is never combined with
+       the one above — across sixteen undisputed members of one group these
+       percentiles span almost the whole range.
+     - **Distance against the benchmark's own spread** (behind the click). Its
+       ceiling is the distance of the group's most eccentric member, so almost
+       nothing falls outside it. Kept because it is a real check against
+       over-reading a small distance, demoted because on this corpus it
+       answers "not distinguishable" for every disputed work and every control
+       alike.
+  4. **Citable** and **Rejected**, side by side. Rejections sit next to findings
+     deliberately: showing conclusions without showing what was thrown out and
+     why would misrepresent the record.
+  5. **Integrity** — the two self-checks, last, because they are not findings.
 
   Opening a hypothesis shows its dossier, all of which the graph already held
   and none of which was reachable without walking edges by hand: the
@@ -134,6 +185,18 @@ reshuffle itself as a graph grows.
   starts, not something that was found — and asking it in one tab to run
   against it in another made the connection between them something the
   researcher had to remember rather than something the tool did.
+
+  With `--radich`, agents in a run are additionally offered the four
+  **ascription tools**, and their order is the method: `register_discriminator`
+  records a prediction about a feature before anything is counted,
+  `run_control_test` counts and compares against it, `apply_to_disputed` is
+  refused outright until that control has passed, and `associate_work` /
+  `place_work` measure one work against the benchmark — the first by
+  neighbourhood across the whole canon, the second by distance against the
+  benchmark's own spread. They are offered only when a study is open —
+  a worker on a graph with no catalogue would meet a tool that can do nothing
+  but refuse, and spend a paid turn learning that. Everything they write lands
+  in Findings, which is the whole reason those two tabs went away.
 
 Clicking an author in a node's provenance opens that agent's contribution
 counts. Counts, never a score: a reputation number would reward volume, so an
@@ -257,19 +320,30 @@ is deliberate and narrow:
   agenda is the supervision, and a planner that paraphrased the question into
   a task would be relocating that decision, not automating it.
 
-Two things it does that a person pressing Start usually does not:
+The roster is **one worker and one reviewer**, and does not scale with the
+pool. Two things about that are deliberate:
 
-- **it spends the second seat on a reviewer, not a second worker.** No agent
-  may attest what it authored, so a single-family roster can propose but never
-  promote: every claim stops at `proposed`. The count that gets a *checked*
-  answer is two, not one.
-- **it gives the workers different stances** — one looking for attestation,
-  one for what would make an answer wrong. Two agents told the same thing run
-  the same searches and return the same passages, and two identical answers
-  read as corroboration while being one result counted twice.
+- **the second seat is a reviewer, not a second worker.** No agent may attest
+  what it authored, so a one-family roster can propose but never promote:
+  every claim stops at `proposed` and the output is a pile of assertions
+  nothing has checked. The count that buys a *checked* answer is two.
+- **the worker is asked to break its own answer** — propose what the passages
+  support, then search for what would make that answer wrong, recording a
+  contradiction rather than choosing between conflicting passages. That job
+  used to belong to a second worker; it moved rather than disappearing when
+  the roster shrank, because it is the half worth keeping.
 
-The stances are fixed rather than generated per run, so two runs on one
-question are comparable. `GET /api/run/config` reports the roster auto would
+The two models must come from **different providers**. Both the roster check
+(`check_distinct_model_families`) and the write boundary
+(`ReviewerNotIndependent`) refuse a reviewer that shares a model family with
+the author — a different id on one model is not a different reader — so a
+same-family reviewer would be refused before the run started, and could never
+promote anything even if it were not. The worker takes `OPENROUTER_MODEL`, the
+configured default; the reviewer takes the next distinct family in
+`OPENROUTER_MODELS`.
+
+The stance is fixed rather than generated per run, so two runs on one question
+are comparable. `GET /api/run/config` reports the roster auto would
 build (`plan`), so the launcher can name what it is about to spend money on;
 the shape depends on how many model *families* the pool has, which a browser
 computing it itself would have to reimplement and would drift from.

@@ -59,6 +59,15 @@ def _open_corpus():
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default=str(REPO_ROOT / "demo_graph.sqlite"))
+    parser.add_argument(
+        "--pcatalogue", metavar="DIR", default=None,
+        help="directory holding an ascription study: `corpus/T-stripped/` and "
+             "a catalogue. Opening one builds a Delta space over the whole "
+             "corpus, which takes about half a minute and is done once at "
+             "startup so no request pays for it",
+    )
+    parser.add_argument("--benchmark-label", default="P-23")
+    parser.add_argument("--control-label", default="interloper")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--reload", action="store_true")
@@ -121,11 +130,31 @@ def main() -> None:
             )
             sys.exit(1)
 
+    study = None
+    if args.pcatalogue:
+        from cohort.delta_study import open_study
+
+        print(f"building the Delta space over {args.pcatalogue} — about 35s, once",
+              file=sys.stderr)
+        study = open_study(
+            args.pcatalogue,
+            benchmark_label=args.benchmark_label,
+            control_label=args.control_label,
+        )
+        print(f"  {study.corpus_size} works read, {len(study.space.works())} "
+              f"long enough to profile, {len(study.space.features)} features; "
+              f"{len(study.catalogue.works())} catalogued works indexed for counting",
+              file=sys.stderr)
+
+    # After the study, because a run manager built without it would hand every
+    # agent a toolset missing the four ascription tools — silently, and only
+    # discoverable by paying for a run and reading the transcript.
     run_manager = None
     if args.allow_runs:
         log_path = Path(args.log) if args.log else db_path.with_suffix(".jsonl")
         run_manager = RunManager(
             db_path, log_path, source, max_budget_usd=args.max_budget,
+            study=study,
         )
 
     attribution = None
@@ -175,6 +204,8 @@ def main() -> None:
         modes.append("researcher writes")
     if source is not None:
         modes.append("corpus")
+    if study is not None:
+        modes.append("ascription study")
     if run_manager is not None:
         modes.append(f"agent runs (max ${args.max_budget:.2f}/run)")
     if attribution is not None:
@@ -197,7 +228,8 @@ def main() -> None:
     uvicorn.run(
         create_app(
             db_path, args.log, allow_writes=args.allow_writes,
-            source=source, run_manager=run_manager, attribution=attribution,
+            source=source, run_manager=run_manager,
+            attribution=attribution, study=study,
         ),
         host=args.host, port=args.port,
     )

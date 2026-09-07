@@ -191,6 +191,29 @@ class VerificationMethod(StrEnum):
     #: makes it a test rather than a check.
     PROSPECTIVE_TEST = "prospective_test"
 
+    #: Re-count a stated feature across the corpus and compare the numbers to
+    #: the ones a claim's author recorded (`cohort.measure`,
+    #: `cohort.tools.measure_claim`).
+    #:
+    #: Added 2026-09-06 with the argument §6 requires, for the Paramārtha
+    #: ascription question. Until now an agent could write "occurs eighteen
+    #: times in P-23, twice in P-weird" into a `derivation` and the graph had
+    #: no way to disagree. In an attribution study *every* claim is a count or
+    #: a rate, so that gap is not a rough edge: it is the difference between a
+    #: finding and a story with figures in it.
+    #:
+    #: It belongs here for the same reason `PROSPECTIVE_TEST` does and
+    #: `MODEL_ENTAILMENT` still does not — nothing in it is anyone's opinion.
+    #: A stated feature is counted again over the same works and the same base
+    #: edition, and the integers are compared. `cohort.measure` is pure and
+    #: deterministic precisely so this comparison means something.
+    #:
+    #: What it cannot do is say a feature *discriminates*. It re-derives the
+    #: numbers a claim rests on; whether they support the claim is a judgement,
+    #: and putting that judgement in a verification would turn a recount into a
+    #: verdict.
+    CORPUS_MEASUREMENT = "corpus_measurement"
+
 
 class VerificationResult(StrEnum):
     PASS = "pass"
@@ -338,6 +361,39 @@ class HitExpectation(StrEnum):
     AT_LEAST = "at_least"
 
 
+class DiscriminationPrediction(_Model):
+    """What a candidate discriminator promises, registered before it is run.
+
+    Added 2026-09-06 with the argument §6 requires, for the Paramārtha
+    ascription question.
+
+    **Two-sided, and that is the whole point.** A one-sided prediction — "this
+    feature appears in the benchmark" — is satisfied by any sufficiently common
+    word, which is how a description gets mistaken for a discriminator. The
+    control ceiling is what makes it a test: the feature must be present in the
+    benchmark group *and* absent from a set of works believed not to belong.
+    `HitExpectation` cannot say this, because one threshold on one count cannot
+    express a contrast between two groups.
+
+    Shares of *works*, not of characters or occurrences. The groups contain
+    works differing in length by more than two hundred fold, and a share of
+    characters would let one long text carry a prediction on its own. An
+    ascription claim is about works, so the threshold is too.
+
+    The control group is named here rather than inferred, so a discriminator
+    records which negative control it was actually tested against — a later
+    reader should not have to assume it was the strict one.
+    """
+
+    feature: str = Field(min_length=1)
+    benchmark_label: str = Field(min_length=1)
+    control_label: str = Field(min_length=1)
+    #: fraction of *measurable* benchmark works that must attest the feature
+    min_benchmark_share: float = Field(ge=0.0, le=1.0)
+    #: fraction of *measurable* control works that may attest it and no more
+    max_control_share: float = Field(ge=0.0, le=1.0)
+
+
 class QueryPayload(_Model):
     text: str = Field(min_length=1)
 
@@ -352,6 +408,12 @@ class QueryPayload(_Model):
     #: conjecture, and nothing can edit a payload afterwards.
     expectation: HitExpectation | None = None
     expected_hits: int | None = Field(default=None, ge=0)
+
+    #: Set only on the `tests` query of a candidate discriminator, by
+    #: `register_discriminator`, in the same call that creates the conjecture.
+    #: Same contract as `expectation` above: on the record first, or it is not
+    #: a prediction.
+    discrimination: DiscriminationPrediction | None = None
 
 
 class QuestionPayload(_Model):
@@ -378,6 +440,157 @@ class DecisionPayload(_Model):
     reason: str | None = None
 
 
+class GroupOutcome(_Model):
+    """What one labelled group of works showed, as a tally.
+
+    Added 2026-09-06 alongside `DiscriminationPrediction`. A control test's
+    result is four numbers, and until this existed they lived only inside the
+    `detail` sentence — which meant every reader of the record, the ledger
+    included, had to parse English to tabulate them. Prose is the right place
+    for what a result *means* and the wrong place for what it *was*.
+
+    Tallies of works, matching the shares a prediction is written in. No rates
+    and no totals: a group whose members differ in length by two hundred fold
+    has no meaningful pooled rate, and offering a field for one would invite
+    somebody to fill it.
+    """
+
+    label: str = Field(min_length=1)
+    works_measured: int = Field(ge=0)
+    works_attesting: int = Field(ge=0)
+    works_skipped_short: int = Field(ge=0)
+
+
+class WorkOutcome(_Model):
+    """What one work showed, as the row a table can print.
+
+    Added 2026-09-06, for the same reason `GroupOutcome` was: a check that
+    reached individual works — a feature applied to disputed texts, a Delta
+    placement — reported them only inside its `detail` sentence, so a reader
+    wanting the numbers had to parse English, and the Findings dossier could
+    only ever render prose.
+
+    Per work and never pooled, and `per_10k` is None rather than 0.0 below the
+    character floor — the same disciplines `cohort.measure` enforces, carried
+    into the record so a payload cannot state a rate the measurement itself
+    refused to give.
+    """
+
+    work: str = Field(min_length=1)
+    label: str | None = None
+    chars: int = Field(ge=0)
+    count: int = Field(ge=0)
+    per_10k: float | None = None
+    editions_attesting: int = Field(ge=0)
+    editions_total: int = Field(ge=0)
+    sufficient: bool = True
+    note: str | None = None
+
+
+class NeighbourOutcome(_Model):
+    """One work in another work's neighbourhood, with where it ranked.
+
+    `label` is the group label when this neighbour belongs to the group being
+    tested and None otherwise, so a renderer can mark group members without
+    being handed a second parallel list to keep in step with this one.
+    """
+
+    work: str = Field(min_length=1)
+    label: str | None = None
+    delta: float
+    rank: int = Field(ge=1)
+
+
+class EnrichmentOutcome(_Model):
+    """How many of the `k` nearest works belong to the group, at one `k`, with
+    what known members of that group score at the same `k`.
+
+    The calibration fields are not decoration. A share is uninterpretable
+    against chance alone — chance says the enrichment is unlikely, not that it
+    is as strong as membership normally looks — and `calibration_blind` is the
+    one a reader must see before treating a zero as an exclusion: it counts
+    undisputed members of the group that the method also fails to recover.
+    """
+
+    k: int = Field(ge=1)
+    hits: int = Field(ge=0)
+    share: float = Field(ge=0.0, le=1.0)
+    p_value: float = Field(ge=0.0, le=1.0)
+    within_calibration: bool
+    calibration_n: int = Field(ge=0)
+    calibration_blind: int = Field(ge=0)
+    calibration_min: float = Field(ge=0.0, le=1.0)
+    calibration_median: float = Field(ge=0.0, le=1.0)
+    calibration_max: float = Field(ge=0.0, le=1.0)
+
+
+class NeighbourhoodOutcome(_Model):
+    """Where a work sits in the corpus, independent of any group.
+
+    The second branch of an ascription question — *what else is this near* —
+    and the reason three works showing no group enrichment are not three blanks.
+    Percentiles rather than raw distances, because a Δ of 0.45 is neither near
+    nor far until the corpus says so.
+
+    Not a group signature, and must not be rendered as one: across sixteen
+    undisputed members of one group these percentiles span almost the whole
+    range. It says where a work sits, never who wrote it.
+    """
+
+    nearest: NeighbourOutcome | None = None
+    nearest_delta: float
+    gap_to_second: float
+    cohesion: float
+    nearest_percentile: float = Field(ge=0.0, le=100.0)
+    gap_percentile: float = Field(ge=0.0, le=100.0)
+    cohesion_percentile: float = Field(ge=0.0, le=100.0)
+    #: one reference point clearly ahead of the rest — an alternate-ascription
+    #: lead. `diffuse` is its opposite and they are never both true.
+    dominant: bool = False
+    diffuse: bool = False
+    reading: str = Field(min_length=1)
+
+
+class AssociationOutcome(_Model):
+    """A work measured against a group across the whole corpus.
+
+    Distinct from a `NullBand` reading and deliberately so: a band asks whether
+    a work is inside a group's own spread, which almost nothing fails, and this
+    asks whether the group is over-represented among the work's nearest
+    neighbours, which is the question with the corpus behind it. See
+    `cohort.association` for the full argument.
+
+    `nearest_outside_group` is the genre control and travels in the same
+    payload as `nearest_in_group` for the reason a `NullBand` travels with a
+    Delta: separated, the comparison is one a renderer can decline to make.
+    """
+
+    work: str = Field(min_length=1)
+    group_label: str = Field(min_length=1)
+    group_size: int = Field(ge=0)
+    corpus_size: int = Field(ge=0)
+    expected_share: float = Field(ge=0.0, le=1.0)
+    #: rank of the nearest group member, or None when the group has none in
+    #: the corpus at all — never 0, so "no member anywhere" cannot be confused
+    #: with "a member at the top".
+    first_rank: int | None = None
+    nearest_in_group: NeighbourOutcome | None = None
+    nearest_outside_group: NeighbourOutcome | None = None
+    enrichment: tuple[EnrichmentOutcome, ...] = ()
+    neighbours: tuple[NeighbourOutcome, ...] = ()
+    neighbourhood: NeighbourhoodOutcome | None = None
+    #: One word for what this work is, so that every work gets a determinate
+    #: row: associates / weak / alternate / unplaced. Rendering the three
+    #: unenriched works of a four-work study as one blank made the method look
+    #: unable to answer, when "not here, and here is where it does sit" is an
+    #: answer.
+    verdict: str = ""
+    #: The group half of the reading on its own, so a renderer can show the two
+    #: branches as two statements rather than one paragraph.
+    group_reading: str = ""
+    reading: str = Field(min_length=1)
+
+
 class VerificationPayload(_Model):
     method: VerificationMethod
     result: VerificationResult
@@ -396,6 +609,20 @@ class VerificationPayload(_Model):
     excerpt_hash: str | None = None
     span_start: int | None = None
     span_end: int | None = None
+    #: Populated only by checks that compared labelled groups of works — a
+    #: discriminator's control test. Empty for everything else, and additive,
+    #: so every verification written before this existed still validates.
+    groups: tuple[GroupOutcome, ...] = ()
+    #: Populated only by checks that reached individual works — a feature
+    #: applied to disputed texts, a Delta placement. Additive alongside
+    #: `groups`, which tallies; this is what was tallied.
+    works: tuple[WorkOutcome, ...] = ()
+    #: Populated only by an association measure. One field holding a
+    #: nested model rather than three parallel tuples, because its parts
+    #: are meaningless apart: a share without its calibration, or a
+    #: nearest group member without the nearest work outside the group,
+    #: is the half of the measure that flatters it.
+    association: AssociationOutcome | None = None
 
 
 PAYLOAD_BY_TYPE: dict[NodeType, type[_Model]] = {

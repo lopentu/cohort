@@ -29,6 +29,8 @@ ROUTE_TO_COMMAND = {
     ("GET", "/api/graph"): "graph",
     ("GET", "/api/node"): "node",
     ("GET", "/api/citable"): "citable",
+    ("GET", "/api/ledger"): "ledger",
+    ("GET", "/api/study"): "study",
     ("GET", "/api/rejected"): "rejected",
     ("GET", "/api/agent"): "agent",
     ("GET", "/api/refusals"): "refusals",
@@ -91,11 +93,20 @@ def app_routes(tmp_path):
         def evidence(self, uid, features="radich"):
             raise KeyError(uid)
 
+    class _Study:
+        """Stands in for an ascription study. Building a real one reads a
+        corpus that is not in this repository, and this fixture's only job is
+        to make every route mountable — the study route's behaviour is tested
+        in `test_delta_study.py`."""
+
+        def as_json(self, *, top=8):
+            return {}
+
     source = _Source()
     app = create_app(
         db, log, allow_writes=True, source=source,
         run_manager=RunManager(db, log, source),
-        attribution=_Attribution(),
+        attribution=_Attribution(), study=_Study(),
     )
     routes = set()
     for route in app.routes:

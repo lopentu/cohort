@@ -56,7 +56,26 @@ from cohort.tools.record_contradiction import RecordContradictionInput, record_c
 from cohort.tools.semantic_neighbors import DESCRIPTION as SEMANTIC_NEIGHBORS_DESCRIPTION
 from cohort.tools.semantic_neighbors import NAME as SEMANTIC_NEIGHBORS_NAME
 from cohort.tools.semantic_neighbors import SemanticNeighborsInput, semantic_neighbors
-
+from cohort.tools.discriminator import (
+    APPLY_DESCRIPTION,
+    APPLY_NAME,
+    CONTROL_DESCRIPTION,
+    CONTROL_NAME,
+    REGISTER_DESCRIPTION,
+    REGISTER_NAME,
+    ApplyToDisputedInput,
+    RegisterDiscriminatorInput,
+    RunControlTestInput,
+    apply_to_disputed,
+    register_discriminator,
+    run_control_test,
+)
+from cohort.tools.place_work import DESCRIPTION as PLACE_WORK_DESCRIPTION
+from cohort.tools.place_work import NAME as PLACE_WORK_NAME
+from cohort.tools.place_work import PlaceWorkInput, place_work
+from cohort.tools.associate_work import DESCRIPTION as ASSOCIATE_WORK_DESCRIPTION
+from cohort.tools.associate_work import NAME as ASSOCIATE_WORK_NAME
+from cohort.tools.associate_work import AssociateWorkInput, associate_work
 from .openrouter import (
     DEFAULT_MAX_OUTPUT_TOKENS,
     complete,
@@ -67,12 +86,12 @@ from .openrouter import (
 
 #: bump whenever SYSTEM_PROMPT or TOOLS changes shape, so logged model_call
 #: events can be grouped by which prompt/tool contract actually produced them.
-PROMPT_VERSION = "attestation_worker/v6-evidence-tools"
+PROMPT_VERSION = "attestation_worker/v7-evidence-and-ascription"
 
 SYSTEM_PROMPT = (
     "You are an attestation worker in COHORT, an evidence graph for textual "
-    "research. You have exactly three tools, all of which write to the graph "
-    "through its own enforced rules — you cannot write structure any other "
+    "research. Every tool you have writes to the graph through its own "
+    "enforced rules — you cannot write structure any other "
     "way, and a call that violates a rule is refused and reported back to "
     "you, not silently dropped. Never invent a node id: every id you pass to "
     "a tool must be one a tool returned to you, or one already in the graph. "
@@ -202,6 +221,119 @@ TOOLS = [
     },
 ]
 
+#: Offered only when the server was started against an ascription study, and
+#: the conditional is the point. These four are the *method* for an attribution
+#: question — register a prediction, survive a negative control, only then
+#: speak about a work in doubt — and `apply_to_disputed` refuses until the
+#: control has passed. A worker on a graph with no catalogue would meet a tool
+#: that can do nothing but refuse, and spend a turn learning that.
+#:
+#: The ordering here is the ordering they must be called in, and it is stated
+#: again in `STUDY_PROMPT` because a model reads the prompt and skims the
+#: schema list.
+STUDY_TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": REGISTER_NAME,
+            "description": REGISTER_DESCRIPTION,
+            "parameters": RegisterDiscriminatorInput.model_json_schema(),
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": CONTROL_NAME,
+            "description": CONTROL_DESCRIPTION,
+            "parameters": RunControlTestInput.model_json_schema(),
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": APPLY_NAME,
+            "description": APPLY_DESCRIPTION,
+            "parameters": ApplyToDisputedInput.model_json_schema(),
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": ASSOCIATE_WORK_NAME,
+            "description": ASSOCIATE_WORK_DESCRIPTION,
+            "parameters": AssociateWorkInput.model_json_schema(),
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": PLACE_WORK_NAME,
+            "description": PLACE_WORK_DESCRIPTION,
+            "parameters": PlaceWorkInput.model_json_schema(),
+        },
+    },
+]
+
+
+def _study_context(study) -> str:
+    """What this study actually contains, so the model does not have to guess
+    a label or a work id and get refused for it.
+
+    Named groups and their sizes rather than the full membership: the
+    catalogue can run to hundreds of works, and a worker that needs one by
+    name can ask the corpus. What it cannot guess is the *labels*, which are a
+    researcher's choice — `apply_to_disputed` takes one as an argument, and a
+    wrong one is a refusal that teaches nothing.
+    """
+    if study is None:
+        return ""
+    cat = study.catalogue
+    groups = ", ".join(
+        f"{label} ({len(cat.works(label))} works)" for label in cat.labels()
+    )
+    return (
+        "An ascription study is open on this graph. Its catalogue names: "
+        f"{groups}. The benchmark group is {cat.benchmark_label!r} — the works "
+        f"believed to belong — and {cat.control_label!r} is the negative "
+        "control: works believed NOT to belong, which earlier methods could "
+        "not separate from the benchmark.\n\n"
+        "The order of the ascription tools is the method, and it is enforced. "
+        "register_discriminator records a prediction about a feature before "
+        "anything is counted. run_control_test counts and compares against "
+        "that prediction; most candidates fail here, and a failure is a result "
+        "to record, not a call to retry with a lower threshold — moving the "
+        "prediction after seeing the numbers is the error this whole ordering "
+        "exists to prevent. apply_to_disputed is refused outright until the "
+        "control has passed. associate_work and place_work are independent of "
+        "that chain, but each needs a claim or conjecture to record against, "
+        "so propose one first.\n\n"
+        "An ascription question has two branches and you are expected to "
+        "answer both for every work you are asked about. Branch one: can this "
+        "work be associated with the benchmark, against the rest of the canon? "
+        "Branch two: if not, what IS it nearest to — is there some other "
+        "reference point in the corpus that stands clearly ahead of the rest, "
+        "suggesting a different ascription? associate_work answers both in one "
+        "call and you should call it on every work in doubt.\n\n"
+        "Read its result carefully, because two of its outcomes are easy to "
+        "confuse. A work with no benchmark enrichment has NOT been shown to be "
+        "outside the group: the calibration reports how many undisputed "
+        "members the method also fails to recover, and where that number is "
+        "high a null says only that this work is somewhere the method cannot "
+        "see. Do not write that a work is excluded, does not belong, or is not "
+        "by the benchmark's author. What you may write is what its own "
+        "neighbourhood shows — a dominant nearest work is a lead worth naming, "
+        "and a diffuse neighbourhood is a result too.\n\n"
+        "place_work reports a distance against the benchmark's own internal "
+        "spread. That spread is set by the group's most eccentric member, so "
+        "almost nothing falls outside it and 'not distinguishable' there is "
+        "close to uninformative on its own — prefer associate_work, and use "
+        "place_work only as a check against over-reading a small distance.\n\n"
+        "Prefer features that could track a translator's register — discourse "
+        "particles, connectives, formulaic openings — over doctrinal "
+        "vocabulary, which tracks what a text is about rather than who "
+        "rendered it."
+    )
+
 
 #: The evidence tools are read-only views over Radich's corpus and its
 #: embeddings. They are registered per worker, only when the server was given
@@ -280,6 +412,7 @@ class AttestationWorker:
         question_id: str | None = None,
         attribution=None,
         embeddings=None,
+        study=None,
     ) -> None:
         self.attribution = attribution
         self.embeddings = embeddings
@@ -311,6 +444,16 @@ class AttestationWorker:
         self.api_key = api_key
         self.transport = transport or default_transport
         self.profile = profile
+
+        #: An open ascription study, or None. Its presence is what decides
+        #: whether this worker is offered the four ascription tools —
+        #: `self.tools`, not `self.TOOLS`, is what the loop sends. The class
+        #: attribute stays the role's fixed set so a subclass can still declare
+        #: its own; this is the per-instance extension, which is the right
+        #: shape because whether a study is open is a property of the server
+        #: this run happens on, not of the role the agent plays.
+        self.study = study
+        self.tools = [*self.TOOLS, *STUDY_TOOLS] if study is not None else list(self.TOOLS)
 
         #: the question this worker was asked, if any. Every claim or
         #: conjecture it proposes gets an `addresses` edge to it — recording
@@ -365,7 +508,11 @@ class AttestationWorker:
         rediscover it. Progress reporting must not change what the agent
         knows."""
         parts = [
-            p for p in (_profile_context(self.profile), _rejected_context(self.graph)) if p
+            p for p in (
+                _profile_context(self.profile),
+                _study_context(self.study),
+                _rejected_context(self.graph),
+            ) if p
         ]
         full_instructions = "\n\n".join([*parts, instructions]) if parts else instructions
         messages: list[dict] = [
@@ -518,15 +665,114 @@ class AttestationWorker:
                 return False, semantic_neighbors(
                     self.embeddings, self.attribution, SemanticNeighborsInput.model_validate(args),
                 )
+            # The four ascription tools, when a study is open. Routed by name
+            # rather than by `self.study is not None`, so calling one against a
+            # server that has no study answers with what is missing instead of
+            # "unknown tool" — which would read as the model having invented a
+            # name it was in fact handed on some other server.
+            if name in _STUDY_TOOL_NAMES:
+                return self._dispatch_study(name, args, model_call_id)
             return True, f"unknown tool: {name}"
         except Exception as e:
             self.graph.log_refusal(
                 name, self.authored_by, e,
                 node_id=(
                     args.get("claim_or_conjecture_id")
+                    or args.get("conjecture_id")
                     or args.get("witness_id")
                     or args.get("node_a_id")
                 ),
                 model_call_id=model_call_id,
             )
             return True, f"{type(e).__name__}: {e}"
+
+    def _dispatch_study(self, name: str, args: dict, model_call_id: int | None) -> tuple[bool, Any]:
+        """The four ascription tools. Split out of `_dispatch` rather than
+        inlined because they share one precondition — an open study — and
+        because a reader of `_dispatch` should be able to see the six tools
+        every worker always has without four conditionally-registered ones
+        interleaved among them.
+
+        Raises rather than returning an error tuple: the caller's `except`
+        already turns an exception into a tool error *and* logs the refusal,
+        and returning early here would skip the logging.
+        """
+        if self.study is None:
+            raise RuntimeError(
+                f"{name} needs an ascription study, and this graph has none "
+                "open. The server was started without one; a catalogue naming "
+                "a benchmark group and a negative control is what these tools "
+                "test against"
+            )
+        study, catalogue = self.study, self.study.catalogue
+        if name == REGISTER_NAME:
+            return False, register_discriminator(
+                self.graph, RegisterDiscriminatorInput.model_validate(args),
+                catalogue=catalogue, authored_by=self.authored_by,
+                model_call_id=model_call_id,
+            )
+        if name == CONTROL_NAME:
+            parsed = RunControlTestInput.model_validate(args)
+            out = run_control_test(
+                self.graph, study.corpus, parsed.conjecture_id, catalogue=catalogue,
+                base_edition=parsed.base_edition, min_chars=parsed.min_chars,
+                authored_by=self.authored_by, model_call_id=model_call_id,
+            )
+            # The measurement objects are dataclasses over every catalogued
+            # work; sending them back would spend hundreds of tokens per call
+            # on rows the model has no use for. What it needs is whether the
+            # prediction held and by how much, which is in the two summaries
+            # and the sentence the verification already recorded.
+            return False, {
+                "verification_id": out["verification_id"],
+                "result": out["result"],
+                "benchmark": _tally(out["benchmark"]),
+                "control": _tally(out["control"]),
+            }
+        if name == APPLY_NAME:
+            parsed = ApplyToDisputedInput.model_validate(args)
+            out = apply_to_disputed(
+                self.graph, study.corpus, parsed.conjecture_id, catalogue=catalogue,
+                disputed_label=parsed.disputed_label, base_edition=parsed.base_edition,
+                min_chars=parsed.min_chars, authored_by=self.authored_by,
+                model_call_id=model_call_id,
+            )
+            return False, {
+                "verification_id": out["verification_id"],
+                "feature": out["feature"],
+                "disputed_label": out["disputed_label"],
+                "works": out["works"],
+            }
+        if name == ASSOCIATE_WORK_NAME:
+            return False, associate_work(
+                self.graph, study, AssociateWorkInput.model_validate(args),
+                authored_by=self.authored_by, model_call_id=model_call_id,
+            )
+        if name == PLACE_WORK_NAME:
+            return False, place_work(
+                self.graph, study, PlaceWorkInput.model_validate(args),
+                authored_by=self.authored_by, model_call_id=model_call_id,
+            )
+        return True, f"unknown study tool: {name}"
+
+
+def _tally(summary) -> dict | None:
+    """A `LabelSummary` as the four numbers a model needs, without its `rates`
+    tuple — one float per work, which for a benchmark of 23 is 23 numbers the
+    model cannot do anything with that the share does not already say."""
+    if summary is None:
+        return None
+    return {
+        "label": summary.label,
+        "works_measured": summary.works_measured,
+        "works_attesting": summary.works_attesting,
+        "works_skipped_short": summary.works_skipped_short,
+        "share_attesting": summary.share_attesting,
+    }
+
+
+#: Which tool names `_dispatch_study` answers for. Derived from `STUDY_TOOLS`
+#: rather than written out again, so a tool added to the schema list without a
+#: dispatch case reaches `_dispatch_study` and gets a named error, instead of
+#: falling through to "unknown tool" and looking like the model hallucinated it.
+_STUDY_TOOL_NAMES = frozenset(t["function"]["name"] for t in STUDY_TOOLS)

@@ -195,6 +195,20 @@ class SingleWriterViolation(CohortError):
 #
 # This taxonomy is the answer, and it lives here rather than in the reporting
 # module so that adding a rule forces the decision. `tests/test_refusal_census.py`
+class ControlNotPassed(CohortError):
+    """A candidate discriminator was pointed at a disputed work before it had
+    survived its negative control.
+
+    The gate the Paramārtha study rests on. Radich's `interloper` set is texts
+    that earlier methods could not separate from the benchmark and that are
+    believed not to belong; a feature that cannot separate them has not earned
+    an opinion about the disputed set, however good its story about them
+    sounds. Refused rather than warned, because the order is the method: run
+    the control first and the feature can fail, run it afterwards and the
+    result is unfalsifiable by construction.
+    """
+
+
 # fails if a `CohortError` subclass has no category, the same discipline
 # `tests/test_parity.py` applies to the two front ends.
 
@@ -238,6 +252,9 @@ class RefusalCategory(StrEnum):
 REFUSAL_CATEGORIES: dict[str, RefusalCategory] = {
     # the corpus did not support it
     UnattestableClaim.__name__: RefusalCategory.EVIDENCE,
+    # EVIDENCE, beside the falsifiability gate it extends: the corpus was
+    # asked and did not support the move. Nothing about who was writing.
+    ControlNotPassed.__name__: RefusalCategory.EVIDENCE,
     UnattestableConjecture.__name__: RefusalCategory.EVIDENCE,
     PassageNotLocated.__name__: RefusalCategory.EVIDENCE,
     # who was writing, or what state it was in

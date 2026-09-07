@@ -1616,9 +1616,22 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
 
 .findings { margin: 18px; }
 .findings h2 { margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+
+/* One rhythm between the page's top-level sections, stated here rather than as
+   a margin on each of them.
+
+   Each section used to carry its own, which held while the order was fixed and
+   broke the moment the page was reordered on 2026-09-06: Integrity moved to the
+   end, where it had no margin of its own, and butted straight against the two
+   cards above it. A gap that belongs to the page should not be a property of
+   whichever section happens to be adjacent.
+
+   The same 18px as `.findings-cols`'s own gutter, so Citable, Rejected and
+   Integrity read as three cards on one grid rather than two and then a third. */
+.findings > * + * { margin-top: 18px; }
+
 .findings-cols {
   display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-  margin-top: 18px;
 }
 .findings-cols > div {
   padding: 18px;
@@ -1772,7 +1785,6 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
 .run-history-agents { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
 
 /* Hypotheses — claims and conjectures as dossiers, not as node ids. */
-.hypotheses { margin-bottom: 1.5rem; }
 .hyp-list { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.6rem; }
 .hyp {
   border: 1px solid var(--line);
@@ -2037,10 +2049,7 @@ a.cbeta-link.block:hover { color: var(--text); }
 .ev-table .num, .ev-table th:not(.g) { text-align: right; white-space: nowrap; }
 .ev-table td.g { font-family: "Noto Serif TC", "Noto Serif CJK TC", "Noto Sans CJK TC", serif; font-size: 15px; }
 
-/* --- tab intros ------------------------------------------------------------ */
-/* One short explainer at the top of every tab, collapsible and remembered.
-   Quiet by design: a border and dim text, never a card, so it reads as a
-   caption to the tab rather than as content competing with it. */
+/* --- tab intros ----------------------------------------------------------- */
 /* The tab intro moved from a block at the top of every tab into a popover
    behind a `?` in the top bar (2026-09-07). What is left is the definition
    list, now in one column inside a panel rather than an auto-fit grid across
@@ -2073,3 +2082,396 @@ a.cbeta-link.block:hover { color: var(--text); }
    the longest text in any popover here. */
 .intro-pop { width: 380px; max-width: calc(100vw - 26px); }
 .intro-pop h3 { margin-bottom: 10px; }
+
+/* --- the reading, and the ledger's numbers inside a hypothesis row ------- */
+
+/* The ledger stopped being a page of its own on 2026-09-06. What survives here
+   is what it was actually good at — the ratio, and the four numbers a control
+   test produced — now carried on the hypothesis row itself rather than on a
+   second description of the same node. `.ledger-row`, `.ledger-head`,
+   `.ledger-feature` and `.ledger-detail` went with the page; the classes below
+   are the ones Findings still uses. */
+
+.reading { display: grid; gap: 12px; }
+.reading .study-null {
+  margin: 0; padding: 12px 16px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+  font-size: 12.5px; line-height: 1.6; color: var(--text-dim);
+}
+
+/* The ratio, given the weight the finding actually has. A panel that led with
+   the survivors would let "3 usable" read the same whether 4 or 90 features
+   were tried, which is the difference between a discovery and an artefact. */
+.ledger-ratio {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+}
+.ratio-figure { display: flex; align-items: baseline; gap: 6px; flex: none; }
+.ratio-figure strong { font-size: 30px; font-weight: 680; letter-spacing: -0.02em; }
+.ratio-figure span { color: var(--text-dim); font-size: 13px; }
+.ledger-ratio p { margin: 0; color: var(--text-dim); font-size: 12.5px; line-height: 1.5; }
+
+/* A group of hypotheses that share a fate, as a disclosure. The discarded
+   group is the majority of a real ledger — twenty of twenty-two — and twenty
+   open rows would bury the survivors and the ratio both. Collapsed, never
+   omitted: the count stays on the header, which is the part carrying the
+   argument. */
+.hyp-group { margin-bottom: 20px; }
+.hyp-group-head {
+  display: flex; align-items: baseline; gap: 8px; width: 100%;
+  padding: 4px 0; background: none; border: 0; cursor: pointer;
+  color: var(--text-dim); text-align: left; font: inherit;
+  border-bottom: 1px solid var(--line-soft);
+}
+.hyp-group-head:hover { color: var(--text); }
+.hyp-group-head h3 {
+  margin: 0; font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: inherit;
+}
+.hyp-group-head .caret {
+  display: inline-block; font-size: 13px; line-height: 1; color: var(--text-faint);
+  transition: transform 160ms var(--ease, ease);
+}
+.hyp-group-head .caret.down { transform: rotate(90deg); }
+.hyp-group-head .ledger-n { margin-left: auto; }
+.group-licenses { margin: 8px 0 0; }
+.ledger-n {
+  font-size: 11px; padding: 1px 7px; border-radius: 999px;
+  background: var(--fill-2); color: var(--text-dim); letter-spacing: 0;
+}
+.ledger-pred { color: var(--text-faint); font-size: 11.5px; }
+.ledger-observed { display: flex; gap: 12px; align-items: baseline; }
+.tally { display: inline-flex; gap: 5px; align-items: baseline; font-size: 12px; }
+.tally-label { color: var(--text-faint); }
+.tally em { color: var(--text-faint); font-style: normal; font-size: 11px; }
+
+/* Discarded features stay legible. Fading them to near-invisibility would be
+   hiding them politely, which defeats the point of keeping them — but the
+   surviving ones still have to be findable at a glance, so the distinction is
+   carried by the outline rather than by opacity (docs/design.md §10: status is
+   the stroke). */
+.hyp.f-usable { border-color: var(--accepted); }
+.hyp.f-discarded { border-color: color-mix(in srgb, var(--rejected) 55%, var(--line)); }
+.hyp.f-untested { border-color: color-mix(in srgb, var(--proposed) 55%, var(--line)); }
+.hyp.f-discarded .hyp-text { color: var(--text-dim); }
+
+/* The prediction and what was observed against it, side by side on the row.
+   A control test is four numbers and a threshold; a reader scanning twenty
+   candidates decides which to open on exactly these, so they are not behind
+   the click. */
+.hyp-test {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: 6px 18px; margin-top: 7px;
+}
+
+@media (max-width: 720px) {
+  .ledger-ratio { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+
+/* --- a prediction that has been run -------------------------------------- */
+
+/* `tests` dotted means *not yet asked* — which is what dotted always said.
+   Once a prediction has been run it either held or broke, and drawing both
+   like the unrun case makes a page of tested predictions unreadable: every
+   line identical, the one that survived indistinguishable from the twenty-one
+   that did not.
+
+   Solid for a decided test, dashed for one that could not decide, and the
+   weights differ too, so the distinction survives greyscale and colour
+   blindness the way the discounting edges do. */
+.e-test-held { stroke: var(--accepted); stroke-width: 2; }
+.a-test-held { fill: var(--accepted); }
+.e-test-broke { stroke: var(--rejected); stroke-width: 1.2; opacity: .75; }
+.a-test-broke { fill: var(--rejected); opacity: .75; }
+.e-test-undecided { stroke: var(--proposed); stroke-width: 1.4; stroke-dasharray: 6 3; }
+.a-test-undecided { fill: var(--proposed); }
+
+.swatch.e-test-held { border-color: var(--accepted); border-top-width: 3px; }
+.swatch.e-test-broke { border-color: var(--rejected); }
+.swatch.e-test-undecided { border-color: var(--proposed); border-top-style: dashed; }
+
+
+/* --- a measurement, as the table it always was --------------------------- */
+
+/* These rendered as one English sentence each until 2026-09-06, so a reader
+   who wanted to know which work carried a feature had to parse the sentence,
+   and the counting rules the payload enforces were invisible. The table is
+   scoped to its own scroller: a work id plus five columns overflows a narrow
+   inspector, and the page body must never scroll sideways. */
+
+.measurements { margin-top: 12px; }
+.measurement {
+  margin-top: 10px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  border-left: 3px solid var(--line);
+}
+.measurement.k-placement { border-left-color: var(--tests); }
+.measurement.k-application { border-left-color: var(--supports); }
+.measurement .v-detail { margin: 0; font-size: 12.5px; line-height: 1.55; }
+
+.work-table {
+  width: 100%; margin: 10px 0 0; border-collapse: collapse;
+  font-size: 12px; display: block; overflow-x: auto;
+}
+.work-table th, .work-table td {
+  padding: 4px 10px 4px 0; text-align: left; white-space: nowrap;
+}
+.work-table th {
+  font-weight: 550; color: var(--text-faint); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--line);
+}
+.work-table td { border-bottom: 1px solid var(--line-soft); }
+.work-table .num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.work-table .dim { color: var(--text-faint); }
+/* A work below the character floor is reported, not dropped — this method
+   having nothing to say about it is a result. */
+.work-table tr.short td { color: var(--text-dim); }
+
+.mono-note {
+  margin: 8px 0 0; font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-faint); overflow-wrap: anywhere;
+}
+
+
+/* --- association: a share against what a known member scores -------------- */
+
+/* The headline measure. Drawn on the same idiom as the null band below it — a
+   shaded region for the calibration, a tick for its median, a marker for this
+   work — because they are the same kind of statement and a reader who has
+   learnt to read one should not have to learn a second grammar.
+
+   The scale is fixed 0–30%, not fitted: an axis that rescaled when a new work
+   arrived would make two screenshots of one finding disagree. */
+
+.assoc-scale {
+  position: relative; flex: 1; height: 18px; min-width: 120px;
+  border-radius: 3px; background: var(--fill-1);
+}
+.cal-band {
+  position: absolute; top: 4px; bottom: 4px;
+  background: color-mix(in srgb, var(--accepted) 20%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--accepted) 45%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--accepted) 45%, transparent);
+}
+.cal-median {
+  position: absolute; top: 2px; bottom: 2px; width: 1px;
+  background: color-mix(in srgb, var(--accepted) 65%, transparent);
+}
+.cal-mark {
+  position: absolute; top: 1px; bottom: 1px; width: 3px; border-radius: 2px;
+  background: var(--text); transform: translateX(-1px);
+}
+.study-work.v-associates .cal-mark { background: var(--accepted); }
+.study-work.v-weak       .cal-mark { background: var(--discounts); }
+.study-work.v-alternate  .cal-mark { background: var(--tests); }
+.study-work.v-unplaced   .cal-mark { background: var(--proposed); }
+
+/* Every work gets one, because the question has two branches and a row that
+   answered only the first was blank three times out of four. `unplaced` is
+   deliberately the quietest: a work the method could not place must not look
+   like a work shown not to belong. */
+.verdict {
+  flex: none; font-size: 10.5px; letter-spacing: 0.02em;
+  padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+  border: 1px solid var(--line); color: var(--text-dim); background: var(--fill-1);
+}
+.verdict.v-associates {
+  border-color: color-mix(in srgb, var(--accepted) 55%, transparent);
+  color: var(--accepted);
+}
+.verdict.v-weak {
+  border-color: color-mix(in srgb, var(--discounts) 50%, transparent);
+  color: var(--discounts);
+}
+.verdict.v-alternate {
+  border-color: color-mix(in srgb, var(--tests) 50%, transparent);
+  color: var(--tests);
+}
+
+.assoc-figure { display: flex; align-items: baseline; gap: 7px; flex: none; }
+.assoc-figure strong { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+.assoc-figure em {
+  font-style: normal; font-family: var(--mono); font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+/* The genre control, on the row rather than behind the click: the nearest
+   group member is only meaningful beside the nearest work that is not one. */
+.assoc-control {
+  margin: 2px 14px 10px; font-size: 11.5px; color: var(--text-dim);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px;
+}
+.assoc-control code { font-family: var(--mono); font-size: 11px; color: var(--text); }
+.assoc-control .rank { color: var(--text-faint); font-size: 10.5px; }
+.assoc-control .sep {
+  width: 1px; height: 10px; background: var(--line); margin: 0 5px;
+}
+
+.study-calibration {
+  margin: 0 0 12px; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+  font-size: 12.5px; line-height: 1.6; color: var(--text-dim);
+}
+.study-calibration strong { color: var(--text); }
+
+/* Association colours the outline, the same channel status uses (design.md
+   §10) — and `a-blind` is deliberately the neutral one, because a work the
+   method cannot see must not look like a work shown not to belong. */
+.study-work.v-associates { border-color: color-mix(in srgb, var(--accepted) 55%, var(--line)); }
+.study-work.v-weak { border-color: color-mix(in srgb, var(--discounts) 45%, var(--line)); }
+.study-work.v-alternate { border-color: color-mix(in srgb, var(--tests) 45%, var(--line)); }
+.study-work.v-unplaced { border-color: var(--line); }
+
+/* The two branches as two paragraphs. Run together they read as one hedge. */
+.study-readings { padding: 0 14px 4px; display: grid; gap: 5px; }
+.study-readings .study-reading { padding: 0; margin: 0; }
+.study-reading.hood { color: var(--text-dim); }
+.study-reading.hood.lead {
+  color: var(--text); padding-left: 9px;
+  border-left: 2px solid color-mix(in srgb, var(--tests) 55%, transparent);
+}
+
+.assoc-detail { margin-top: 8px; }
+.assoc-summary { margin: 0; font-size: 12.5px; line-height: 1.55; }
+.assoc-summary code, .assoc-detail .assoc-control code {
+  font-family: var(--mono); font-size: 11.5px;
+}
+.assoc-detail .assoc-control { margin: 8px 0 0; }
+.hood-block {
+  margin-top: 10px; padding: 9px 11px;
+  border-radius: var(--radius); background: var(--fill-1);
+  border-left: 2px solid var(--line);
+}
+.hood-block.lead { border-left-color: color-mix(in srgb, var(--tests) 60%, transparent); }
+.hood-reading { margin: 0 0 5px; font-size: 12.5px; line-height: 1.55; }
+.hood-block .hint { margin: 0; }
+
+.work-table tr.assoc-strong td { color: var(--text); font-weight: 550; }
+.work-table tr.assoc-strong td:first-child::after {
+  content: ' ✓'; color: var(--accepted);
+}
+
+.band-row { display: flex; align-items: center; gap: 12px; margin: 4px 0 2px; }
+.band-row .study-scale { flex: 1; }
+.nb-rank {
+  font-family: var(--mono); font-size: 10.5px; color: var(--text-faint);
+  min-width: 2.2em; text-align: right;
+}
+
+
+/* --- attribution: a distance against the spread it has to beat ----------- */
+
+/* A section of Findings, not a page: the page supplies the margin. */
+.study { margin: 0; max-width: 940px; }
+.study h2 { margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+.study > .hint { margin: 0 0 12px; }
+
+.study-frame {
+  padding: 13px 15px; margin-bottom: 12px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+}
+.study-null { margin: 0 0 6px; font-size: 13px; line-height: 1.55; }
+.study-frame .hint { margin: 0; }
+
+/* The caveat is a first-class element, not a footnote. These neighbourhoods
+   track subject matter, and a reader who scrolls past that will over-read
+   every row below it. */
+.study-caveat {
+  margin: 0 0 22px; padding: 10px 13px;
+  border-left: 3px solid var(--tests);
+  background: color-mix(in srgb, var(--tests) 7%, transparent);
+  font-size: 12.5px; line-height: 1.55; color: var(--text-dim);
+}
+
+.study-group { margin-bottom: 26px; }
+.study-group h3 {
+  display: flex; align-items: baseline; gap: 8px; margin: 0 0 10px;
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+.study-n {
+  font-size: 11px; padding: 1px 7px; border-radius: 999px;
+  background: var(--fill-2); letter-spacing: 0;
+}
+
+.study-work {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  margin-bottom: 8px; padding-bottom: 2px;
+}
+/* Inside the band is the *common* case and the unremarkable one, so it is not
+   coloured like a pass. Outside is what deserves a reader's attention. */
+.study-work.outside { border-color: color-mix(in srgb, var(--tests) 45%, var(--line)); }
+
+.study-head {
+  display: grid; grid-template-columns: 8.5rem 1fr 5.5rem; gap: 14px;
+  align-items: center; width: 100%; padding: 11px 14px 6px;
+  background: none; border: 0; text-align: left; cursor: pointer;
+  color: var(--text); font: inherit;
+  white-space: normal; overflow: visible; text-overflow: clip;
+}
+.study-id { font-size: 14px; font-weight: 600; }
+.study-delta {
+  font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+  text-align: right;
+}
+
+/* The scale. One shared domain across every row, so two works can be compared
+   by eye rather than by reading two numbers and subtracting. */
+.study-scale {
+  position: relative; display: block; height: 20px;
+  border-radius: 3px; background: var(--fill-1);
+}
+.scale-band {
+  position: absolute; top: 4px; bottom: 4px;
+  background: color-mix(in srgb, var(--accepted) 22%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--accepted) 55%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--accepted) 55%, transparent);
+  border-radius: 2px;
+}
+.scale-median {
+  position: absolute; top: 6px; bottom: 6px; width: 1px;
+  background: color-mix(in srgb, var(--accepted) 65%, transparent);
+}
+.scale-mark {
+  position: absolute; top: 1px; bottom: 1px; width: 3px; margin-left: -1.5px;
+  border-radius: 2px; background: var(--text);
+}
+.study-work.outside .scale-mark { background: var(--tests); }
+
+.study-reading {
+  margin: 0 14px 10px; font-size: 12px; line-height: 1.5; color: var(--text-dim);
+}
+
+.study-neighbours { padding: 0 14px 12px; border-top: 1px solid var(--line-soft); }
+.study-neighbours h4 {
+  margin: 12px 0 6px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--text-faint);
+}
+.study-neighbours ol { margin: 0 0 8px; padding: 0; list-style: none; display: grid; gap: 3px; }
+.study-neighbours li { font-size: 12.5px; display: flex; gap: 9px; align-items: baseline; }
+.nb-work { font-weight: 550; }
+/* A benchmark work turning up as a nearest neighbour is the single most
+   interesting thing this view can show, so it is marked rather than left for
+   the reader to cross-reference against the catalogue. */
+.nb-bench { color: var(--accepted); }
+.nb-bench::after { content: ' ★'; font-size: 10px; }
+.nb-label { color: var(--text-faint); font-size: 11px; }
+.nb-delta { color: var(--text-dim); font-family: var(--mono); font-size: 11.5px; }
+
+.study-unmeasurable {
+  margin: 10px 0 0; padding: 9px 12px; font-size: 12px; line-height: 1.5;
+  border: 1px dashed var(--line); border-radius: var(--radius-sm);
+  color: var(--text-dim);
+}
+
+@media (max-width: 720px) {
+  .study-head { grid-template-columns: 1fr; gap: 8px; }
+  .study-delta { text-align: left; }
+}

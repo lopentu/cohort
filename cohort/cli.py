@@ -44,6 +44,7 @@ from .errors import (
 )
 from .eventlog import EventLog, read_refusals, read_runs, summarize_refusals
 from .graph import Graph
+from .ledger import ledger_json
 from .schemas import RESEARCHER, EdgeType, NodeType, QuestionPayload
 from .views import (
     dossier_json,
@@ -200,6 +201,106 @@ def cmd_citable(args) -> None:
         for n in p:
             print(f"{n['type']:<12} {n['id']}")
         print(f"\n{len(p)} citable")
+    _emit(args, payload, render)
+
+
+def _open_study(args):
+    """The study named by `--pcatalogue`, or None when the flag was not given.
+
+    Shared by `study` and `run` so the terminal offers an agent exactly the
+    tools the browser does. Without it, `cohort run` would quietly hand every
+    agent a smaller toolset than the same graph served over HTTP — the kind of
+    asymmetry `tests/test_parity.py` exists to catch between the two front
+    ends, here between two callers of one run manager.
+    """
+    from .delta_study import open_study
+
+    if not getattr(args, "pcatalogue", None):
+        return None
+    return open_study(
+        args.pcatalogue,
+        benchmark_label=args.benchmark_label,
+        control_label=args.control_label,
+    )
+
+
+def cmd_study(args) -> None:
+    """The ascription study. Reads the corpus directly and holds no graph — a
+    Delta space is a measurement over texts, not a record of anyone's claims."""
+    from .delta_study import open_study
+
+    payload = _open_study(args).as_json(top=args.top)
+
+    def render(p):
+        n = p["null"]
+        cal = next((c for c in p["calibration"] if c["k"] == 25), None)
+        print(f"benchmark {p['benchmark_label']}: {n['n']} works, "
+              f"Δ to each other {n['min']}–{n['max']} (median {n['median']})")
+        print(f"{p['features']} features over {p['corpus_size']} works, "
+              f"floor {p['min_chars']} chars")
+        if cal:
+            # The calibration first, because every share below is unreadable
+            # without it — and `blind` most of all: while a third of the
+            # group's undisputed members score zero, a zero is not an
+            # exclusion.
+            print(f"calibration: a known {p['benchmark_label']} work has "
+                  f"{cal['min']:.0%}–{cal['max']:.0%} of its 25 nearest in "
+                  f"{p['benchmark_label']} (median {cal['median']:.0%}); "
+                  f"{cal['blind']} of {cal['n']} score zero")
+        print()
+        for label, group in p["groups"].items():
+            print(f"{label}:")
+            for prof in group["profiles"]:
+                where = "inside" if prof["inside_null"] else "OUTSIDE"
+                near = ", ".join(
+                    f"{q['work']}{'*' if q['label'] == p['benchmark_label'] else ''}"
+                    f" {q['delta']}"
+                    for q in prof["neighbours"][:4]
+                )
+                a = prof.get("association")
+                if a:
+                    e = a["enrichment"][0]
+                    mark = ("associates" if e["within_calibration"] and e["hits"]
+                            else "weak" if e["hits"] else "not seen")
+                    print(f"  {prof['work']:<12} {e['hits']:>2}/{e['k']} nearest are "
+                          f"{p['benchmark_label']}  p={e['p_value']:.1e}  [{mark}]")
+                    print(f"               {a['reading']}")
+                print(f"               Δ={prof['mean_delta_to_benchmark']:.3f} "
+                      f"[{where} the benchmark's own spread]  nearest: {near}")
+            if group["unmeasurable"]:
+                print(f"  below the floor, not profiled: "
+                      f"{', '.join(group['unmeasurable'])}")
+            print()
+        print(f"* = a {p['benchmark_label']} work")
+        print(p["caveat"])
+    _emit(args, payload, render)
+
+
+def cmd_ledger(args) -> None:
+    graph = _read(args)
+    try:
+        payload = ledger_json(graph)
+    finally:
+        graph.close()
+
+    def render(p):
+        if not p["features"]:
+            print(p["reading"])
+            return
+        print(f"{'fate':<10} {'feature':<14} {'predicted':<22} outcome")
+        for row in sorted(p["features"], key=lambda r: r["fate"]):
+            pred = row["prediction"]
+            window = (
+                f">={pred['min_benchmark_share']:.2f} / "
+                f"<={pred['max_control_share']:.2f}"
+            )
+            control = row["control"]
+            outcome = control["result"] if control else "not run"
+            print(f"{row['fate']:<10} {row['feature']:<14} {window:<22} {outcome}")
+        print()
+        # The ratio, not the survivors, and last so it is the line left on
+        # screen.
+        print(p["reading"])
     _emit(args, payload, render)
 
 
@@ -899,6 +1000,7 @@ def cmd_run(args) -> None:
     manager = RunManager(
         Path(args.db), _log_path(args), source,
         max_budget_usd=args.budget, max_turns=args.max_turns,
+        study=_open_study(args),
     )
     try:
         manager.start(specs, budget_usd=args.budget, max_turns=args.max_turns,
@@ -1001,6 +1103,20 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("id")
 
     add("citable", cmd_citable, "accepted nodes — the only ones citable by output")
+    p = add("study", cmd_study,
+            "an ascription study: where each disputed work sits relative to the "
+            "benchmark's own internal spread, and what it is nearest to in the "
+            "whole corpus")
+    p.add_argument("--pcatalogue", required=True, metavar="DIR",
+                   help="directory holding corpus/T-stripped/ and P-catalogue.txt")
+    p.add_argument("--benchmark-label", default="P-23")
+    p.add_argument("--control-label", default="interloper")
+    p.add_argument("--top", type=int, default=8, help="neighbours per work")
+
+    add("ledger", cmd_ledger,
+        "every candidate discriminator and what became of it — including the "
+        "ones that failed their negative control, which is the number that "
+        "says whether the surviving ones mean anything")
 
     p = add("rejected", cmd_rejected, "rejected nodes, with their reasons")
     p.add_argument("--type", choices=[t.value for t in NodeType])
@@ -1124,6 +1240,16 @@ def build_parser() -> argparse.ArgumentParser:
                         "it; alongside an explicit roster it just records what "
                         "the run was asked. Every claim or conjecture the run "
                         "proposes gets an `addresses` edge to it")
+    p.add_argument("--pcatalogue", metavar="DIR",
+                   help="open an ascription study from this directory and give "
+                        "every agent in the run the four tools that go with it: "
+                        "register a discriminator, run its negative control, "
+                        "apply a surviving one to disputed works, place a work "
+                        "in the Delta space. Without it those tools are not "
+                        "offered — an agent should not meet a tool that can "
+                        "only refuse")
+    p.add_argument("--benchmark-label", default="P-23")
+    p.add_argument("--control-label", default="interloper")
     p.add_argument("--budget", type=float, default=0.25, help="hard USD cap for the run")
     p.add_argument("--max-turns", type=int, default=8)
     p.add_argument("--max-agents", type=int, default=4,

@@ -151,34 +151,36 @@ class AgentSpec:
 # model "what should we look into here?" would be the bottom-up
 # question-generation this project has not agreed to.
 
-#: The stance each auto worker takes. Fixed, not chosen per run: two agents
-#: handed the same question and the same instructions run the same searches and
-#: return the same passages, and two identical answers look like corroboration
-#: while being one result counted twice — the exact confusion
-#: `independent_support()` exists to prevent. So the second worker's job is to
-#: look for what would *break* an answer. `record_contradiction` has never once
-#: been called in a live run, which is some evidence that nothing in the current
-#: setup asks anyone to try.
-INQUIRY_STANCES = (
-    (
-        "direct attestation",
-        "Search the corpus for passages that would attest an answer to this "
-        "question, and propose the claims or conjectures those passages support. "
-        "Cite what you find; propose nothing you cannot cite.",
-    ),
-    (
-        "disconfirmation",
-        "Your job is the other side: search for passages that would make an "
-        "answer to this question wrong, or that an answer would have to explain "
-        "away. Where two passages genuinely conflict, record the contradiction "
-        "rather than choosing between them. A question that survives this is "
-        "worth more than one nobody tried to break.",
-    ),
+#: The one worker's stance. Auto mode plans exactly one worker and one
+#: reviewer, so the two jobs that used to be split across two workers go to the
+#: same agent: propose what the passages support, *and* go looking for what
+#: would break it.
+#:
+#: Merged rather than dropped. The disconfirming half is the half worth having —
+#: `record_contradiction` has still never been called in a live run, which is
+#: some evidence that nothing had ever asked anyone to try — and quietly losing
+#: it when the roster shrank would have made the smaller run cheaper in the one
+#: way that matters least.
+#:
+#: Fixed, not generated per run: a stance chosen per run would be a model
+#: deciding how to inquire, and would make two runs on one question
+#: incomparable.
+INQUIRY_STANCE = (
+    "attestation and disconfirmation",
+    "First, search the corpus for passages that would attest an answer to this "
+    "question, and propose the claims or conjectures those passages support. "
+    "Cite what you find; propose nothing you cannot cite.\n\n"
+    "Then do the opposite, before you stop: search for passages that would make "
+    "your own answer wrong, or that it would have to explain away. Where two "
+    "passages genuinely conflict, record the contradiction rather than choosing "
+    "between them. An answer that survives this is worth more than one nobody "
+    "tried to break, and finding out yours does not survive is a result, not a "
+    "failure.",
 )
 
 REVIEW_STANCE = (
     "review",
-    "Check the claims the other agents proposed against the passages they "
+    "Check the claims the worker proposed against the passages it "
     "cite. Attest what holds. Where a citation does not resolve, say so and "
     "leave it unattested — withholding is a result.",
 )
@@ -208,29 +210,32 @@ def plan_inquiry(
         by_family.setdefault(model_family(m), m)
     usable = [by_family[f] for f in families]
 
-    # A reviewer is reserved before workers are allocated, not added if some
-    # budget happens to be left. An agent may not attest what it authored, so a
-    # run with no second family cannot promote anything it proposes: every
-    # claim stays at `proposed` and the run's output is a pile of assertions
-    # nobody checked. Trading the second worker for a reviewer is the whole
-    # reason to plan a roster rather than let someone press Start with one
-    # agent — the count that gets you a *checked* answer is 2, not 1.
-    seats = max(1, min(max_agents, len(usable) or 1))
-    reviewing = seats >= 2
-    worker_seats = min(seats - (1 if reviewing else 0), len(INQUIRY_STANCES))
+    # One worker, one reviewer — and the reviewer is not the optional half.
+    # An agent may not attest what it authored, so a roster with only one model
+    # family can propose but never promote: every claim stops at `proposed` and
+    # the run's output is a pile of assertions nothing has checked. The count
+    # that buys a *checked* answer is two, and the second seat is spent on
+    # checking rather than on more proposing.
+    #
+    # The two models must come from different providers. Both the roster check
+    # (`check_distinct_model_families`) and the write boundary
+    # (`ReviewerNotIndependent`) refuse a reviewer sharing a family with the
+    # author, because a different id on one model is not a different reader —
+    # so a roster that reused one would be refused before it could run.
+    usable = usable[:2]
+    reviewing = max_agents >= 2 and len(usable) >= 2
 
     specs: list[AgentSpec] = []
-    for i in range(worker_seats):
-        label, stance = INQUIRY_STANCES[i]
-        specs.append(
-            AgentSpec(
-                agent_id=f"agent:inquiry-{i + 1}",
-                instructions=_inquiry_task(question, answerable_by, stance),
-                method_label=label,
-                model=usable[i] if i < len(usable) else "",
-                role=ROLE_WORKER,
-            )
+    label, stance = INQUIRY_STANCE
+    specs.append(
+        AgentSpec(
+            agent_id="agent:inquiry-1",
+            instructions=_inquiry_task(question, answerable_by, stance),
+            method_label=label,
+            model=usable[0] if usable else "",
+            role=ROLE_WORKER,
         )
+    )
     if reviewing:
         label, stance = REVIEW_STANCE
         specs.append(
@@ -238,7 +243,7 @@ def plan_inquiry(
                 agent_id="agent:inquiry-reviewer",
                 instructions=_inquiry_task(question, answerable_by, stance),
                 method_label=label,
-                model=usable[len(specs)] if len(specs) < len(usable) else "",
+                model=usable[1],
                 role=ROLE_REVIEWER,
             )
         )
@@ -352,6 +357,7 @@ class RunManager:
         transport_factory=None,
         attribution=None,
         embeddings=None,
+        study=None,
     ) -> None:
         self.db_path = db_path
         self.log_path = log_path
@@ -360,6 +366,16 @@ class RunManager:
         #: server has them; workers register the evidence tools only then.
         self.attribution = attribution
         self.embeddings = embeddings
+        #: An open ascription study, handed to every worker this manager
+        #: builds. Its presence is what puts the ascription tools in front
+        #: of an agent, so the answer to "can an agent run a control
+        #: test?" is decided once, when the server starts, by whether the
+        #: operator opened a study — not per run and not by the browser.
+        #:
+        #: Independent of `attribution` above: the two scope the same
+        #: corpus by different catalogues (pre-450 Dharmarakṣa versus the
+        #: P catalogue), so a server may have either, both or neither.
+        self.study = study
         self.max_budget_usd = max_budget_usd
         self.max_turns = max_turns
         self.max_agents = max_agents
@@ -382,6 +398,10 @@ class RunManager:
         return {
             "runs_enabled": True,
             "corpus_available": self.source is not None,
+            # Reported so the launcher can say what an agent will be able to
+            # do, rather than letting a researcher discover after paying for a
+            # run that the ascription tools were never on the table.
+            "study_available": self.study is not None,
             "model_configured": configured,
             "model": detail if configured else None,
             # The pool a multi-agent roster draws on. Agents in one run may not
@@ -598,7 +618,7 @@ class RunManager:
                 return cls(
                     graph, source=self.source, authored_by=spec.agent_id,
                     profile=profile, transport=transport, model=spec.model,
-                    question_id=run.question_id,
+                    question_id=run.question_id, study=self.study,
                     attribution=self.attribution, embeddings=self.embeddings,
                 ), spec.instructions
 

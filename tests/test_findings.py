@@ -217,3 +217,134 @@ def test_the_machines_finding_and_a_readers_words_stay_in_separate_fields(graph,
 def test_an_unknown_id_is_an_error_not_an_empty_dossier(graph, source):
     with pytest.raises(NodeNotFound):
         dossier_json(graph, "claim:nope")
+
+
+# --- one page, not three ----------------------------------------------------
+
+def _corpus(tmp_path):
+    """A tiny catalogued corpus, enough for one control test to run on."""
+    from cohort.catalogue import load_catalogue
+    from cohort.sources.radich_reader import RadichReader
+
+    mark, filler = "阿黎耶識", "文" * 8_000
+    layout = {
+        "B1": mark + filler, "B2": mark + filler, "B3": filler,
+        "C1": filler, "C2": filler,
+        "D1": mark + filler,
+    }
+    for work, text in layout.items():
+        d = tmp_path / "corpus" / work
+        d.mkdir(parents=True)
+        (d / "大.txt").write_text(text, encoding="utf-8")
+    cat = tmp_path / "cat.txt"
+    cat.write_text(
+        "B1 bench\nB2 bench\nB3 bench\nC1 control\nC2 control\nD1 disputed\n",
+        encoding="utf-8",
+    )
+    return (
+        RadichReader(tmp_path / "corpus"),
+        load_catalogue(cat, benchmark_label="bench", control_label="control"),
+        mark,
+    )
+
+
+def _registered(graph, tmp_path):
+    from cohort.tools.discriminator import (
+        RegisterDiscriminatorInput,
+        register_discriminator,
+        run_control_test,
+    )
+
+    corpus, catalogue, mark = _corpus(tmp_path)
+    out = register_discriminator(
+        graph,
+        RegisterDiscriminatorInput(
+            feature=mark, min_benchmark_share=0.6, max_control_share=0.1,
+            derivation="a rendering peculiar to this translator",
+            corpus_boundary="the fixture corpus, base edition 大",
+            selection_risks="chosen by hand, not sampled",
+            alternative_explanations="may track subject matter",
+        ),
+        catalogue=catalogue, authored_by=AGENT,
+    )
+    run_control_test(graph, corpus, out["conjecture_id"], catalogue=catalogue,
+                     authored_by=AGENT)
+    return corpus, catalogue, out
+
+
+def test_a_registered_discriminator_carries_its_fate_on_the_hypothesis_row(
+    graph, tmp_path,
+):
+    """The fate was on a separate page until 2026-09-06, so the same conjecture
+    was described twice — once as an unranked hypothesis, once as a ledger row
+    carrying the single most informative thing about it. A reader could reach
+    both and assemble neither."""
+    corpus, _, out = _registered(graph, tmp_path)
+    try:
+        row = next(
+            r for r in findings_json(graph)["findings"]
+            if r["id"] == out["conjecture_id"]
+        )
+        assert row["ledger"]["fate"] == "usable"
+        assert row["ledger"]["prediction"]["min_benchmark_share"] == 0.6
+        # The four numbers a control test produced, as numbers — so a row does
+        # not have to parse the English sentence beside them.
+        tallies = {g["label"]: g for g in row["ledger"]["control"]["groups"]}
+        assert tallies["bench"]["works_attesting"] == 2
+        assert tallies["control"]["works_attesting"] == 0
+    finally:
+        corpus.close()
+
+
+def test_an_ordinary_hypothesis_has_no_fate(graph, source):
+    """`fate` is meaningful only for a feature with a registered control. A
+    claim carrying `untested` would read as "a control is pending", which is
+    a promise nobody made."""
+    claim = graph.propose_claim(ClaimPayload(text="a plain claim"), authored_by=AGENT)
+    row = next(r for r in findings_json(graph)["findings"] if r["id"] == claim)
+    assert row["ledger"] is None
+
+
+def test_measurements_reach_the_row_and_the_dossier(graph, tmp_path):
+    """A measurement recorded against a hypothesis is the point of giving an
+    agent the tools at all; if it does not travel with the hypothesis it is
+    invisible wherever the hypothesis is read."""
+    from cohort.tools.discriminator import apply_to_disputed
+
+    corpus, catalogue, out = _registered(graph, tmp_path)
+    try:
+        apply_to_disputed(graph, corpus, out["conjecture_id"], catalogue=catalogue,
+                          disputed_label="disputed", authored_by=AGENT)
+        row = next(
+            r for r in findings_json(graph)["findings"]
+            if r["id"] == out["conjecture_id"]
+        )
+        assert len(row["measurements"]) == 1
+        assert row["measurements"][0]["kind"] == "application"
+
+        d = dossier_json(graph, out["conjecture_id"])
+        works = {w["work"] for w in d["measurements"][0]["works"]}
+        assert works == {"D1"}
+    finally:
+        corpus.close()
+
+
+def test_every_measurement_is_kept_not_the_latest_one(graph, tmp_path):
+    """Unlike `latest_verifications`. A hypothesis can carry a placement of
+    four different works, and "the latest measurement" is not a thing a reader
+    of that wants — it would show whichever happened to be written last."""
+    from cohort.tools.discriminator import apply_to_disputed
+
+    corpus, catalogue, out = _registered(graph, tmp_path)
+    try:
+        for _ in range(2):
+            apply_to_disputed(graph, corpus, out["conjecture_id"], catalogue=catalogue,
+                              disputed_label="disputed", authored_by=AGENT)
+        d = dossier_json(graph, out["conjecture_id"])
+        assert len(d["measurements"]) == 2
+        # …while the per-method collapse still applies to the ladder's own read.
+        assert len(d["latest_verifications"]) == len(
+            {v["payload"]["method"] for v in d["verifications"]}
+        )
+    finally:
+        corpus.close()

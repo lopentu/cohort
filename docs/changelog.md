@@ -1412,3 +1412,317 @@ it before looking is what stops it being quietly reshaped afterwards.
 question rather than with a list of node ids.
 
 **11 new tests** (439 total), one new module.
+
+---
+
+## Three pages become one, and the tools behind two of them go to the agents
+
+**2026-09-06.** The researcher's verdict on the six-tab UI was that it was "so
+scattered that i don't even know where to look or to piece together a complete
+picture", and that is the right diagnosis. Findings, Ledger and Attribution were
+three descriptions of overlapping material:
+
+- a candidate discriminator appeared in **Findings** as an unranked hypothesis
+  and in **Ledger** as a row carrying its fate — the single most informative
+  thing about it — with neither page mentioning the other;
+- **Attribution** measured the works those hypotheses were about, and lived
+  entirely outside the graph: `/api/study` computed a Delta space on demand and
+  rendered it. No node, no provenance, no fingerprint, nothing a later reader
+  could disagree with.
+
+Nothing was missing. Nothing could be assembled.
+
+### The tools were tabs when they should have been tools
+
+The deeper problem is that `register_discriminator`, `run_control_test`,
+`apply_to_disputed` and the Delta space were things *the UI did*, not things an
+agent could do. An agent had six tools, none of which could touch the method the
+whole Paramārtha question is about. So a "run" against an ascription question
+could propose claims and find attestations and never once register a prediction.
+
+They are now agent tools, offered when — and only when — the server was started
+against a study (`--radich`, and `cohort run --radich` so the terminal offers
+the same set). The conditional is the point: a worker on a graph with no
+catalogue would meet a tool that can do nothing but refuse, and spend a paid
+turn learning that. `AttestationWorker.TOOLS` stays the role's fixed set and the
+extension is per-instance, because whether a study is open is a property of the
+server, not of the role.
+
+The prompt supplement names the catalogue's groups and states the ordering,
+including the sentence that matters most: **a control failure is a result to
+record, not a call to retry with a lower threshold.** Moving the prediction
+after seeing the numbers is the error the whole ordering exists to prevent, and
+a model that has only met the refusal will read it as an obstacle.
+
+### `apply_to_disputed` wrote nothing
+
+The one concrete output of the entire method — *which works in doubt a surviving
+feature places where* — went to stdout from the demo seed and never reached the
+graph it was derived from. `復次: with benchmark ['T0669', 'T1529', 'T1584',
+'T1644']; without ['T0097', 'T2049']` was printed once, in a terminal, and lost.
+
+It now records a `CORPUS_MEASUREMENT` verification when given an author, and
+still writes nothing without one, so the scripts that print rather than write
+are unchanged. The result is `INDETERMINATE` always, and not because the
+arithmetic is uncertain: pass/fail is for a prediction meeting evidence, the
+registered prediction was about the benchmark and the control and has already
+been settled, and a `PASS` here would read as "the disputed work is
+Paramārtha's" — the one sentence nothing in this system may write.
+
+`WorkOutcome` is the new payload field that carries the rows, alongside
+`GroupOutcome` which carries the tallies. Same reasoning as when `GroupOutcome`
+was added four entries ago: prose is the right place for what a result *means*
+and the wrong place for what it *was*. The Findings dossier prints a table now
+instead of a sentence, and `per_10k` renders as an em dash rather than `0.0`
+below the character floor — a work this method cannot speak to, not a work with
+a rate of nothing.
+
+### `place_work`
+
+New tool: one work's Delta from the benchmark, recorded against a claim or
+conjecture with the null band in the same payload. The band is not optional and
+never was — `Profile` refuses to exist without one — because twice on this same
+day an apparent separation in this study turned out to be an artifact, and both
+would have been obvious at a glance against the benchmark's own spread. A
+renderer cannot drop the calibration because it never receives the distance
+separately from it.
+
+`CAVEAT` goes into `limitations`, which is the field both front ends already
+render under "Does not establish". Character n-grams over this corpus track
+subject matter heavily; a neighbourhood is evidence about resemblance, not
+authorship, and that sentence now travels with every placement rather than
+sitting in a panel's prose where a redesign can lose it.
+
+First call is `INDETERMINATE` — a baseline, which says only what the number is —
+and later calls PASS or FAIL against its fingerprint. Filtered by *work*, for
+the reason `measure_claim` filters by feature: two works on one hypothesis are
+two baselines, and comparing one against the other's would FAIL every time while
+looking like a finding.
+
+### What Findings looks like now
+
+The page is an argument top to bottom: the ratio, then hypotheses grouped by
+fate, then the standing placements, then citable and rejected, then integrity.
+
+Grouping by fate needed an argument of its own, because `findings_json` is
+explicitly *not* ranked — sorting by support count would be a confidence score
+under another name. A fate is a different kind of thing: it is a fact about a
+test that was run, not an estimate of how good a feature is, and `usable` means
+"survived one negative control" and nothing more. Grouping by it is allowed for
+exactly the reason ranking by support is not.
+
+Discarded features are collapsed by default and never omitted. Twenty-two
+candidates produced twenty-one discards; twenty-one open rows would bury the
+survivor and the ratio both, and hiding them would defeat the reason the ledger
+exists. The count stays on the header, which is the part carrying the argument.
+
+### Housekeeping this turned up
+
+- The system prompt said "you have exactly three tools" while six were
+  registered. It had been wrong for three stages. A count in prose is a fact
+  that rots; the schema list is the only place the number should live, and a
+  test now asserts the sentence is gone.
+- `/api/health` reported a `discriminators` count to gate the Ledger tab. It
+  cost a full walk over every conjecture on **every health poll**, the tab is
+  gone, and `/api/ledger` answers the same question for whoever asks it.
+- The study-directory layout (`P-catalogue.txt`, `corpus/T-stripped/`) was
+  spelled out independently in three callers. `open_study()` states it once.
+
+647 tests pass. Nothing here found a Paramārtha marker, and the surviving
+feature is still one discourse particle that separated a sixteen-work benchmark
+from a three-work control — which is what the ratio at the top of the page is
+for.
+
+---
+
+## The measure that answers the brief, and why the band did not
+
+**2026-09-06, later.** The Paramārtha study read as a nothing burger — every
+disputed work and every interloper alike came back *"as close to the benchmark
+as its own members are to each other — not distinguishable from it by this
+measure"* — and the researcher asked what could improve it. Two wrong answers
+were given before the right one, and both are worth recording.
+
+### First wrong answer: a rank test on the catalogue
+
+The interloper contrast looked promising. Every P-weird work is closer to P-23
+than every interloper is — a perfect 4-vs-3 split, p = 0.0286. Four robustness
+checks later:
+
+| perturbation | split | p |
+|---|---|---|
+| bigrams, 300 features (as shipped) | 12/12 | 0.029 |
+| bigrams, 600 features | 12/12 | 0.029 |
+| bigrams, 100 features | 11/12 | 0.057 |
+| unigrams, 300 | 10/12 | 0.114 |
+| trigrams, 300 | 9/12 | 0.200 |
+| equal-length windows (6k, 8k chars) | 11/12 | 0.057 |
+
+Interlopers have a median of 6,012 characters against P-weird's 15,605, and
+`corr(log chars, Δ to P-23) = −0.189`. Equalise the lengths and the gap goes
+negative. It was length at one parameterisation.
+
+Worse, the design could not have produced a real result: with 4 disputed works
+and 3 measurable controls the *best* p a rank test can return is 1/35 = 0.0286,
+and the observed value was exactly that floor. **A perfect split that clears the
+threshold only by being perfect is not a finding.**
+
+(One methodological note from that round: the trigram row was initially reported
+as agreeing with bigrams. It was a bigram run — `build_space(ngram=...)` binds
+its default at definition time, so monkeypatching `DEFAULT_NGRAM` did nothing.
+Passing the parameter is what killed the result.)
+
+### Second wrong answer: ship the negative
+
+Proposed, and correctly rejected by the researcher, who went back to what Radich
+actually wrote:
+
+> can we discover features that still associate such a work with P, **against
+> texts by other translators in the canon** … features that might associate one
+> text or more with **some other reference point(s) in the canon**
+
+That is not the catalogue contrast. It is one work against 1,464 profiled works,
+where the interlopers are a negative control for *feature discovery* and not the
+research question at all. The n problem evaporates: the comparison set is the
+canon.
+
+### `cohort/association.py`
+
+Of the works nearest this one across the whole corpus, are group members more
+common than the 1.1% chance would give? Reported at k = 25, 50 and 100 together,
+because choosing the neighbourhood after seeing all three is the error this
+project exists against.
+
+**Calibrated leave-one-out over the group itself**, and the calibration carries
+the number that matters most: how many undisputed members the method **cannot
+see**. On this study that is six of sixteen. So a work with no enrichment has
+*not* been shown to be an outsider, and `Association.reading` says so in those
+words — a measure that reported those as negatives would be manufacturing
+exclusions. This is the single most important line in the module.
+
+**The genre control is inside the neighbour list, not beside it.** Character
+n-grams track subject matter, so a work surrounded by Abhidharma sits near any
+Abhidharma-heavy group whoever translated it. The check that survives that is
+the nearest group member against the nearest work *outside* the group, and both
+travel in one payload for the reason a `NullBand` travels with a Delta:
+separated, the comparison is one a renderer can decline to make.
+
+### What it found
+
+| work | k=25 | p | reading |
+|---|---|---|---|
+| **T1584** | **5/25** | **3.7×10⁻⁶** | nearest work in the entire canon is T1559, a P-23 work, at Δ 0.489 — nearer than T1562 (0.522), T1563 (0.522), T1558 (0.525), the same material by other hands. Ties the best any known P-23 work reaches. |
+| T1529 | 0/25 | — | no P-23 association; nearest is T1820 at Δ 0.453, isolated by a wide margin from the next at 0.558 — an alternate reference point |
+| T1644 | 0/25 | — | neighbours are cosmological literature (T0001-30-世記經, T0023, T0721) |
+| T0669 | 0/25 | — | neighbours are Mahāyāna sūtra literature (T0945, T0397-15, T0159) |
+
+The control behaved, and named its own failure mode: T1924 → T18xx–T20xx
+Chinese compositions, T2738 → T27xx/T28xx, both correctly negative — but
+**T1608 scores 2/25 (8%)**, an enrichment in the Abhidharma cluster again. Below
+the calibration median, so it reads as "weak" rather than "associates", which is
+the distinction the median threshold exists to draw. It is also the honest limit
+on T1584.
+
+### Why the median and not the minimum
+
+`within_calibration` compares against the *median* known member. The minimum is
+zero — six of sixteen are invisible — so a floor set there would be cleared by
+every work in the canon. Half of a group's own members failing this is the
+expected shape, not a fault in the threshold.
+
+### Elsewhere
+
+- `NullBand` is unchanged and still shown, one click down, with a sentence
+  saying its ceiling is the group's most eccentric member. It is a good check
+  against *over*-reading a small distance and a useless one for finding an
+  association; narrowing it to a quantile would make it a different statistic
+  wearing the same name. `test_place_work.py` pins the "not distinguishable"
+  behaviour rather than fixing it, so the motivation for this module stays
+  visible.
+- `associate_work` is the fifth ascription tool, and the prompt now tells an
+  agent to prefer it over `place_work` and why.
+- The demo seed proposes one conjecture per P-weird work — phrased as the open
+  question, never as its answer — and records the association against it.
+- A test that asserted `len(STUDY_TOOLS) == 4` broke on the very next tool
+  added. It had been written to catch a hardcoded count in the system prompt,
+  which is the same mistake one layer out. It now checks that no number
+  precedes the word "tools" at all.
+- The association fixture's 150 background works were 4,900 characters against
+  a 5,000 floor; `build_space` skipped every one in silence and left the measure
+  being tested on 38 works, where a top-25 neighbourhood is most of the corpus.
+  The fixture now asserts `not space.skipped`.
+
+673 tests pass. **T1584 associates with P-23 and the association survives its
+genre control** — which is a finding, and the first one this project has had.
+
+---
+
+## Answering the second branch, and a row that is never blank
+
+**2026-09-06, later still.** The association measure landed and three of the four
+P-weird works still rendered the same way: a grey bar, a marker at zero, and a
+sentence beginning *"no P-23 work is among the 25 nearest — but 6 of 16
+undisputed P-23 works score zero here too…"*. Epistemically careful, and read as
+the method shrugging four times. The researcher's note was that the format made
+it *look unable to answer*, which was the right diagnosis of the wrong-looking
+thing: the measure genuinely was only answering half the question.
+
+Radich asked two things, and the second one had been dropped:
+
+> can we discover features that still associate such a work with P … **Or,
+> conversely** … features that might associate one text or more with **some
+> other reference point(s) in the canon, suggesting an alternate ascription?**
+
+`associate_work` answered branch one and printed the neighbour list for branch
+two without ever measuring it. So a work with no P-23 enrichment produced a raw
+list of Taishō numbers behind a click and no statement at all.
+
+### What the neighbourhood actually says
+
+Measured against the canon's own distribution, sampled over 200 works:
+
+| work | nearest Δ | gap to 2nd | gap pct | verdict |
+|---|---|---|---|---|
+| T1584 | 0.4894 | 0.0323 | 63rd | **associates** |
+| T1529 | 0.4529 | **0.1052** | **92nd** | **alternate** — T1820 stands clear of everything |
+| T1644 | 0.3324 | 0.0209 | 51st | unplaced, ordinary neighbourhood |
+| T0669 | 0.4806 | 0.0065 | 25th | unplaced, **diffuse** — no work stands out |
+
+Three works that were one blank are now three different statements. T1529 in
+particular has a nearest work standing further clear of the runner-up than 92%
+of the corpus manages — which is precisely the shape branch two asks about, and
+it was visible in the raw list all along with nothing to compare it against.
+
+### The thing this must not become
+
+**Neighbourhood structure is not a group signature.** Across the sixteen
+undisputed P-23 works, nearest-neighbour percentile runs from the 4th to the
+96th and cohesion from the 37th to the 98th. It says where a work sits in the
+canon; it says nothing about who produced it. So the two readings are computed
+separately, rendered as two paragraphs rather than one, and `verdict` is pinned
+by a test as a logical invariant: an enriched work's verdict is decided by the
+group alone, and the neighbourhood may decide something only when the group
+half is empty.
+
+`unplaced` is the fourth verdict and is drawn in the quietest colour on the
+page, for the same reason `blind` exists in the calibration: a work the method
+could not place must not look like a work shown not to belong.
+
+### The prompt
+
+An agent that called `associate_work` and got back zero enrichment previously
+had nowhere to go. It now reads, before it starts, that the question has two
+branches and it is expected to answer both — plus the sentence that matters
+most, in the imperative: *do not write that a work is excluded, does not
+belong, or is not by the benchmark's author.* What it may write is what the
+neighbourhood shows.
+
+### Reproducibility
+
+The canon baseline is a 200-work sample, and a recorded association is
+fingerprinted. An unseeded sample would make every re-measurement disagree with
+its own baseline and report an unchanged corpus as a changed one, so
+`BASELINE_SEED` is fixed and a test asserts two baselines over one space are
+identical.
+
+679 tests pass.

@@ -65,8 +65,10 @@ from cohort.views import (
     question_json,
     questions_json,
 )
+from cohort.ledger import ledger_json
 from cohort.views import edge_json as _edge_json
 from cohort.views import node_json as _node_json
+from cohort.views import test_outcome as _test_outcome
 
 from .runs import ROLE_WORKER, AgentSpec, RunManager, RunRejected, plan_inquiry
 
@@ -81,6 +83,7 @@ def create_app(
     source: Source | None = None,
     run_manager: RunManager | None = None,
     attribution: AttributionIndex | None = None,
+    study=None,
 ) -> FastAPI:
     """Build the app around one projection path.
 
@@ -138,6 +141,15 @@ def create_app(
                 "corpus_enabled": source is not None,
                 "runs_enabled": run_manager is not None,
                 "evidence_enabled": attribution is not None,
+                # Whether an ascription study is open on this server. It
+                # decides what an agent is offered — the ascription tools
+                # are registered only when one is — so a client that wants
+                # to say what a run will be able to do needs it from here
+                # rather than inferring it from node counts. Independent of
+                # `evidence_enabled`: the two scope the same corpus by
+                # different catalogues, so a server may have either, both
+                # or neither.
+                "study_enabled": study is not None,
             }
         finally:
             graph.close()
@@ -163,7 +175,18 @@ def create_app(
             edges = [e for e in graph.edges() if e.src in ids and e.dst in ids]
             return {
                 "nodes": [_node_json(graph, n) for n in nodes],
-                "edges": [_edge_json(e) for e in edges],
+                # A `tests` edge carries its own outcome. Without it, a study
+                # whose findings are predictions rather than citations renders
+                # as a wall of identical lines — every prediction looking alike
+                # whether it held or broke, which is the flattening
+                # docs/design.md §10 forbids, on the axis this kind of study
+                # actually turns on.
+                "edges": [
+                    {**_edge_json(e),
+                     **({"outcome": _test_outcome(graph, e.dst)}
+                        if e.type == EdgeType.TESTS else {})}
+                    for e in edges
+                ],
                 "truncated": truncated,
                 "discounting_edge_types": sorted(DISCOUNTING_EDGE_TYPES),
             }
@@ -201,6 +224,30 @@ def create_app(
         graph = read()
         try:
             return [_node_json(graph, n) for n in graph.citable()]
+        finally:
+            graph.close()
+
+    if study is not None:
+        @app.get("/api/study")
+        def study_view(top: int = Query(default=8, ge=1, le=40)) -> dict[str, Any]:
+            """Where each disputed work sits, and what it is nearest to.
+
+            Not mounted without `--pcatalogue`, like every other capability: a
+            route that answered with an empty study would look like a study
+            that found nothing."""
+            return study.as_json(top=top)
+
+    @app.get("/api/ledger")
+    def ledger() -> dict[str, Any]:
+        """Every candidate discriminator and what became of it.
+
+        The discarded rows are the point. Features that did not work are
+        invisible in ordinary stylometry, so a reader cannot tell a discovery
+        from a fishing expedition — this endpoint is the record that makes the
+        difference legible, and `tried` matters more than `usable`."""
+        graph = read()
+        try:
+            return ledger_json(graph)
         finally:
             graph.close()
 
