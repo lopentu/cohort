@@ -28,6 +28,9 @@ export default function App() {
   const [theme, setTheme] = useState(loadTheme)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
+  // The third top-bar popover. All three are mutually exclusive: two panels
+  // hanging off adjacent controls would overlap each other.
+  const [introOpen, setIntroOpen] = useState(false)
   const [agentSeed, setAgentSeed] = useState(null)
 
   const reload = useCallback(() => {
@@ -44,6 +47,11 @@ export default function App() {
   // The stats popover hangs off a control that only the Graph tab shows, so
   // leaving it open while switching away would strand it.
   useEffect(() => { if (tab !== 'graph') setStatsOpen(false) }, [tab])
+
+  // The help panel describes the tab you are on, so a tab change makes its
+  // open contents wrong. Closed rather than swapped: silently replacing the
+  // text under a reader's eyes is worse than making them ask again.
+  useEffect(() => { setIntroOpen(false) }, [tab])
 
   useEffect(reload, [reload])
 
@@ -125,7 +133,10 @@ export default function App() {
           <StatsBar
             health={health}
             open={statsOpen}
-            onToggle={(v) => { setStatsOpen(v); if (v) setSettingsOpen(false) }}
+            onToggle={(v) => {
+              setStatsOpen(v)
+              if (v) { setSettingsOpen(false); setIntroOpen(false) }
+            }}
           />
         </div>
         <nav className="tabs" ref={tabTrackRef}>
@@ -144,9 +155,20 @@ export default function App() {
         </nav>
 
         <div className="topbar-controls">
+          <TabIntro
+            tab={tab}
+            open={introOpen}
+            onToggle={(v) => {
+              setIntroOpen(v)
+              if (v) { setSettingsOpen(false); setStatsOpen(false) }
+            }}
+          />
           <Settings
             open={settingsOpen}
-            onToggle={(v) => { setSettingsOpen(v); if (v) setStatsOpen(false) }}
+            onToggle={(v) => {
+              setSettingsOpen(v)
+              if (v) { setStatsOpen(false); setIntroOpen(false) }
+            }}
             theme={theme}
             onTheme={setTheme}
             showAudit={showAudit}
@@ -173,7 +195,6 @@ export default function App() {
           <div className="tab-panel" key={tab} data-dir={tabDir}>
             {tab === 'graph' && (
               <>
-                <TabIntro tab="graph" />
                 <Legend data={data} showAudit={showAudit} />
                 <GraphView
                   data={data}
@@ -186,21 +207,17 @@ export default function App() {
                 )}
               </>
             )}
-            {tab === 'findings' && <TabIntro tab="findings" />}
             {tab === 'findings' && (
               <FindingsPanel
                 onSelect={(id) => { setSelectedId(id); goTab('graph') }}
               />
             )}
-            {tab === 'corpus' && <TabIntro tab="corpus" />}
             {tab === 'corpus' && (
               <CorpusPanel
                 onCite={(phrase) => { setAgentSeed(phrase); goTab('run') }}
               />
             )}
-            {tab === 'evidence' && <TabIntro tab="evidence" />}
             {tab === 'evidence' && <EvidencePanel />}
-            {tab === 'run' && <TabIntro tab="run" />}
             {tab === 'run' && (
               <RunPanel instructionSeed={agentSeed} onGraphChanged={reload} />
             )}

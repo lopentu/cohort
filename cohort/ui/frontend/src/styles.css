@@ -442,9 +442,20 @@ code { font-family: var(--mono); font-size: .9em; }
    change would move the button the pointer is already over. Below 760px the
    tab bar wraps to its own full-width row, so nothing can shift and the group
    is dropped outright instead of leaving dead space in a cramped header. */
-.graph-controls { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+/* Members of a cluster sit close; the clusters themselves are separated by
+   `.topbar`'s own 20px gap. That contrast is what makes these read as two
+   groups rather than five loose controls — so tighten the members, never the
+   gap between the groups.
+
+   One value for both, so the bar has a single internal rhythm. An earlier
+   pass gave the bare icons 6px and the labelled pills 8px, on the argument
+   that a 30px box around a 15px glyph already carries its own air — true in
+   isolation, and wrong across a bar where the eye reads the two clusters
+   together and sees the 2px as a mistake. Both were 14px, which was right
+   when `.topbar-controls` held only the gear. */
+.graph-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .graph-controls.off { visibility: hidden; }
-.topbar-controls { display: flex; align-items: center; gap: 14px; flex: none; }
+.topbar-controls { display: flex; align-items: center; gap: 8px; flex: none; }
 .toggle {
   display: flex; align-items: center; gap: 6px;
   font-size: 12px; color: var(--text-dim); cursor: pointer;
@@ -1320,7 +1331,7 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
   .kv dt { color: var(--text-faint); }
   .record-text { max-height: 240px; font-size: 13px; }
   .corpus-snippet { font-size: 13.5px; }
-  .settings-pop, .stats-pop { width: calc(100vw - 24px); }
+  .settings-pop, .stats-pop, .intro-pop { width: calc(100vw - 24px); }
   .boot { padding: 10vh 6vw; }
 }
 
@@ -2030,11 +2041,35 @@ a.cbeta-link.block:hover { color: var(--text); }
 /* One short explainer at the top of every tab, collapsible and remembered.
    Quiet by design: a border and dim text, never a card, so it reads as a
    caption to the tab rather than as content competing with it. */
-.tab-intro { margin: 14px 18px 0; border-left: 2px solid var(--line); padding-left: 12px; flex: none; }
-.tab-intro-toggle { display: flex; gap: 12px; align-items: baseline; width: 100%; background: none; border: 0; padding: 2px 0; color: var(--text); font: inherit; cursor: pointer; text-align: left; }
-.tab-intro-toggle:focus-visible { outline: 2px solid var(--supports); outline-offset: 2px; border-radius: 3px; }
-.tab-intro-title { font-size: 13px; font-weight: 650; }
-.tab-intro-hint { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
-.tab-intro-body { margin: 6px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 6px 20px; max-width: 1100px; }
-.tab-intro-body dt { font-size: 12px; font-weight: 600; color: var(--text-dim); margin: 0; }
-.tab-intro-body dd { font-size: 12.5px; line-height: 1.5; color: var(--text-dim); margin: 1px 0 0; }
+/* The tab intro moved from a block at the top of every tab into a popover
+   behind a `?` in the top bar (2026-09-07). What is left is the definition
+   list, now in one column inside a panel rather than an auto-fit grid across
+   the full page width. `.tab-intro`, `.tab-intro-toggle`, `.tab-intro-title`
+   and `.tab-intro-hint` went with the block. */
+.tab-intro-body { margin: 0; display: grid; gap: 10px; }
+.tab-intro-body dt { font-size: 12px; font-weight: 600; color: var(--text); margin: 0; }
+.tab-intro-body dd { font-size: 12px; line-height: 1.55; color: var(--text-dim); margin: 2px 0 0; }
+
+/* Round, because a question mark in a circle is the one help affordance a
+   reader does not have to be taught. The gear beside it keeps the squarish
+   control radius, so the two are told apart by shape before colour. */
+.icon-btn.help { border-radius: 50%; }
+.icon-btn.help svg { transition: none; }
+.icon-btn.help.on svg { transform: none; }
+
+/* Unseen, not unread: the dot says the panel has never been opened for this
+   tab. It replaces the old block's open-by-default behaviour, which is how a
+   first-time reader used to meet the explanation without looking for it —
+   without a panel that covers what they came to read. */
+.icon-btn.help { position: relative; }
+.icon-btn.help.unseen::after {
+  content: ''; position: absolute; top: 1px; right: 1px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--supports);
+  border: 1.5px solid var(--bg-raised);
+}
+
+/* Prose needs more width than the settings panel's controls, and the intro is
+   the longest text in any popover here. */
+.intro-pop { width: 380px; max-width: calc(100vw - 26px); }
+.intro-pop h3 { margin-bottom: 10px; }
