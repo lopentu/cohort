@@ -203,7 +203,7 @@ def cmd_citable(args) -> None:
 
 
 def _open_study(args):
-    """The study named by `--radich`, or None when the flag was not given.
+    """The study named by `--pcatalogue`, or None when the flag was not given.
 
     Shared by `study` and `run` so the terminal offers an agent exactly the
     tools the browser does. Without it, `cohort run` would quietly hand every
@@ -211,12 +211,12 @@ def _open_study(args):
     asymmetry `tests/test_parity.py` exists to catch between the two front
     ends, here between two callers of one run manager.
     """
-    from .attribution import open_study
+    from .delta_study import open_study
 
-    if not getattr(args, "radich", None):
+    if not getattr(args, "pcatalogue", None):
         return None
     return open_study(
-        args.radich,
+        args.pcatalogue,
         benchmark_label=args.benchmark_label,
         control_label=args.control_label,
     )
@@ -225,7 +225,7 @@ def _open_study(args):
 def cmd_study(args) -> None:
     """The ascription study. Reads the corpus directly and holds no graph — a
     Delta space is a measurement over texts, not a record of anyone's claims."""
-    from .attribution import open_study
+    from .delta_study import open_study
 
     payload = _open_study(args).as_json(top=args.top)
 
@@ -1030,7 +1030,7 @@ def build_parser() -> argparse.ArgumentParser:
             "an ascription study: where each disputed work sits relative to the "
             "benchmark's own internal spread, and what it is nearest to in the "
             "whole corpus")
-    p.add_argument("--radich", required=True, metavar="DIR",
+    p.add_argument("--pcatalogue", required=True, metavar="DIR",
                    help="directory holding corpus/T-stripped/ and P-catalogue.txt")
     p.add_argument("--benchmark-label", default="P-23")
     p.add_argument("--control-label", default="interloper")
@@ -1148,7 +1148,7 @@ def build_parser() -> argparse.ArgumentParser:
                         "it; alongside an explicit roster it just records what "
                         "the run was asked. Every claim or conjecture the run "
                         "proposes gets an `addresses` edge to it")
-    p.add_argument("--radich", metavar="DIR",
+    p.add_argument("--pcatalogue", metavar="DIR",
                    help="open an ascription study from this directory and give "
                         "every agent in the run the four tools that go with it: "
                         "register a discriminator, run its negative control, "

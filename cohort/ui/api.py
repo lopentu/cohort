@@ -226,7 +226,7 @@ def create_app(
         def study_view(top: int = Query(default=8, ge=1, le=40)) -> dict[str, Any]:
             """Where each disputed work sits, and what it is nearest to.
 
-            Not mounted without `--radich`, like every other capability: a
+            Not mounted without `--pcatalogue`, like every other capability: a
             route that answered with an empty study would look like a study
             that found nothing."""
             return study.as_json(top=top)

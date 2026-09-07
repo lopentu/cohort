@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from cohort.attribution import CAVEAT, load_study
+from cohort.delta_study import CAVEAT, load_study
 from cohort.catalogue import load_catalogue
 from cohort.delta import DEFAULT_MIN_CHARS
 from cohort.errors import WrongNodeType

@@ -23,7 +23,7 @@ from cohort.agents.attestation_worker import (
     _study_context,
 )
 from cohort.agents.review_worker import ReviewWorker
-from cohort.attribution import load_study
+from cohort.delta_study import load_study
 from cohort.catalogue import load_catalogue
 from cohort.delta import DEFAULT_MIN_CHARS
 

@@ -111,7 +111,7 @@ def associate_work(
     graph: Graph, study, args: AssociateWorkInput, *, authored_by: str,
     model_call_id: int | None = None,
 ) -> dict:
-    from ..attribution import CAVEAT
+    from ..delta_study import CAVEAT
 
     node = graph.get_node(args.claim_or_conjecture_id)
     if node.type not in MEASURABLE:

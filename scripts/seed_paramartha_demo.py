@@ -29,7 +29,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from cohort.attribution import open_study                         # noqa: E402
+from cohort.delta_study import open_study                         # noqa: E402
 from cohort.catalogue import load_catalogue                       # noqa: E402
 from cohort.eventlog import EventLog                              # noqa: E402
 from cohort.graph import Graph                                    # noqa: E402

@@ -60,7 +60,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--db", default=str(REPO_ROOT / "demo_graph.sqlite"))
     parser.add_argument(
-        "--radich", metavar="DIR", default=None,
+        "--pcatalogue", metavar="DIR", default=None,
         help="directory holding an ascription study: `corpus/T-stripped/` and "
              "a catalogue. Opening one builds a Delta space over the whole "
              "corpus, which takes about half a minute and is done once at "
@@ -126,13 +126,13 @@ def main() -> None:
             sys.exit(1)
 
     study = None
-    if args.radich:
-        from cohort.attribution import open_study
+    if args.pcatalogue:
+        from cohort.delta_study import open_study
 
-        print(f"building the Delta space over {args.radich} — about 35s, once",
+        print(f"building the Delta space over {args.pcatalogue} — about 35s, once",
               file=sys.stderr)
         study = open_study(
-            args.radich,
+            args.pcatalogue,
             benchmark_label=args.benchmark_label,
             control_label=args.control_label,
         )
