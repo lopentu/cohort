@@ -26,6 +26,61 @@ The honest Q1 result is an instrument, not attributions. No grey text has been
 attributed and none will be claimed. What the instrument does is stated in
 [the explainer](#artifacts) section 0 and summarised under *Numbers* below.
 
+## Against the abstract
+
+The accepted abstract promises agent-based architectures powered by large
+language models, an interactive research environment, and agents that assist
+with corpus retrieval, semantic analysis, variant alignment and
+interpretation, provenance-aware and grounded in source texts, integrating
+human expertise in a more dynamic and collaborative model, for diachronic
+digital humanities. Point by point, what runs and what does not.
+
+| abstract | what runs (live, not planned) | what does not |
+|---|---|---|
+| agent-based, LLM-powered | a worker and a reviewer from different provider families, each a tool-use loop over a fixed tool list, under a per-run dollar cap; the live run chose its own chain of 12 calls | one worker per run in the demo; the scaling study in the old handoff is still not done |
+| interactive research environment | five tabs: ask a question with its answer-condition, run agents against it, browse and search, paint evidence and withhold a dependency, accept or reject | accepting from the Evidence screen; drawing an edge by hand |
+| corpus retrieval | exact: `find_attestations` (53 witnesses for one phrase in the live run); by meaning: `semantic_neighbors` over a frozen Buddhist-Chinese encoder | relevance ranking; the encoder's retrieval is passage likeness, not translator identity, and is at the largest-class baseline for the latter |
+| semantic analysis | `attribution_evidence`: string leanings with raw counts and a ledger; the encoder: what a text is about | any measurement beyond string counts and cosine; no dating model |
+| variant alignment | `align_passages`: verbatim shared runs between two units with offsets into both texts | `collate_editions` and `link_parallels` need the CBETA XML archive, and the server is pointed at Radich's plain text; switching makes Corpus show CBETA while Evidence shows Radich |
+| interpretation | `propose_conjecture` with rival explanations and a refutation test; `review_claim` from a second family | nothing checks that a cited span bears on the claim (the 佛 case) |
+| provenance-aware, grounded | every citation re-fetched and hash-verified; ungrounded claims refused and the refusals logged; every Evidence answer names file and SHA-256; the event log is the record | "grounded" means the words exist, not that they support the reading |
+| human expertise integrated | nothing an agent writes is more than `proposed`; only the researcher accepts; rejections kept with reasons | the dependency the demo turns on cannot be recorded as an edge (below) |
+| diachronic | Radich's historical ordering of translators, shown beside each candidate | no time model at all; say "dated by ascription", not "diachronic analysis" |
+
+## To discuss before the talk
+
+**The edge-proposal gap.** The demo story ends with the researcher accepting
+that T1694 quotes T0603 (or that T0453 and Ekottarika 48.3 are one text), and
+"the graph remembers": from then on the independence check treats the two as
+one witness. That check reads edges of type `quotes`, `parallel_of` or
+`descends_from`. Nothing can write such an edge from what the agent found.
+`link_parallels` is the only writer of discounting edges and it writes only
+CBETA's own asserted cross-references; neither the CLI nor the UI can draw an
+edge by hand; `quotes` is in the vocabulary and discounts independence (PR #6)
+but has no writer. What the live run leaves is a conjecture whose prose states
+the relation, which the check does not read. Two options:
+
+1. **Build `propose_dependency(a, b, kind, evidence)`**, a worker tool that
+   an agent may call after `align_passages`, under the same rules as the other
+   proposals: located spans in both texts, arrives `proposed`, promoted only by
+   the researcher; plus the parity mapping, the legend, and tests. About a day.
+   It makes the demo's last step real.
+2. **State it on stage.** "The relation is recorded as a conjecture; writing
+   it as an edge is the next tool." The explainer already words the story this
+   way.
+
+Either is defensible. What is not is the earlier wording, which implied the run
+wrote the edge. Whoever picks this up should decide with the presenter, since
+it changes what the last minute of the talk shows.
+
+**The markup tools.** Pointing the server at the CBETA archive makes
+`collate_editions` and `link_parallels` live at the cost of two different
+texts on two tabs. Decide whether the abstract's "variant alignment" needs the
+apparatus shown, or whether `align_passages` carries it.
+
+**Diachronic.** The weakest fit to the abstract, and not fixable this week.
+Decide the sentence that will be said if someone asks.
+
 ## Read first
 
 1. **[design.md](design.md)** §0 carries the standing rule: when a rule cannot
@@ -136,13 +191,9 @@ per-class control table (a smoothing constant left at the wrong value); the
 
 Ordered by how much it could embarrass the talk.
 
-1. **Step 6 of the demo may be narrative only.** The story ends with the
-   researcher accepting a `quotes` (T0603/T1694) or `parallel_of`
-   (T0453/T0125-48.3) edge. Check what can actually write those edges today:
-   `link_parallels` writes only CBETA's asserted cross-references, and neither
-   front end can draw an edge by hand. If nothing can propose the edge from the
-   evidence tools' output, either add a tool that proposes it (with the same
-   grounding rules) or say on stage that the last step is not built.
+1. **The edge-proposal gap** (see *To discuss before the talk*). Step 6 of
+   the demo is narrative until a tool can propose a `quotes` or `parallel_of`
+   edge from the evidence tools' output, or the talk says it is not built.
 2. **Grounding relevance.** A claim grounded on the single character 佛 passed
    `propose_claim`. The span exists, so the rule is satisfied; nothing checks
    that the span bears on the claim. Decide whether a minimum span length or a
