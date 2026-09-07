@@ -35,7 +35,8 @@ const ALPHA_CAP = 0.55   // above this the ink fails 4.5:1 contrast on both grou
 function readHash() {
   const h = new URLSearchParams(window.location.hash.replace(/^#/, ''))
   return { uid: h.get('uid') || null, features: h.get('features') || 'radich',
-    withhold: h.get('withhold') || '', offset: Number(h.get('offset') || 0) }
+    withhold: h.get('withhold') || '', offset: Number(h.get('offset') || 0),
+    pair: h.get('pair') || '' }
 }
 function writeHash(state) {
   const h = new URLSearchParams()
@@ -43,6 +44,7 @@ function writeHash(state) {
   if (state.features !== 'radich') h.set('features', state.features)
   if (state.withhold) h.set('withhold', state.withhold)
   if (state.offset) h.set('offset', String(state.offset))
+  if (state.pair) h.set('pair', state.pair)
   const next = '#' + h.toString()
   if (window.location.hash !== next) window.history.replaceState(null, '', next)
 }
@@ -55,6 +57,9 @@ export default function EvidencePanel() {
   const [features, setFeatures] = useState(initial.features)
   const [withhold, setWithhold] = useState(initial.withhold)
   const [offset, setOffset] = useState(initial.offset)
+  // 'A,B' pins which two classes the colours compare, so a link can paint a grey
+  // text as tradition (A) against the leader (B) instead of leader vs runner-up.
+  const [pair, setPair] = useState(initial.pair)
   const [data, setData] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
@@ -70,15 +75,15 @@ export default function EvidencePanel() {
   }, [])
 
   useEffect(() => {
-    writeHash({ uid, features, withhold, offset })
+    writeHash({ uid, features, withhold, offset, pair })
     if (!uid) return undefined
     let live = true
     setBusy(true); setError(null)
-    getEvidence(uid, features, { withhold, offset })
+    getEvidence(uid, features, { withhold, offset, pair })
       .then((d) => { if (live) { setData(d); setBusy(false) } })
       .catch((e) => { if (live) { setError(e.message); setData(null); setBusy(false) } })
     return () => { live = false }
-  }, [uid, features, withhold, offset])
+  }, [uid, features, withhold, offset, pair])
 
   const choose = (u) => { setUid(u); setOffset(0) }
 
@@ -178,6 +183,8 @@ export default function EvidencePanel() {
           sequence={units?.sequence || []}
           withhold={withhold}
           onWithhold={setWithhold}
+          pair={pair}
+          onPair={setPair}
           onOffset={setOffset}
         />
       )}
@@ -235,9 +242,11 @@ function rgba(which, a) {
   return `rgba(var(--ev-${which}-rgb), ${Math.max(0, Math.min(a, ALPHA_CAP)).toFixed(2)})`
 }
 
-function Reading({ data, sequence, withhold, onWithhold, onOffset }) {
+function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPair, onOffset }) {
   const [withholdDraft, setWithholdDraft] = useState(withhold)
   useEffect(() => { setWithholdDraft(withhold) }, [withhold])
+  const [pairDraft, setPairDraft] = useState(pinnedPair)
+  useEffect(() => { setPairDraft(pinnedPair) }, [pinnedPair])
 
   const pair = data.pair
   const a = pair?.a, b = pair?.b
@@ -299,6 +308,23 @@ function Reading({ data, sequence, withhold, onWithhold, onOffset }) {
         </label>
         <button className="btn tiny" type="submit">recompute</button>
         {withhold && <button className="btn tiny" type="button" onClick={() => onWithhold('')}>clear</button>}
+      </form>
+
+      <form
+        className="ev-withhold"
+        onSubmit={(e) => { e.preventDefault(); onPair(pairDraft.replace(/\s+/g, '')) }}
+      >
+        <label>
+          <span className="hint small">paint A against B (two class labels, A,B); empty = label or leader vs strongest rival:</span>
+          <input
+            className="corpus-input"
+            value={pairDraft}
+            placeholder="e.g. Dhr,ZFn"
+            onChange={(e) => setPairDraft(e.target.value)}
+          />
+        </label>
+        <button className="btn tiny" type="submit">repaint</button>
+        {pinnedPair && <button className="btn tiny" type="button" onClick={() => onPair('')}>clear</button>}
       </form>
 
       {data.verdict === 'no evidence' ? (
