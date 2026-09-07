@@ -20,7 +20,13 @@ from .sources.cbeta_refs import reader_url
 #: linked by either are evidence of shared descent, not independent
 #: confirmation. Named once so no front end has to re-derive it, and so none
 #: can quietly omit the distinction docs/design.md §10 requires.
-DISCOUNTING_EDGE_TYPES = frozenset({EdgeType.DESCENDS_FROM, EdgeType.PARALLEL_OF})
+#: The relations under which two witnesses' agreement is one observation, not
+#: two: a copy of an exemplar (descends_from), the same passage transmitted in
+#: two texts (parallel_of), and a text reproducing another's words (quotes). A
+#: commentary that quotes its base text does not independently confirm it;
+#: until 2026-09-06 `quotes` was drawn as structural and did not discount, so a
+#: claim resting on a sūtra and its commentary counted two witnesses.
+DISCOUNTING_EDGE_TYPES = frozenset({EdgeType.DESCENDS_FROM, EdgeType.PARALLEL_OF, EdgeType.QUOTES})
 
 
 def node_json(graph: Graph, node) -> dict[str, Any]:

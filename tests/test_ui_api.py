@@ -101,7 +101,7 @@ def test_discounting_edges_are_marked_as_such(client):
     by_type = {e["type"]: e for e in body["edges"]}
     assert by_type["parallel_of"]["discounts"] is True
     assert by_type["attests"]["discounts"] is False
-    assert set(body["discounting_edge_types"]) == {"descends_from", "parallel_of"}
+    assert set(body["discounting_edge_types"]) == {"descends_from", "parallel_of", "quotes"}
 
 
 def test_graph_view_reports_truncation_explicitly(client):

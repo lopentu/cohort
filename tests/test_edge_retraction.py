@@ -211,3 +211,39 @@ def test_restoring_an_edge_that_is_not_retracted_is_refused(graph, supported):
 def test_an_invented_edge_id_is_refused(graph):
     with pytest.raises(EdgeNotFound):
         graph.retract_edge("edge:nope", authored_by=RESEARCHER, reason="does not exist")
+
+
+def test_a_quotation_discounts_independence_like_a_parallel(graph):
+    """A commentary that quotes its base text is not a second witness to the
+    words it quotes. Two passages attesting one claim, one quoting the other:
+    two attestations, two distinct witnesses, and `independent` False -- and
+    retracting the quotes edge restores it, the way it does for parallel_of."""
+    claim = graph.propose_claim(ClaimPayload(text="the phrase recurs"), authored_by=AGENT)
+    passages = []
+    for ref in ("T15n0603", "T33n1694"):
+        w = graph.propose_witness(
+            WitnessPayload(
+                canonical_ref=ref,
+                dating=Dating(confidence=DatingRoute.UNKNOWN, basis="not dated for this test"),
+            ),
+            authored_by=AGENT,
+        )
+        p = graph.propose_passage(
+            PassagePayload(canonical_ref=f"{ref}#x", locator="juan 1", excerpt="譬是人為多熱"),
+            witness_id=w, authored_by=AGENT,
+        )
+        graph.attest(p, authored_by=AGENT)
+        graph.add_edge(EdgeType.ATTESTS, p, claim, authored_by=AGENT)
+        passages.append(p)
+    before = graph.independent_support(claim)
+    assert before.attesting_count == 2
+    assert before.distinct_witnesses == 2
+    assert before.independent is True
+    edge = graph.add_edge(EdgeType.QUOTES, passages[1], passages[0], authored_by=AGENT)
+    after = graph.independent_support(claim)
+    assert after.attesting_count == 2  # the count of citations never moves
+    assert after.distinct_witnesses == 2
+    assert after.independent is False
+    graph.retract_edge(edge, authored_by=RESEARCHER, reason="the quotation was misidentified")
+    assert graph.independent_support(claim).independent is True
+    assert graph.agent_report(AGENT).discount_edges_contributed == 1

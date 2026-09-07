@@ -5,7 +5,7 @@
 // requirements rather than styling choices:
 //
 //   * node status is a visual channel, not a tooltip;
-//   * `descends_from`/`parallel_of` are visually distinct from `attests`,
+//   * `descends_from`/`parallel_of`/`quotes` are visually distinct from `attests`,
 //     because they *discount* support rather than adding it;
 //   * contradiction edges are as visible as agreement edges.
 //
@@ -48,7 +48,7 @@ export const EDGE_STYLE = {
   // relation a reader scans for first.
   addresses:    { klass: 'e-addresses',    label: 'addresses' },
   supersedes:   { klass: 'e-structural',   label: 'supersedes' },
-  quotes:       { klass: 'e-structural',   label: 'quotes' },
+  quotes:       { klass: 'e-discount',     label: 'quotes' },
   contradicts:  { klass: 'e-contradicts',  label: 'contradicts' },
   parallel_of:  { klass: 'e-discount',     label: 'parallel of' },
   descends_from:{ klass: 'e-discount',     label: 'descends from' },
@@ -66,9 +66,9 @@ export const LEGEND_EDGES = [
   { key: 'attests', types: ['attests'], klass: 'e-attests', text: 'attests — adds support' },
   {
     key: 'discount',
-    types: ['parallel_of', 'descends_from'],
+    types: ['parallel_of', 'descends_from', 'quotes'],
     klass: 'e-discount',
-    text: 'parallel of / descends from — discounts support',
+    text: 'parallel of / descends from / quotes — discounts support',
     strong: 'discounts',
   },
   { key: 'contradicts', types: ['contradicts'], klass: 'e-contradicts', text: 'contradicts' },
@@ -81,7 +81,7 @@ export const LEGEND_EDGES = [
   { key: 'addresses', types: ['addresses'], klass: 'e-addresses', text: 'addresses — what an assertion answers' },
   {
     key: 'structural',
-    types: ['part_of', 'verifies', 'searched_for', 'supersedes', 'quotes'],
+    types: ['part_of', 'verifies', 'searched_for', 'supersedes'],
     klass: 'e-structural',
     text: 'structural — where a record sits',
   },

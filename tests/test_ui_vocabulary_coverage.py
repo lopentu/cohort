@@ -90,7 +90,7 @@ def test_the_discounting_edges_are_not_filed_under_structural(model):
     legend = _block(model, "LEGEND_EDGES")
     structural = re.search(r"key: 'structural'.*?\}", legend, re.S)
     assert structural, "no structural legend entry"
-    for edge in ("parallel_of", "descends_from", "contradicts", "attests"):
+    for edge in ("parallel_of", "descends_from", "quotes", "contradicts", "attests"):
         assert f"'{edge}'" not in structural.group(0), (
             f"`{edge}` carries evidential weight and must not be filed as structural"
         )

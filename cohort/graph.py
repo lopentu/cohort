@@ -865,7 +865,7 @@ class Graph:
     def agent_report(self, agent_id: str) -> AgentReport:
         """A pure contribution-history count for `agent_id` — proposed,
         attested, accepted, rejected, and discount edges contributed
-        (`descends_from`/`parallel_of`, which surface non-independence
+        (`descends_from`/`parallel_of`/`quotes`, which surface non-independence
         rather than hide it). Never a score; see `AgentReport`'s docstring.
         Works for any agent_id string, registered or not, since registration
         is informational, not enforced."""
@@ -877,8 +877,8 @@ class Graph:
 
         discount_edges = self.conn.execute(
             "SELECT COUNT(*) AS c FROM edge_authorship ea JOIN edges e ON e.id = ea.edge_id "
-            "WHERE ea.author=? AND ea.action='proposed' AND e.type IN (?, ?)",
-            (agent_id, EdgeType.DESCENDS_FROM, EdgeType.PARALLEL_OF),
+            "WHERE ea.author=? AND ea.action='proposed' AND e.type IN (?, ?, ?)",
+            (agent_id, EdgeType.DESCENDS_FROM, EdgeType.PARALLEL_OF, EdgeType.QUOTES),
         ).fetchone()["c"]
 
         return AgentReport(
@@ -912,7 +912,11 @@ class Graph:
     def independent_support(self, node_id: str) -> IndependentSupport:
         """design doc §4, §11 — the counter-argument to consensus-seeking:
         attesting count stays put while `independent` flips to False the
-        instant a descent/parallel relation links two supporting witnesses."""
+        instant a descent, parallel or quotation relation links two supporting
+        witnesses or passages. Quotation counts because a text that reproduces
+        another's words is not a second witness to those words: T1694, the
+        commentary on T0603, carries 65% of the sūtra's ten-character strings
+        verbatim, and citing both for one claim is citing the sūtra twice."""
         self._require_node(node_id)
         attesting = self.conn.execute(
             "SELECT src FROM edges WHERE type=? AND dst=? AND retracted_at IS NULL",
@@ -930,7 +934,7 @@ class Graph:
         subjects = list(dict.fromkeys([*passages, *distinct_witnesses]))
         flips = [
             (a, b) for a, b in itertools.combinations(subjects, 2)
-            if self._related(a, b, (EdgeType.DESCENDS_FROM, EdgeType.PARALLEL_OF))
+            if self._related(a, b, (EdgeType.DESCENDS_FROM, EdgeType.PARALLEL_OF, EdgeType.QUOTES))
         ]
         return IndependentSupport(
             node_id=node_id,
