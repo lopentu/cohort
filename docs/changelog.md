@@ -1412,3 +1412,48 @@ it before looking is what stops it being quietly reshaped afterwards.
 question rather than with a list of node ids.
 
 **11 new tests** (439 total), one new module.
+
+
+## The week before PNC: an Evidence tab, three measuring tools, and the numbers as scripts
+
+**2026-09-03 to 2026-09-07.** Michael Radich's first research question (how to
+help determine translator ascriptions for "grey" texts) became the grounding
+for the PNC 2026 demo, with his corpus (Zenodo 7750586), his catalogue of
+labels and his curated string list as the material. The audience is PNC; his
+questions are the frame.
+
+What was built, each as its own pull request on top of a strict ruff and ty
+configuration (#2): `cohort/attribution.py` and the **Evidence tab** (#3),
+Radich's corpus as the `LocalReader` Source with a configurable output ceiling
+and reasoning effort (#4), the three read-only **evidence tools**
+`attribution_evidence`, `semantic_neighbors`, `align_passages` a worker can
+chain (#5), a `quotes` edge that **discounts independence** like `parallel_of`
+(#6), a plain-language intro on every tab (#7), the **experiments as scripts**
+under `scripts/experiments/` (#8), and a link that pins the painted pair (#9).
+Upstream `main` meanwhile replaced the column layout with a force-directed
+graph.
+
+What was measured, and then corrected: leave-one-unit-out read 82% and
+leave-one-work-out 52%, because 106 of Saṅghadeva's 108 units are chapters of
+one book; the first per-class control table was wrong (a smoothing constant
+left at the union vocabulary size) and was recomputed; the T0603/T1694 overlap
+was first quoted with punctuation in (11.4%, 25–32 characters) and is 65% with
+a 279-character run without it; a 38% temporal-adjacency figure was withdrawn
+when 56 of its 67 cases turned out to be one confusion the leakage rule
+creates. The two Dharmamitra encoders do not recognise translators (nearest
+window by the same translator 23.7% against a 24.0% baseline) and do find
+quotation: 25 of T0603's 30 windows retrieve its commentary, and all 10 of
+T0453's retrieve Ekottarika-āgama 48.3, of which it is a copy.
+
+One live run: a `meta/muse-spark-1.3` worker with an `x-ai/grok-4.6` reviewer
+chained the three tools and the existing three, proposed two rival conjectures
+with tests, and was refused five times (four `UngroundedClaim`, one
+`NodeNotFound`), for $0.11 in 73 s. A claim grounded on the single character
+佛 passed, which is the open grounding-relevance gap.
+
+Two colour bugs in the tab were fixed before anyone saw them: the leader was
+always painted teal (now a fixed pair, A against B), and a text with zero
+vocabulary hits was assigned a leader (now "no evidence"). The leak check that
+recomputed its own arithmetic was replaced by one that can fail.
+
+**528 tests.** Current state is in [handoff.md](handoff.md).

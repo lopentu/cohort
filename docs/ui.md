@@ -46,6 +46,14 @@ show without status and edges without the independence flag, a densely linked
 node looks well supported regardless of whether its support is independent —
 the visualization would silently argue *against* the thesis.
 
+Since 2026-09-06 the graph is a force-directed canvas (vis-network): nodes
+drag, the layout settles by simulation, and a claim or conjecture is filled
+green when at least two independent witnesses corroborate it, yellow when it
+is unattested, single-sourced or its witnesses collapse through a discounting
+edge, and red when contradicted or rejected. The verdict is computed on the
+client from the edges. Positions are not stable across loads, so cite nodes by
+id, not by where they sit in a screenshot.
+
 So, enforced (and covered by `tests/test_ui_theme.py`):
 
 - **node status is a visual channel**, not a tooltip — the node's own
@@ -125,6 +133,18 @@ reshuffle itself as a graph grows.
   exists to break; where support does not survive the independence check the row
   says so, and the attesting count is left unchanged.
 - **Corpus** — browse and search, with `--corpus`.
+- **Evidence** — with `--radich PATH`. For one unit of Radich's corpus: which
+  short strings occur more often in one translator's securely ascribed work
+  than another's, and where in the text they fall. A ranking with a margin,
+  the text painted as a fixed pair A (teal) against B (rust) with saturation as
+  summed log-odds, a strip over the whole text, the strings pulling each way
+  with raw counts and rates per 100,000 feature tokens, a withhold box for the
+  sensitivity test, and the ledger of what profiling discarded. The target's
+  own work is never in the profiles; that is asserted in code, not promised.
+  The selection lives in the URL hash (`uid`, `features`, `withhold`,
+  `offset`, `pair`), so a view can be linked. Changing only the hash in an
+  open tab does not reload the app. The tab names a leaning, never a verdict,
+  and says "no evidence" when not one vocabulary string occurs.
 - **Inquiry** — asking a question and running agents against it, with
   `--allow-runs`. Named for the unit rather than the mechanism:
   [vocabulary.md](vocabulary.md) already defines a `question` as "what an
@@ -134,6 +154,9 @@ reshuffle itself as a graph grows.
   starts, not something that was found — and asking it in one tab to run
   against it in another made the connection between them something the
   researcher had to remember rather than something the tool did.
+
+Every tab opens with a short plain-language intro that can be collapsed; the
+choice is remembered in the browser.
 
 Clicking an author in a node's provenance opens that agent's contribution
 counts. Counts, never a score: a reputation number would reward volume, so an

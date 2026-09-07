@@ -20,6 +20,7 @@ multi-agent textual research.*
 | Why is it built this way? What got reversed? | [decisions.md](decisions.md) |
 | What's the plan and how far along is it? | [roadmap.md](roadmap.md) |
 | How did it get here? | [changelog.md](changelog.md) |
+| Where do the talk's numbers come from? | `scripts/experiments/README.md` — one command per number |
 
 ## Start here
 

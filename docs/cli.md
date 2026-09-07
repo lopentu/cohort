@@ -29,6 +29,12 @@ functions, so a rule refuses identically whichever way you reach it.
     cohort question --ask "…" --answerable-by "…"
     cohort question --id question:abc --address conjecture:def
 
+    cohort evidence --list                    # units of Radich's corpus with a base text, and the ledger
+    cohort evidence T0603                     # string evidence for one unit: ranking, pair, strings, provenance
+    cohort evidence T0603 --withhold T1694    # the sensitivity test: drop a profiled unit and recount
+    cohort evidence T0453 --pair Dhr,ZFn      # paint A against B instead of the label vs its rival
+    cohort evidence T0603 --features generic  # the label-free vocabulary (or: both)
+
     cohort findings                           # claims and conjectures as hypotheses
     cohort findings --id conjecture:abc123    # the whole dossier for one
 
@@ -169,15 +175,26 @@ a chat session.**
 | `--allow-writes` | off | accept/reject/reopen, acting as `RESEARCHER` |
 | `--allow-runs` | off | the agent-run launcher (implies `--corpus`) — **spends money** |
 | `--max-budget` | 1.00 | hard per-run ceiling the browser cannot raise |
+| `--radich PATH` | off | the Evidence tab and the three evidence tools, over Radich's data folder |
 | `--reload` | off | dev autoreload |
 
 See [ui.md](ui.md) for the HTTP surface and for port forwarding over SSH.
 
 ## Environment variables
 
-    OPENROUTER_API_KEY=      # live scripts and UI runs
-    OPENROUTER_MODEL=
-    CBETA_ARCHIVE_PATH=      # anything touching the real corpus
-    CBETA_FTS_PATH=          # optional; defaults to cbeta_fts.sqlite
+    OPENROUTER_API_KEY=              # live scripts and UI runs
+    OPENROUTER_MODEL=                # the worker's model
+    OPENROUTER_MODELS=               # optional; the roster a swarm draws from
+    OPENROUTER_MAX_OUTPUT_TOKENS=    # optional; 0 or none = no ceiling (default 2800)
+    OPENROUTER_REASONING_EFFORT=     # optional; low / medium / high, for reasoning models
+
+    CBETA_ARCHIVE_PATH=              # anything touching the CBETA archive
+    CBETA_ARCHIVE_SHA256=            # optional; overrides the pinned v061 hash for another release
+    CBETA_ARCHIVE_VERSION=           # optional; the label recorded in provenance, e.g. "xml-p5 2021Q3"
+    CBETA_FTS_PATH=                  # optional; defaults to cbeta_fts.sqlite
+
+    LOCAL_CORPUS_ROOT=               # a plain-text corpus with a manifest.csv; wins over CBETA when set
+    LOCAL_CORPUS_MANIFEST=           # optional; defaults to LOCAL_CORPUS_ROOT/manifest.csv
+    EVIDENCE_EMBEDDINGS_PATH=        # the .npz for semantic_neighbors; without it the tool is not offered
 
 Copy `.env.example` to `.env` and fill it in by hand. `.env` is gitignored.

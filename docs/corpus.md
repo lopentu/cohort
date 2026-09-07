@@ -5,7 +5,9 @@ COHORT's whole corpus seam is two functions — `search(query)` and `fetch(ref)`
 matches ATELIER's adapter interface, so integrating the two later means writing
 one adapter class rather than reshaping the swarm.
 
-Two readers implement it.
+Two readers implement it, and `LocalReader` has a second job: it is how a
+researcher's own plain-text corpus becomes the Source for Corpus, Inquiry and
+the agent tools without a new reader.
 
 ## The fixture: `LocalReader`
 
@@ -19,6 +21,21 @@ needs no corpus, no key and no network.
 Four Tang poems, public domain in every jurisdiction. **Illustrative, never a
 finding** — this is not a research corpus and nothing derived from it is a
 scholarly result.
+
+## A researcher's corpus as the Source: `LOCAL_CORPUS_ROOT`
+
+Set `LOCAL_CORPUS_ROOT` to a folder holding a `manifest.csv` (`path,
+witness_ref, label, note`) and `LocalReader` is chosen before the CBETA
+archive. `scripts/radich_manifest.py` writes that manifest for Radich's corpus
+(Zenodo 7750586: CBETA's Taishō text with paratext stripped and composite works
+split; one folder per unit, one file per printed edition), listing the Taishō
+file of every unit as a witness (2,306 of them). The folder is licence-
+restricted and git-ignored; nothing from it may be committed, printed or
+screenshotted in bulk.
+
+The Evidence tab and the three evidence tools read the same folder through
+`--radich PATH`, but through `cohort/attribution.py`, not through the reader:
+they need the catalogue and the marker list beside the texts.
 
 ## The development corpus: CBETA v061
 

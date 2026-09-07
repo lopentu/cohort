@@ -58,6 +58,7 @@ act, and starting an agent run spends money:
     --corpus        corpus browse/search
     --allow-writes  the researcher's accept / reject / reopen
     --allow-runs    the agent-run launcher   (--max-budget caps each run)
+    --radich PATH   the Evidence tab and the evidence tools, over Radich's data folder
 
 It binds `127.0.0.1` by default and deliberately: the corpus behind the graph is
 licence-restricted. Over SSH, forward the port rather than changing the bind.
@@ -93,8 +94,9 @@ rather than treated as free. Full reference in [docs/cli.md](docs/cli.md).
 
 ## Conventions
 
-No linter or formatter is configured; match the surrounding style. The house
-habit that matters most: **a document about this system should report
+`uvx ruff check .` and `uvx ty check cohort scripts` must pass before a PR;
+the configuration in `pyproject.toml` is strict on purpose, and `AGENTS.md`
+lists the rules the tests enforce. The house habit that matters most: **a document about this system should report
 arithmetic, not assertion** — count the outputs rather than claiming things
 about them. If a rule in [docs/design.md](docs/design.md) cannot be honoured,
 say so and stop rather than quietly working around it.
