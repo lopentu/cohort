@@ -333,3 +333,29 @@ def test_every_recorded_duplicate_still_exists():
 def test_each_recorded_duplicate_carries_a_reason():
     blank = sorted(k for k, v in DUPLICATE_CLASSES.items() if not v.strip())
     assert not blank, f"duplicates recorded without a reason: {blank}"
+
+
+def test_no_table_is_its_own_scroller(css):
+    """`display: block` on a `<table>` turns its `thead` and `tbody` into
+    ordinary blocks, and the moment they stop being table sections they stop
+    sharing column widths — every header ends up over the wrong column.
+
+    It is a tempting rule because it is the shortest way to make a wide table
+    scroll, and it is the one way that also stops the thing being a table. The
+    scroller belongs on a wrapper.
+    """
+    import re
+
+    offenders = []
+    for m in re.finditer(r"^(\.[\w.-]+(?:\s*,\s*\.[\w.-]+)*)\s*\{([^}]*)\}", css, re.M):
+        sel, body = m.group(1), m.group(2)
+        if "table" not in sel:
+            continue
+        if re.search(r"display:\s*block", body) and "overflow" in body:
+            offenders.append(f"{sel.strip()} (line {css[: m.start()].count(chr(10)) + 1})")
+    assert not offenders, (
+        "these table rules make the table its own scroller:\n  "
+        + "\n  ".join(offenders)
+        + "\nPut `overflow-x: auto` on a wrapper and leave the table a table."
+    )
+

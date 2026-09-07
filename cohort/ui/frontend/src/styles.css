@@ -2213,9 +2213,14 @@ a.cbeta-link.block:hover { color: var(--text); }
 .measurement.k-application { border-left-color: var(--supports); }
 .measurement .v-detail { margin: 0; font-size: 12.5px; line-height: 1.55; }
 
+/* The scroller is the wrapper, never the table. `display: block` on a
+   `<table>` makes its `thead` and `tbody` ordinary blocks, and the moment they
+   stop being table sections they stop sharing column widths — so every header
+   sat over the wrong column. It is the one way to make a table overflow
+   horizontally that also stops it being a table. */
+.work-scroll { margin: 10px 0 0; overflow-x: auto; }
 .work-table {
-  width: 100%; margin: 10px 0 0; border-collapse: collapse;
-  font-size: 12px; display: block; overflow-x: auto;
+  width: 100%; border-collapse: collapse; font-size: 12px;
 }
 .work-table th, .work-table td {
   padding: 4px 10px 4px 0; text-align: left; white-space: nowrap;
@@ -2249,7 +2254,8 @@ a.cbeta-link.block:hover { color: var(--text); }
    arrived would make two screenshots of one finding disagree. */
 
 .assoc-scale {
-  position: relative; flex: 1; height: 18px; min-width: 120px;
+  /* a grid item, so `flex: 1` here did nothing — the column grows, not this */
+  position: relative; width: 100%; height: 18px; min-width: 140px;
   border-radius: 3px; background: var(--fill-1);
 }
 .cal-band {
@@ -2300,7 +2306,10 @@ a.cbeta-link.block:hover { color: var(--text); }
   color: var(--tests);
 }
 
-.assoc-figure { display: flex; align-items: baseline; gap: 7px; flex: none; }
+.assoc-figure {
+  display: flex; align-items: baseline; gap: 7px;
+  justify-content: flex-end; text-align: right;
+}
 .assoc-figure strong { font-family: var(--mono); font-size: 13px; font-weight: 600; }
 .assoc-figure em {
   font-style: normal; font-family: var(--mono); font-size: 10.5px;
@@ -2412,12 +2421,21 @@ a.cbeta-link.block:hover { color: var(--text); }
   border: 1px solid var(--line); border-radius: var(--radius);
   margin-bottom: 8px; padding-bottom: 2px;
 }
-/* Inside the band is the *common* case and the unremarkable one, so it is not
-   coloured like a pass. Outside is what deserves a reader's attention. */
-.study-work.outside { border-color: color-mix(in srgb, var(--tests) 45%, var(--line)); }
 
+/* Four columns for four children: work id, verdict chip, calibration scale,
+   figure. It was three (`8.5rem 1fr 5.5rem`), sized for the older row of
+   id / band / delta, and the association layout added a fourth item — a
+   fragment's children become grid items directly, so the figure orphaned onto
+   an implicit second row under the id while the scale, which has a 120px
+   floor, overflowed its 5.5rem column.
+
+   Fixed widths rather than `auto`, because each row is its own grid: `auto`
+   columns would size to each row's own content and the scales would not line
+   up between works, which is the entire reason they share one domain. */
 .study-head {
-  display: grid; grid-template-columns: 8.5rem 1fr 5.5rem; gap: 14px;
+  display: grid;
+  grid-template-columns: 7rem 6.5rem minmax(140px, 1fr) 5.5rem;
+  gap: 14px;
   align-items: center; width: 100%; padding: 11px 14px 6px;
   background: none; border: 0; text-align: left; cursor: pointer;
   color: var(--text); font: inherit;
@@ -2450,7 +2468,6 @@ a.cbeta-link.block:hover { color: var(--text); }
   position: absolute; top: 1px; bottom: 1px; width: 3px; margin-left: -1.5px;
   border-radius: 2px; background: var(--text);
 }
-.study-work.outside .scale-mark { background: var(--tests); }
 
 .study-reading {
   margin: 0 14px 10px; font-size: 12px; line-height: 1.5; color: var(--text-dim);
@@ -2480,5 +2497,6 @@ a.cbeta-link.block:hover { color: var(--text); }
 
 @media (max-width: 720px) {
   .study-head { grid-template-columns: 1fr; gap: 8px; }
+  .assoc-figure { justify-content: flex-start; text-align: left; }
   .study-delta { text-align: left; }
 }

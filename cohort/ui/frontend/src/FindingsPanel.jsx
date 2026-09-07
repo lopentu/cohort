@@ -467,7 +467,7 @@ function Measurements({ rows }) {
           </p>
           {m.association && <AssociationTable a={m.association} />}
           {m.works.length > 0 && (
-            <table className="work-table">
+            <div className="work-scroll"><table className="work-table">
               <thead>
                 <tr>
                   <th>work</th><th>label</th><th className="num">chars</th>
@@ -491,7 +491,7 @@ function Measurements({ rows }) {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
           {m.works.some((w) => !w.sufficient) && (
             <p className="hint small">
@@ -527,7 +527,7 @@ function AssociationTable({ a }) {
           : <> — no {a.group_label} work anywhere in the ranking</>}
       </p>
 
-      <table className="work-table">
+      <div className="work-scroll"><table className="work-table">
         <thead>
           <tr>
             <th>k nearest</th><th className="num">in group</th>
@@ -551,7 +551,7 @@ function AssociationTable({ a }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
 
       <p className="hint small">
         Chance would give {(a.expected_share * 100).toFixed(1)}%. &ldquo;Known

@@ -212,13 +212,19 @@ function Work({ profile, domain, band, benchmark }) {
   )
 }
 
-//: What each verdict is called on screen. The words are chosen so that none of
-//: them can be read as an exclusion: `unplaced` says the method placed the work
-//: nowhere, which is what happened, and not that the work does not belong.
+//: What each verdict is called on screen. Short, because the chip sits in a
+//: fixed 6.5rem column of a row whose scales have to line up between works —
+//: and because the paragraph immediately below says the whole thing. "alternate
+//: reference point" became "alternate" for that reason, not because the
+//: shorter word says as much.
+//:
+//: The words are still chosen so none can be read as an exclusion: `not
+//: placed` says the method placed the work nowhere, which is what happened,
+//: and not that the work does not belong.
 const VERDICT = {
   associates: 'associates',
-  weak: 'weak association',
-  alternate: 'alternate reference point',
+  weak: 'weak',
+  alternate: 'alternate',
   unplaced: 'not placed',
 }
 
