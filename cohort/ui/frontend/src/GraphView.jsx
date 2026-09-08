@@ -27,7 +27,7 @@ function palette() {
     contradicts: v('--contradicts', '#ff453a'),
     structural: v('--structural', '#48484e'),
     tests: v('--tests', '#bf5af2'),
-    addresses: v('--addresses', '#5ac8f5'),
+    addresses: v('--addresses', '#f29ac8'),
     proposed: v('--proposed', '#8e8e96'),
     attested: v('--attested', '#0a84ff'),
     accepted: v('--accepted', '#30d158'),

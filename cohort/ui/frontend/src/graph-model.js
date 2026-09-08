@@ -71,7 +71,7 @@ export const EDGE_STYLE = {
 // says it in words; a reader left to infer it from a dash pattern is being
 // handed a code, not a key.
 export const LEGEND_EDGES = [
-  { key: 'attests', types: ['attests'], klass: 'e-attests', text: 'attests — adds support' },
+  { key: 'attests', types: ['attests'], klass: 'e-attests', text: 'attests — passage supports proposal' },
   {
     key: 'discount',
     types: ['parallel_of', 'descends_from'],
@@ -84,14 +84,14 @@ export const LEGEND_EDGES = [
     key: 'tests',
     types: ['tests'],
     klass: 'e-tests',
-    text: 'tests — the query that would refute this, predicted before the evidence was in',
+    text: 'tests — query tests a conjecture',
   },
-  { key: 'addresses', types: ['addresses'], klass: 'e-addresses', text: 'addresses — what an assertion answers' },
+  { key: 'addresses', types: ['addresses'], klass: 'e-addresses', text: 'addresses — proposal responds to question' },
   {
     key: 'structural',
     types: ['part_of', 'verifies', 'searched_for', 'supersedes', 'quotes'],
     klass: 'e-structural',
-    text: 'structural — where a record sits',
+    text: 'source links and audit records',
   },
 ]
 

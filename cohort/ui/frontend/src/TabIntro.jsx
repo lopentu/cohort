@@ -23,7 +23,7 @@ const INTROS = {
     body: [
       ['Search', 'Exact-phrase search. Results appear in corpus order.'],
       ['Read', 'Open a result for context. Hiding markup changes displayed positions.'],
-      ['Continue', 'Send to agent fills a task in Inquiry. It does not start a run.'],
+      ['Continue', 'Investigate this passage opens an Inquiry draft with the selected source. Review and record it before starting.'],
     ],
   },
   evidence: {
@@ -115,6 +115,7 @@ export default function TabIntro({ tab, open, onToggle }) {
           aria-label={intro.title}
         >
           <h3>{intro.title}</h3>
+          {tab === 'graph' && <p><a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">How to read the graph — illustrated guide</a></p>}
           <dl className="tab-intro-body">
             {intro.body.map(([term, text]) => (
               <div key={term}>

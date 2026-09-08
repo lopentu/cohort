@@ -1,3 +1,4 @@
+import { corpusInquiryDraft } from './corpus-inquiry'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { askQuestion, getQuestions, getRunConfig, getRuns, startRun, stopRun } from './api'
 
@@ -75,7 +76,7 @@ const REVIEWER_TASK =
   'Review each pending claim: re-check that its cited passages say what it '
   + 'claims they say, and give a verdict.'
 
-export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuestions, onToggleHiddenQuestion }) {
+export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChanged, hiddenQuestions, onToggleHiddenQuestion }) {
   const [config, setConfig] = useState(null)
   const [runs, setRuns] = useState(null)
   const [agents, setAgents] = useState([blankAgent(0)])
@@ -99,25 +100,11 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
       .catch((e) => setError(e.message))
   }, [])
 
+  const [draftSeed] = useState(() => corpusInquiryDraft(instructionSeed))
   useEffect(() => {
-    if (!instructionSeed) return
-    // A phrase sent over from the Corpus tab is a free-text task, and free
-    // text is what Customize is for — so arriving with one switches modes.
-    // Auto mode renders no agent cards, so before this the seed landed in
-    // state nothing displayed: "send to agents" took you to a screen showing
-    // no sign of what you had sent.
-    setMode('custom')
-    setAgents((prev) => {
-      if (prev[0].instructions) return prev
-      const next = [...prev]
-      next[0] = {
-        ...next[0],
-        instructions:
-          `Find attestations for the phrase ${instructionSeed} and propose one claim about its distribution.`,
-      }
-      return next
-    })
-  }, [instructionSeed])
+    // Consume the handoff once so a later visit cannot resurrect an old draft.
+    if (instructionSeed) onSeedConsumed?.()
+  }, [instructionSeed, onSeedConsumed])
 
   const poll = useCallback(async () => {
     try {
@@ -206,6 +193,7 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
       )}
 
       <Questions
+        draft={draftSeed}
         selected={questionId}
         onSelect={setQuestionId}
         hidden={hiddenQuestions}
@@ -437,11 +425,12 @@ function RunHistory({ runs }) {
 // Only the researcher may ask — setting the agenda is the supervision, so the
 // form is absent rather than disabled on a read-only server (the route is not
 // mounted either).
-function Questions({ selected, onSelect, hidden, onToggleHidden }) {
+function Questions({ draft, selected, onSelect, hidden, onToggleHidden }) {
   const [data, setData] = useState(null)
-  const [asking, setAsking] = useState(false)
-  const [text, setText] = useState('')
-  const [answerable, setAnswerable] = useState('')
+  const [asking, setAsking] = useState(!!draft)
+  const [text, setText] = useState(draft?.question || '')
+  const [answerable, setAnswerable] = useState(draft?.instructions || '')
+  const [sourceRef, setSourceRef] = useState(draft?.sourceRef || '')
   const [error, setError] = useState(null)
   const [showHidden, setShowHidden] = useState(false)
 
@@ -479,13 +468,14 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
       <div className="demo-examples">
         <p className="hint small">Choose an example, then edit and record it.</p>
         {DEMO_EXAMPLES.map((example) => <button type="button" className="btn" key={example.label}
-          onClick={() => { setText(example.question); setAnswerable(example.criteria); setAsking(true) }}>
+          onClick={() => { setText(example.question); setAnswerable(example.criteria); setSourceRef(''); setAsking(true) }}>
           {example.label}
         </button>)}
       </div>
 
       {asking && (
         <form className="ask-form" onSubmit={submit}>
+          {sourceRef && <p className="hint small">Starting source: <code>{sourceRef}</code></p>}
           <label>
             Research question
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={2} required />

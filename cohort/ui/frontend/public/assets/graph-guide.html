@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to read the Cohort graph</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#faf9f6;color:#252525;font:17px/1.6 system-ui,sans-serif}main{max-width:1100px;margin:48px auto;padding:0 28px 60px}a{color:#006778}h1{font-size:36px;line-height:1.15;letter-spacing:-.025em;margin:24px 0 16px}h2{font-size:23px;margin:40px 0 12px}p{max-width:780px}figure{margin:28px 0;background:white;border:1px solid #d9d9d3;padding:18px}svg{width:100%;height:auto}svg text{font-family:system-ui,sans-serif;fill:#252525;font-size:15px}svg .label{font-weight:650;font-size:18px}svg .edge{font-size:13px;fill:#555}figcaption{font-size:14px;color:#555}table{border-collapse:collapse;width:100%;font-size:16px}th,td{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #ddd}th{font-weight:650}.note{border-left:3px solid #007582;padding-left:18px}li{margin:8px 0}@media(max-width:650px){main{margin:24px auto;padding:0 16px 40px}h1{font-size:28px}figure{padding:8px;overflow:auto}svg{min-width:760px}table{font-size:14px}th,td{padding:8px}}
+</style>
+<main>
+<a href="/" target="_self">Open Cohort</a>
+<h1>How to read the graph</h1>
+<p><strong>A hypothesis is either a claim or a conjecture.</strong> It is not a container made of claims. Passages provide evidence for either kind.</p>
+<figure>
+<svg viewBox="0 0 1040 570" role="img" aria-labelledby="diagram-title diagram-description">
+<title id="diagram-title">Sources and passages support claims or conjectures, which address a research question</title>
+<desc id="diagram-description">A source text contains a passage. The passage supports a claim and a conjecture. Claim and conjecture are grouped under the heading hypotheses. Both address a research question. A test query tests the conjecture. These are relationships, not automatic steps.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#647176"/></marker></defs>
+<rect x="495" y="50" width="260" height="420" rx="12" fill="#f2f7f6" stroke="#87aaa8" stroke-dasharray="6 5"/>
+<text x="625" y="83" text-anchor="middle" class="label">Hypotheses</text>
+<text x="625" y="106" text-anchor="middle">Two kinds of proposal</text>
+<g fill="none" stroke="#647176" stroke-width="2" marker-end="url(#arrow)">
+<path d="M175 245 H255"/><path d="M425 230 H455 V182 H505" stroke="#0064d2"/>
+<path d="M425 260 H455 V350 H505" stroke="#0064d2"/>
+<path d="M735 182 H790 V225 H865" stroke="#9c2469"/><path d="M735 350 H790 V255 H870" stroke="#9c2469"/>
+<path d="M365 485 V395 H590" stroke-dasharray="7 4"/>
+</g>
+<ellipse cx="100" cy="245" rx="75" ry="48" fill="#f1f1ef" stroke="#647176"/>
+<text x="100" y="243" text-anchor="middle" class="label">Source text</text><text x="100" y="266" text-anchor="middle">A corpus record</text>
+<rect x="255" y="205" width="170" height="80" rx="3" fill="#eef4ff" stroke="#647176"/>
+<text x="340" y="239" text-anchor="middle" class="label">Passage</text><text x="340" y="262" text-anchor="middle">A located quotation</text>
+<path d="M625 123 L735 182 L625 241 L505 182 Z" fill="white" stroke="#007582"/>
+<text x="625" y="179" text-anchor="middle" class="label">Claim</text><text x="625" y="201" text-anchor="middle">What the text states</text>
+<path d="M625 287 L735 350 L625 413 L505 350 Z" fill="white" stroke="#007582"/>
+<text x="625" y="346" text-anchor="middle" class="label">Conjecture</text><text x="625" y="369" text-anchor="middle">An explanation to test</text>
+<text x="910" y="250" text-anchor="middle" style="font-size:62px;fill:#6554ac">★</text>
+<text x="910" y="298" text-anchor="middle" class="label">Research question</text><text x="910" y="322" text-anchor="middle">What you asked</text>
+<rect x="285" y="485" width="160" height="52" rx="26" fill="#f4eff9" stroke="#647176"/>
+<text x="365" y="517" text-anchor="middle" class="label">Test query</text>
+<text x="215" y="226" text-anchor="middle" class="edge">contains</text>
+<text x="440" y="156" class="edge">supports</text><text x="440" y="323" class="edge">supports</text>
+<text x="785" y="158" class="edge">addresses</text><text x="785" y="375" class="edge">addresses</text>
+<text x="402" y="421" class="edge">tests</text>
+</svg>
+<figcaption>A schematic of possible relationships. Arrows do not mean that one record automatically creates or approves the next. “Contains” displays the stored passage-to-source <code>part_of</code> relationship in reverse.</figcaption>
+</figure>
+<h2>Read one chain</h2>
+<ol>
+<li><strong>Source text:</strong> the record from which material was retrieved.</li>
+<li><strong>Passage:</strong> the quotation and its source reference.</li>
+<li><strong>Claim:</strong> a statement supported by the passage. Illustrative example: “This phrase occurs in this passage.”</li>
+<li><strong>Conjecture:</strong> a proposed explanation. Illustrative example: “The shared wording may reflect reuse.” This needs a test, not just a matching quotation.</li>
+<li><strong>Research question:</strong> the question a claim or conjecture addresses. Several proposals can address the same question.</li>
+</ol>
+<p>Claims and conjectures are alternatives in this diagram, not mandatory successive stages. A claim does not turn into a conjecture when accepted.</p>
+<h2>What the links mean</h2>
+<table><thead><tr><th>Link</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>contains / <code>part_of</code></td><td>Locates a passage within its source text.</td></tr>
+<tr><td><code>attests</code></td><td>Connects a supporting passage to a claim or conjecture.</td></tr>
+<tr><td><code>tests</code></td><td>Connects a test query to the conjecture it investigates. The existence of a test is not a passing result.</td></tr>
+<tr><td><code>addresses</code></td><td>Connects a proposal to the research question it attempts to answer.</td></tr>
+<tr><td><code>parallel_of</code> / <code>descends_from</code></td><td>Records relationships that reduce the independence of supporting sources.</td></tr>
+</tbody></table>
+<h2>Checks and decisions</h2>
+<p><strong>Verified with an exact span</strong> means the latest recorded span check located the quotation in its source. It does not verify the interpretation. Repeated checks stay in the passage’s history.</p>
+<table><thead><tr><th>Status</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>Proposed</td><td>Submitted for consideration.</td></tr>
+<tr><td>Attested</td><td>The required checks for that record type passed.</td></tr>
+<tr><td>Accepted</td><td>The researcher approved that record.</td></tr>
+<tr><td>Rejected</td><td>The researcher rejected that record with a reason.</td></tr>
+</tbody></table>
+<p class="note">Accepting a passage does not accept the claims connected to it. Each decision applies to the selected record. A contradiction link is also separate from researcher rejection.</p>
+<h2>How records appear</h2>
+<p>Recording a question adds its star. Agent runs can add sources, passages, proposals, queries and checks. Findings lists the claims and conjectures; Graph shows their connections. Corpus searches and Evidence calculations do not add graph records on their own.</p>
+<p>The graph can also contain records loaded from earlier work. Opening a session does not rerun the agents.</p>
+</main></html>

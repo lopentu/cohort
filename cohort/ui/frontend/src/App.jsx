@@ -33,6 +33,7 @@ export default function App() {
   // hanging off adjacent controls would overlap each other.
   const [introOpen, setIntroOpen] = useState(false)
   const [agentSeed, setAgentSeed] = useState(null)
+  const consumeAgentSeed = useCallback(() => setAgentSeed(null), [])
   // Which questions are hidden from the Graph tab. A view preference, not a
   // graph write — see RunPanel.jsx's `loadHiddenQuestions` for why.
   const [hiddenQuestions, setHiddenQuestions] = useState(loadHiddenQuestions)
@@ -261,13 +262,14 @@ export default function App() {
             )}
             {tab === 'corpus' && (
               <CorpusPanel
-                onCite={(phrase) => { setAgentSeed(phrase); goTab('run') }}
+                onCite={(source) => { setAgentSeed(source); goTab('run') }}
               />
             )}
             {tab === 'evidence' && <EvidencePanel />}
             {tab === 'run' && (
               <RunPanel
                 instructionSeed={agentSeed}
+                onSeedConsumed={consumeAgentSeed}
                 onGraphChanged={reload}
                 hiddenQuestions={hiddenQuestions}
                 onToggleHiddenQuestion={toggleHiddenQuestion}
@@ -320,6 +322,20 @@ function Legend({ data, showAudit }) {
           <NodeKeyShape shape={n.types ? TYPE_SHAPE[n.types[0]] : 'diamond'} color={n.color} /> {n.key}
         </span>
       ))}
+      <details className="legend-explainer">
+        <summary>What do these links mean?</summary>
+        <dl>
+          <dt><i className="swatch e-attests" /> Attests</dt>
+          <dd>A passage supports a claim or conjecture. For example, a quoted passage is evidence for a claim about its wording. The link records support; it does not prove the claim.</dd>
+          <dt><i className="swatch e-addresses" /> Addresses</dt>
+          <dd>A claim or conjecture responds to a research question. It tells you which question the proposal concerns, not whether the proposal answers it successfully.</dd>
+          <dt>Claim / conjecture</dt>
+          <dd>Both appear under “Hypotheses.” A claim states what the sources support; a conjecture proposes an explanation to test. A hypothesis is not a collection of claims.</dd>
+          <dt>Other links</dt>
+          <dd>Tests connects a query to a conjecture. Parallel and descent links mark related sources whose support may not be independent.</dd>
+        </dl>
+        <a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">Open the illustrated graph guide</a>
+      </details>
     </div>
   )
 }

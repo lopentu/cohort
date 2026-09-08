@@ -155,10 +155,10 @@ export default function CorpusPanel({ onCite }) {
                   {onCite && (
                     <button
                       className="btn tiny"
-                      title="Use this phrase as an agent's task"
-                      onClick={() => onCite(query.trim())}
+                      title="Draft a research question about this passage"
+                      onClick={() => onCite({ phrase: results.query || query.trim(), ref: h.ref, title: h.title })}
                     >
-                      send to agent
+                      Investigate this passage
                     </button>
                   )}
                 </div>

@@ -1926,9 +1926,9 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
    the work was for, and a reader scans for it first. Solid, because an
    assertion addressing a question is an assertion and not a hypothetical —
    the dotted `tests` edge is the one that is still open. */
-:root { --addresses: #5ac8f5; }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --addresses: #0a7ea4; } }
-:root[data-theme="light"] { --addresses: #0a7ea4; }
+:root { --addresses: #f29ac8; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --addresses: #9c2469; } }
+:root[data-theme="light"] { --addresses: #9c2469; }
 .e-addresses { stroke: var(--addresses); stroke-width: 1.6; }
 .a-addresses { fill: var(--addresses); }
 .swatch.e-addresses { border-color: var(--addresses); }
@@ -2156,3 +2156,11 @@ a.cbeta-link.block:hover { color: var(--text); }
 
 .suggested-inputs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 6px; }
 .suggested-inputs > button { flex: 0 1 auto; white-space: normal; height: auto; min-height: 32px; overflow-wrap: anywhere; }
+
+.legend .legend-explainer { flex-basis: 100%; margin-top: 8px; color: var(--text); }
+.legend-explainer > summary { cursor: pointer; font-weight: 600; }
+.legend-explainer dl { display: grid; grid-template-columns: minmax(100px, 160px) 1fr; gap: 10px 16px; max-width: 900px; margin: 14px 0; line-height: 1.5; }
+.legend-explainer dt { font-weight: 650; }
+.legend-explainer dd { margin: 0; }
+.legend-explainer a { color: var(--text); text-decoration: underline; }
+@media (max-width: 600px) { .legend-explainer dl { grid-template-columns: 1fr; gap: 4px; } .legend-explainer dd { margin-bottom: 12px; } }
