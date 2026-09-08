@@ -1,5 +1,5 @@
 import { passageCheckIds } from './span-verification'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getGraph, getHealth, getRefusals } from './api'
 import DetailPanel from './DetailPanel'
 import GraphView, { nodeLegendFor, TYPE_SHAPE } from './GraphView'
@@ -37,6 +37,28 @@ export default function App() {
   // Which questions are hidden from the Graph tab. A view preference, not a
   // graph write — see RunPanel.jsx's `loadHiddenQuestions` for why.
   const [hiddenQuestions, setHiddenQuestions] = useState(loadHiddenQuestions)
+  const filterInitialized = useRef(false)
+  const rememberQuestionFilter = () => {
+    try { localStorage.setItem('cohort.questionFilterConfigured', 'true') } catch { /* optional storage */ }
+  }
+  const showQuestions = (ids) => {
+    setSelectedId(null)
+    rememberQuestionFilter()
+    const visible = new Set(ids)
+    setHiddenQuestions(new Set(data.nodes.filter((n) => n.type === 'question' && !visible.has(n.id)).map((n) => n.id)))
+  }
+  useEffect(() => {
+    if (!data || filterInitialized.current) return
+    const questions = data.nodes.filter((n) => n.type === 'question')
+    if (!questions.length) return
+    filterInitialized.current = true
+    try {
+      if (localStorage.getItem('cohort.questionFilterConfigured') === 'true') return
+    } catch { /* choose the latest when storage is unavailable */ }
+    if (hiddenQuestions.size) return
+    const latest = questions.reduce((a, b) => a.created_seq > b.created_seq ? a : b)
+    setHiddenQuestions(new Set(questions.filter((n) => n.id !== latest.id).map((n) => n.id)))
+  }, [data, hiddenQuestions])
 
   const reload = useCallback(() => {
     Promise.all([getGraph(), getHealth()])
@@ -56,6 +78,8 @@ export default function App() {
   useEffect(() => { saveHiddenQuestions(hiddenQuestions) }, [hiddenQuestions])
 
   const toggleHiddenQuestion = useCallback((id) => {
+    setSelectedId(null)
+    try { localStorage.setItem('cohort.questionFilterConfigured', 'true') } catch { /* optional storage */ }
     setHiddenQuestions((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
@@ -242,6 +266,8 @@ export default function App() {
           <div className="tab-panel" key={tab} data-dir={tabDir}>
             {tab === 'graph' && (
               <>
+                <QuestionFilter nodes={data.nodes} hidden={hiddenQuestions}
+                  onToggle={toggleHiddenQuestion} onShow={showQuestions} />
                 <Legend data={graphData} showAudit={showAudit} />
                 <GraphView
                   data={graphData}
@@ -270,6 +296,7 @@ export default function App() {
                 instructionSeed={agentSeed}
                 onSeedConsumed={consumeAgentSeed}
                 onGraphChanged={reload}
+                onQuestionRecorded={(id) => { showQuestions([id]); reload() }}
                 hiddenQuestions={hiddenQuestions}
                 onToggleHiddenQuestion={toggleHiddenQuestion}
               />
@@ -363,4 +390,23 @@ function NodeKeyShape({ shape, color }) {
                 : <circle cx="10" cy="10" r="6" {...common} />}
     </svg>
   )
+}
+
+function QuestionFilter({ nodes, hidden, onToggle, onShow }) {
+  const questions = nodes.filter((n) => n.type === 'question').sort((a, b) => b.created_seq - a.created_seq)
+  if (!questions.length) return null
+  const shown = questions.filter((n) => !hidden.has(n.id)).length
+  return <details className="question-filter">
+    <summary>Research questions · {shown} of {questions.length} shown</summary>
+    <div className="question-filter-actions">
+      <button className="btn tiny" onClick={() => onShow(questions.map((q) => q.id))}>Show all</button>
+      <button className="btn tiny" onClick={() => onShow([])}>Hide all questions</button>
+    </div>
+    {questions.map((q) => <div className="question-filter-row" key={q.id}>
+      <label><input type="checkbox" checked={!hidden.has(q.id)} onChange={() => onToggle(q.id)} />
+        <span>{q.payload?.text || q.id}</span></label>
+      <button className="btn tiny" onClick={() => onShow([q.id])}>Only this</button>
+    </div>)}
+    <p className="hint small">Filters this graph view. Shared evidence and records with no question link remain visible.</p>
+  </details>
 }

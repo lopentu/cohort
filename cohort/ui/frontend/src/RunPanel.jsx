@@ -76,7 +76,7 @@ const REVIEWER_TASK =
   'Review each pending claim: re-check that its cited passages say what it '
   + 'claims they say, and give a verdict.'
 
-export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChanged, hiddenQuestions, onToggleHiddenQuestion }) {
+export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChanged, onQuestionRecorded, hiddenQuestions, onToggleHiddenQuestion }) {
   const [config, setConfig] = useState(null)
   const [runs, setRuns] = useState(null)
   const [agents, setAgents] = useState([blankAgent(0)])
@@ -194,6 +194,7 @@ export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChang
 
       <Questions
         draft={draftSeed}
+        onRecorded={onQuestionRecorded}
         selected={questionId}
         onSelect={setQuestionId}
         hidden={hiddenQuestions}
@@ -425,7 +426,7 @@ function RunHistory({ runs }) {
 // Only the researcher may ask — setting the agenda is the supervision, so the
 // form is absent rather than disabled on a read-only server (the route is not
 // mounted either).
-function Questions({ draft, selected, onSelect, hidden, onToggleHidden }) {
+function Questions({ draft, onRecorded, selected, onSelect, hidden, onToggleHidden }) {
   const [data, setData] = useState(null)
   const [asking, setAsking] = useState(!!draft)
   const [text, setText] = useState(draft?.question || '')
@@ -450,7 +451,7 @@ function Questions({ draft, selected, onSelect, hidden, onToggleHidden }) {
       // Selected on being asked. The researcher wrote it in order to inquire
       // into it; making them then pick it out of a list is a step that exists
       // only because the form and the list are different components.
-      if (asked?.id) onSelect(asked.id)
+      if (asked?.id) { onSelect(asked.id); onRecorded?.(asked.id) }
     } catch (err) {
       setError(err.message)
     }

@@ -182,7 +182,11 @@ export function hiddenIdsForQuestions(nodes, edges, hiddenQuestionIds) {
       // whether hiding the question left it with nothing to be shown for; a
       // witness's own visibility is still decided by its `part_of` edges
       // below, once its passages have already been resolved.
-      if (n.type === 'passage') touching = touching.filter((e) => e.type !== 'part_of')
+      if (n.type === 'passage') {
+        // Checks follow their passage; they cannot keep each other visible
+        // after all of the passage's research connections are hidden.
+        touching = touching.filter((e) => !['part_of', 'verifies'].includes(e.type))
+      }
       if (!touching.length) continue   // nothing links it either way — leave it
       const stillLinked = touching.some((e) => !hidden.has(e.src === n.id ? e.dst : e.src))
       if (!stillLinked) {
