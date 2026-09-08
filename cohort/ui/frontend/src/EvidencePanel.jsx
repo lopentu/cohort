@@ -24,8 +24,8 @@ import { profileName, textName } from './evidence-labels'
 
 const FEATURE_LABEL = {
   radich: "Radich's curated strings",
-  generic: 'commonest strings, no labels read',
-  both: 'both together',
+  generic: 'Frequent corpus strings',
+  both: 'Combined lists',
 }
 const ALPHA_CAP = 0.55   // above this the ink fails 4.5:1 contrast on both grounds
 
@@ -176,7 +176,7 @@ export default function EvidencePanel() {
       </div>
       <details className="ev-options">
         <summary>Vocabulary and method</summary>
-        <p>A vocabulary is the list of short strings counted in the comparison.</p>
+        <p>Here, “vocabulary” means a list of two-, three- and four-character sequences to count. They are not necessarily whole words.</p>
         <div className="ev-features" role="radiogroup" aria-label="feature vocabulary">
           {Object.entries(FEATURE_LABEL).map(([k, label]) => (
             <button
@@ -188,6 +188,12 @@ export default function EvidencePanel() {
             >{label}</button>
           ))}
         </div>
+        <p className="hint small">{features === 'radich'
+          ? 'A scholar-selected list developed for a dictionary of Dharmarakṣa (竺法護). It covers some translators better than others, so it is not a neutral sample.'
+          : features === 'generic'
+          ? 'Frequent strings selected from texts whose translator is uncertain in this catalogue, without using translator labels. Common religious expressions can dominate.'
+          : 'The union of both lists, with duplicate strings counted once in the list. Combining them does not remove their biases.'}</p>
+        <p>The calculation stays the same when you switch lists; you change which strings it counts.</p>
         <button className="btn" onClick={() => setShowHow((v) => !v)} aria-expanded={showHow}>
           {showHow ? 'Hide method explanation' : 'Explain the calculation and its limits'}
         </button>
@@ -212,8 +218,11 @@ function HowToRead() {
   return (
     <div className="ev-how">
       <p>
-        <b>Counts.</b> Matching 2-, 3- and 4-character strings are counted. Their weights compare frequencies in the two selected corpus groups.
+        <b>How the score is made.</b> Count the selected strings in your text. For each comparison group, use its relative string frequencies to score those matches. More frequent matches contribute more. The highest score determines the first-ranked group.
         </p>
+      <p>
+        <b>Score difference.</b> The highest score minus the next highest, divided by the number of distinct matched strings. Near zero means little separates those scores. It is not a probability, and there is no validated cutoff for assigning a translator.
+      </p>
       <p>
         <b>Colours.</b> Teal and rust show which group a string favours. Stronger colour means greater weight. Fix the group pair before switching string sets.
       </p>
@@ -300,7 +309,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
           <div><span className="hint small">Next comparison group</span><b>{profileName(data.second)}</b><span className="hint small">{seq(data.second)}</span></div>
           <div>
             <span className="hint small">Score difference</span>
-            <b>{data.margin > 0 ? '+' : ''}{data.margin.toFixed(2)}</b>
+            <b>{data.margin > 0 ? '+' : ''}{data.margin.toFixed(3)}</b>
             <span className="hint small">log-odds per distinct string; not comparable across texts</span>
           </div>
           {data.verdict === 'low evidence' && (
@@ -339,6 +348,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
       </p>}
       </form>
       <p className="hint small">Applies to this calculation only. Sources and graph records are unchanged.</p>
+      {data.withheld_extra.length > 0 && <ExclusionComparison key={`${data.uid}:${data.features}:${data.withheld_extra.join(',')}`} data={data} />}
       </div>
       <details className="ev-options">
       <summary>Highlighting groups</summary>
@@ -440,6 +450,41 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
       </details>
     </div>
   )
+}
+
+function ExclusionComparison({ data }) {
+  const [before, setBefore] = useState(null)
+  const [error, setError] = useState(false)
+  useEffect(() => {
+    let live = true
+    getEvidence(data.uid, data.features).then(r => { if (live) setBefore(r) })
+      .catch(() => { if (live) setError(true) })
+    return () => { live = false }
+  }, [data.uid, data.features])
+  if (error) return <p className="hint">The comparison without additional exclusions could not be loaded.</p>
+  if (!before) return <p className="hint">Loading the comparison without additional exclusions…</p>
+  const rows = [['No additional exclusions', before], [`Excluded: ${data.withheld_extra.join(', ')}`, data]]
+  return <div className="ev-comparison">
+    <h4>Before and after exclusion</h4>
+    <div className="ev-comparison-scroll"><table className="ev-table">
+      <thead><tr><th>Comparison</th><th>Highest-ranked group</th><th>Next group</th><th>Score difference</th></tr></thead>
+      <tbody>{rows.map(([label,r]) => <tr key={label}><td>{label}</td>
+        <td>{r.first ? profileName(r.first) : 'No ranking'}</td>
+        <td>{r.second ? profileName(r.second) : '—'}</td>
+        <td>{Number.isFinite(r.margin) ? r.margin.toFixed(3) : '—'}</td>
+      </tr>)}</tbody>
+    </table></div>
+    <p>The target text and vocabulary list are the same in both rows. Only the comparison material changes.</p>
+    <p>{!before.first || !data.first
+      ? 'A comparison has no ranking; no change in leader can be inferred.'
+      : before.first !== data.first
+      ? 'The leading group changes. This result depends on which comparison texts are included.'
+      : 'The leading group stays the same. Check how much the score difference changes.'}
+      {' '}This does not establish a translator attribution.</p>
+    {data.uid === 'T0603' && data.withheld_extra.includes('T1694') && <p>
+      T1694 is the commentary on T0603. Excluding it asks whether the vocabulary result survives removing that commentary from the comparison profiles. It does not remove passages from T0603 or establish the direction of borrowing.
+    </p>}
+  </div>
 }
 
 function EvidenceTable({ title, rows, a, b }) {

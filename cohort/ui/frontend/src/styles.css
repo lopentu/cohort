@@ -2181,3 +2181,6 @@ a.cbeta-link.block:hover { color: var(--text); }
 .exploration-actions li { padding:12px 0; border-bottom:1px solid var(--border); }
 .exploration-actions p { margin:6px 0; }
 .exploration-detail { overflow-wrap:anywhere; }
+
+.ev-comparison-scroll { overflow-x:auto; }
+.ev-comparison { margin-top:18px; }
