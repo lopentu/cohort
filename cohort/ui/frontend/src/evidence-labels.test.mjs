@@ -19,3 +19,6 @@ test('readable prose preserves source identifiers and expands a mixed group as o
   assert.equal(explainProfileCodes('T1694 X-ASg source:Dhr pre-Dhr-other'),
     'T1694 X-ASg source:Dhr Other material before Dharmarakṣa 竺法護 (pre-Dhr-other)')
 })
+
+assert.equal(profileName('ASg', false), 'An Shigao 安世高')
+assert.equal(profileName('unknown', false), 'unknown')

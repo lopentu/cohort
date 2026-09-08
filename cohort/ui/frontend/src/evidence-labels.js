@@ -22,8 +22,8 @@ const TEXTS = {
   T0453: 'Maitreya’s descent 彌勒下生經',
   T0125: 'Ekottarikāgama 增壹阿含經',
 }
-export function profileName(code) {
-  return PROFILES[code] ? `${PROFILES[code]} (${code})` : code
+export function profileName(code, showCode = true) {
+  return PROFILES[code] ? PROFILES[code] + (showCode ? ` (${code})` : '') : code
 }
 export function textName(uid) {
   return TEXTS[uid] ? `${TEXTS[uid]} · ${uid}` : uid

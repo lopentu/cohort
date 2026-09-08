@@ -470,26 +470,19 @@ function ExclusionComparison({ data }) {
   }, [data.uid, data.features])
   if (error) return <p className="hint">The comparison without additional exclusions could not be loaded.</p>
   if (!before) return <p className="hint">Loading the comparison without additional exclusions…</p>
-  const rows = [['No additional exclusions', before], [`Excluded: ${data.withheld_extra.join(', ')}`, data]]
+  const rows = [['Before', before], [`Without ${data.withheld_extra.join(', ')}`, data]]
   return <div className="ev-comparison">
-    <h4>Before and after exclusion</h4>
+    <h4>Effect of exclusion</h4>
     <div className="ev-comparison-scroll"><table className="ev-table">
-      <thead><tr><th>Comparison</th><th>Highest-ranked group</th><th>Next group</th><th>Score difference</th></tr></thead>
+      <thead><tr><th>Setup</th><th>First</th><th>Second</th><th>Margin</th></tr></thead>
       <tbody>{rows.map(([label,r]) => <tr key={label}><td>{label}</td>
-        <td>{r.first ? profileName(r.first) : 'No ranking'}</td>
-        <td>{r.second ? profileName(r.second) : '—'}</td>
+        <td>{r.first ? profileName(r.first, false) : 'No ranking'}</td>
+        <td>{r.second ? profileName(r.second, false) : '—'}</td>
         <td>{Number.isFinite(r.margin) ? r.margin.toFixed(3) : '—'}</td>
       </tr>)}</tbody>
     </table></div>
-    <p>The target text and vocabulary list are the same in both rows. Only the comparison material changes.</p>
-    <p>{!before.first || !data.first
-      ? 'A comparison has no ranking; no change in leader can be inferred.'
-      : before.first !== data.first
-      ? 'The leading group changes. This result depends on which comparison texts are included.'
-      : 'The leading group stays the same. Check how much the score difference changes.'}
-      {' '}This does not establish a translator attribution.</p>
-    {data.uid === 'T0603' && data.withheld_extra.includes('T1694') && <p>
-      T1694 is the commentary on T0603. Excluding it asks whether the vocabulary result survives removing that commentary from the comparison profiles. It does not remove passages from T0603 or establish the direction of borrowing.
+    {data.uid === 'T0603' && data.withheld_extra.includes('T1694') && <p className="hint small">
+      T1694 is T0603’s commentary. Its wording contributes to the mixed group.
     </p>}
   </div>
 }
