@@ -250,10 +250,11 @@ export default function App() {
 
 function Legend({ data, showAudit }) {
   // Edge key describes *this* graph (`legendFor` keeps only drawn edges); the
-  // node key explains the fill colours, which now carry meaning rather than
-  // status: a claim reads green/yellow/red for supported / insufficient /
-  // contradicted, a source text is black, a passage and a query blue. A dashed
-  // outline still marks a proposed (unchecked) node on the canvas.
+  // node key explains the fill colours. A hypothesis (claim or conjecture,
+  // drawn as a diamond either way) reads grey/blue/yellow/green/red for
+  // proposed / attested / contradicted / accepted / rejected; a source text is
+  // black, a passage and a query blue. Contradicted overrides whatever status
+  // the node itself carries — see GraphView.jsx `nodeColorKey`.
   const { edges } = legendFor(data.nodes, data.edges, { showAudit })
   // The node key for *this* graph, not the whole vocabulary — ten colours
   // listed against a graph that draws four is a legend the reader has to
