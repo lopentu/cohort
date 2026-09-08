@@ -220,6 +220,16 @@ function edgeStyle(type, p) {
 
 const SYMMETRIC = new Set(['parallel_of', 'contradicts'])
 
+// `part_of` is stored and drawn passage -> witness (`from: e.src, to: e.dst`
+// below) like every other edge — nothing about the data moves. But its label
+// reads "contains", from the witness's side, and an arrowhead sitting on the
+// witness while the word describes the witness as the one doing the
+// containing pointed the picture and the sentence in opposite directions.
+// So this is the one type whose arrowhead is drawn at `from` instead of `to`
+// — the line still runs between the same two nodes, only which end gets the
+// arrowhead is flipped, purely at the canvas layer.
+const ARROW_AT_FROM = new Set(['part_of'])
+
 function truncate(s, n) {
   const chars = [...String(s ?? '')]
   return chars.length > n ? chars.slice(0, n).join('') + '…' : chars.join('')
@@ -288,7 +298,11 @@ function buildEdges(edges, visibleIds, p) {
         color: { color: s.color, highlight: s.color, hover: s.color, opacity: 0.9 },
         width: s.width,
         dashes: s.dashes || false,
-        arrows: SYMMETRIC.has(e.type) ? undefined : { to: { enabled: true, scaleFactor: 0.55 } },
+        arrows: SYMMETRIC.has(e.type)
+          ? undefined
+          : ARROW_AT_FROM.has(e.type)
+            ? { from: { enabled: true, scaleFactor: 0.55 } }
+            : { to: { enabled: true, scaleFactor: 0.55 } },
         smooth: { enabled: true, type: 'dynamic' },
         title: label + (e.discounts ? ' — discounts support' : ''),
       }

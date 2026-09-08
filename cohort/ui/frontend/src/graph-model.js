@@ -38,13 +38,14 @@ export const STATUS_ORDER = ['proposed', 'attested', 'accepted', 'rejected']
 
 export const EDGE_STYLE = {
   attests:      { klass: 'e-attests',      label: 'attests' },
-  // The edge is still stored passage -> witness (schemas.py EDGE_DOMAINS;
-  // unchanged, and every arrow on the canvas still points that way), but
-  // "passage part of witness" read subordinate-first — the passage as the
-  // primary thing, the witness as a location note. "contains" reads the
-  // other way on purpose: witness (the arrow's head) contains passage (the
-  // arrow's tail), which is the direction that actually matches how a
-  // witness is the container and a passage is what was found inside it.
+  // The edge is still stored passage -> witness (schemas.py EDGE_DOMAINS,
+  // unchanged) — but "passage part of witness" read subordinate-first, the
+  // passage as the primary thing and the witness as a location note.
+  // "contains" reads the other way, from the container's side, and
+  // GraphView.jsx's `ARROW_AT_FROM` draws the arrowhead to match: it points at
+  // the passage, so the picture reads "witness contains passage" the same
+  // direction as the word, rather than a label contradicting the arrow it
+  // sits on.
   part_of:      { klass: 'e-structural',   label: 'contains' },
   verifies:     { klass: 'e-structural',   label: 'verifies' },
   searched_for: { klass: 'e-structural',   label: 'searched for' },
