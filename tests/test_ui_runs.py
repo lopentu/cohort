@@ -27,7 +27,16 @@ from fastapi.testclient import TestClient  # noqa: E402
 from cohort.agents.budget import BudgetedTransport, BudgetExceeded  # noqa: E402
 from cohort.errors import CohortError  # noqa: E402
 from cohort.graph import Graph  # noqa: E402
-from cohort.schemas import ClaimPayload  # noqa: E402
+from cohort.schemas import (  # noqa: E402
+    AssuranceLevel,
+    ClaimPayload,
+    Dating,
+    DatingRoute,
+    PassagePayload,
+    VerificationMethod,
+    VerificationResult,
+    WitnessPayload,
+)
 from cohort.sources.local_reader import LocalReader  # noqa: E402
 from cohort.ui.api import create_app  # noqa: E402
 from cohort.ui.runs import (  # noqa: E402
@@ -120,6 +129,112 @@ def test_corpus_endpoints_absent_without_a_source(graph_files):
     client = TestClient(create_app(db_path))
     assert client.get("/api/corpus/search", params={"q": "x"}).status_code == 404
     assert client.get("/api/health").json()["corpus_enabled"] is False
+
+
+# --- passage context: a KWIC line for one already-recorded passage ---------
+
+def _propose_passage(graph, source, ref, excerpt):
+    """A passage recorded the way `find_attestations.py` records one —
+    `source_ref` is exactly the ref `source.search()` returned, the contract
+    `/api/passage/context` and `verify_exact_span` both depend on."""
+    record = source.fetch(ref)
+    witness_id = graph.propose_witness(
+        WitnessPayload(
+            canonical_ref=record.witness_ref, label=record.title,
+            dating=Dating(confidence=DatingRoute.UNKNOWN, basis="not dated by this test"),
+        ),
+        authored_by=AGENT,
+    )
+    return graph.propose_passage(
+        PassagePayload(
+            canonical_ref=f"{record.witness_ref}#{ref}", locator=ref,
+            excerpt=excerpt, source_ref=ref,
+        ),
+        witness_id=witness_id, authored_by=AGENT,
+    )
+
+
+def test_passage_context_returns_the_window_around_the_excerpt(graph_files, source):
+    db_path, log_path = graph_files
+    graph = Graph.open(db_path, log_path)
+    hit = source.search("明月", max_results=1)[0]
+    passage_id = _propose_passage(graph, source, hit.ref, "明月")
+    graph.close()
+
+    client = TestClient(create_app(db_path, source=source))
+    body = client.get("/api/passage/context", params={"id": passage_id, "window": 10}).json()
+
+    record = source.fetch(hit.ref)
+    idx = record.text.find("明月")
+    assert body["excerpt"] == "明月"
+    assert body["before"] == record.text[max(0, idx - 10):idx]
+    assert body["after"] == record.text[idx + 2:idx + 2 + 10]
+    assert body["location"] == "first_match"
+
+
+def test_passage_context_prefers_a_verified_span_over_the_first_match(graph_files, source):
+    """明月 occurs twice in the fixture poem. A fresh search always lands on
+    the first; a passage already checked by `verify_exact_span` recorded
+    which one it actually meant, and the context shown must be about *that*
+    occurrence — not whichever one a bare search happens to hit first."""
+    db_path, log_path = graph_files
+    graph = Graph.open(db_path, log_path)
+    hit = source.search("明月", max_results=1)[0]
+    record = source.fetch(hit.ref)
+    first = record.text.find("明月")
+    second = record.text.find("明月", first + 1)
+    assert first != second, "fixture must contain two occurrences for this test to mean anything"
+
+    passage_id = _propose_passage(graph, source, hit.ref, "明月")
+    graph.verify(
+        passage_id, method=VerificationMethod.EXACT_SPAN, result=VerificationResult.PASS,
+        assurance_level=AssuranceLevel.A2_EXACT_SPAN_MATCHED, detail="test baseline",
+        span_start=second, span_end=second + 2, authored_by=AGENT,
+    )
+    graph.close()
+
+    client = TestClient(create_app(db_path, source=source))
+    body = client.get("/api/passage/context", params={"id": passage_id}).json()
+
+    assert body["location"] == "verified_span"
+    assert body["before"] == record.text[max(0, second - 10):second]
+    assert body["after"] == record.text[second + 2:second + 2 + 10]
+
+
+def test_passage_context_404s_without_source_ref_or_excerpt(graph_files, source):
+    db_path, log_path = graph_files
+    graph = Graph.open(db_path, log_path)
+    witness_id = graph.propose_witness(
+        WitnessPayload(
+            canonical_ref="poem:no-context",
+            dating=Dating(confidence=DatingRoute.UNKNOWN, basis="not dated by this test"),
+        ),
+        authored_by=AGENT,
+    )
+    passage_id = graph.propose_passage(
+        PassagePayload(canonical_ref="poem:no-context#1", locator="line 1"),
+        witness_id=witness_id, authored_by=AGENT,
+    )
+    graph.close()
+
+    client = TestClient(create_app(db_path, source=source))
+    assert client.get("/api/passage/context", params={"id": passage_id}).status_code == 404
+
+
+def test_passage_context_on_a_non_passage_node_is_400(graph_files, source):
+    db_path, log_path = graph_files
+    graph = Graph.open(db_path, log_path)
+    claim_id = graph.propose_claim(ClaimPayload(text="not a passage"), authored_by=AGENT)
+    graph.close()
+
+    client = TestClient(create_app(db_path, source=source))
+    assert client.get("/api/passage/context", params={"id": claim_id}).status_code == 400
+
+
+def test_passage_context_absent_without_a_source(graph_files):
+    db_path, _ = graph_files
+    client = TestClient(create_app(db_path))
+    assert client.get("/api/passage/context", params={"id": "passage:x"}).status_code == 404
 
 
 # --- the budget cap ----------------------------------------------------------

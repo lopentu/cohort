@@ -56,6 +56,12 @@ export const fetchCorpus = (ref, { maxChars = 4000, stripMarkup = true } = {}) =
     `/api/corpus/fetch?ref=${encodeURIComponent(ref)}` +
     `&max_chars=${maxChars}&strip_markup=${stripMarkup}`,
   )
+// A passage in context — chars of source text on each side of its recorded
+// excerpt, re-fetched live rather than trusted from the stored (often tiny)
+// excerpt. 404s for a passage with no source_ref/excerpt to re-fetch from;
+// the caller treats that as "no context available", not an error.
+export const getPassageContext = (id, window = 10) =>
+  json(`/api/passage/context?id=${encodeURIComponent(id)}&window=${window}`)
 
 // --- agent runs (the only calls that spend money) ---------------------------
 export const getRunConfig = () => json('/api/run/config')

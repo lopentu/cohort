@@ -1977,6 +1977,23 @@ a.cbeta-link.block { display: inline-block; margin: 6px 0 2px; font-size: 12px;
                      text-underline-offset: 2px; }
 a.cbeta-link.block:hover { color: var(--text); }
 
+/* A passage's excerpt in its source: a KWIC line, before/mark/after. `mark`
+   is reset off the browser default (which is opaque, near-black text on
+   yellow — illegible against a dark ground and off-key against the app's own
+   palette either way) and given the same accent `--addresses` uses, so the
+   located span reads as "this is what the citation actually resolves to"
+   rather than as a search-engine highlight. */
+.passage-context {
+  margin: 6px 0 2px; padding: 6px 8px; font-size: 12.5px; line-height: 1.5;
+  color: var(--text-dim); background: var(--fill-1); border-radius: var(--radius-sm);
+  overflow-wrap: anywhere;
+}
+.passage-context mark {
+  background: color-mix(in srgb, var(--addresses) 22%, transparent);
+  color: var(--text); font-weight: 600; border-radius: 3px; padding: 0 1px;
+}
+.passage-context .ctx-ellipsis { color: var(--text-faint); }
+
 /* --- evidence (translator attribution over Radich's corpus) --------------- */
 /* Two hues that are neither the graph's `supports` blue nor its `discounts`
    orange: a leaning toward a candidate is not an edge and must not read as one.

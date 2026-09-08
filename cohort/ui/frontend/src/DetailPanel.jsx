@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  acceptNode, attestNode, getAgent, getNode, rejectNode, reopenNode,
-  restoreEdge, retractEdge,
+  acceptNode, attestNode, getAgent, getNode, getPassageContext, rejectNode,
+  reopenNode, restoreEdge, retractEdge,
 } from './api'
 import { EDGE_STYLE, nodeTitle } from './graph-model'
 import { usePresence } from './motion'
@@ -110,6 +110,8 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
         </a>
       )}
 
+      {node.type === 'passage' && <PassageContext passageId={node.id} />}
+
       {canWrite && (
         <Verdict
           node={node}
@@ -202,6 +204,43 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
         </ul>
       </Section>
     </div>
+  )
+}
+
+// A passage's excerpt, in its source — a KWIC line, like a corpus search
+// result, but re-fetched live for this one already-recorded passage rather
+// than read off the stored `excerpt`. That field can be as short as the
+// matched span itself (find_attestations.py records whatever the source's own
+// snippet was — sometimes a two-character run), which is not enough on its
+// own for a reader to judge the citation against.
+//
+// Silent, not an error, when it 404s: a corpus not configured on this server
+// and a passage recorded before `source_ref` existed both fail the same way,
+// and the excerpt already shown above stands on its own either way — see
+// `getPassageContext` in api.js.
+function PassageContext({ passageId }) {
+  const [ctx, setCtx] = useState(null)
+  const [unavailable, setUnavailable] = useState(false)
+
+  useEffect(() => {
+    let live = true
+    setCtx(null)
+    setUnavailable(false)
+    getPassageContext(passageId)
+      .then((c) => { if (live) setCtx(c) })
+      .catch(() => { if (live) setUnavailable(true) })
+    return () => { live = false }
+  }, [passageId])
+
+  if (unavailable || !ctx) return null
+  return (
+    <p className="passage-context" title={`located by ${ctx.location}`}>
+      {ctx.has_more_before && <span className="ctx-ellipsis">…</span>}
+      {ctx.before}
+      <mark>{ctx.excerpt}</mark>
+      {ctx.after}
+      {ctx.has_more_after && <span className="ctx-ellipsis">…</span>}
+    </p>
   )
 }
 

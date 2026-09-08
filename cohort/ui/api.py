@@ -61,9 +61,11 @@ from cohort.views import (
     DISCOUNTING_EDGE_TYPES,
     dossier_json,
     findings_json,
+    locate_passage_span,
     node_detail_json,
     question_json,
     questions_json,
+    verified_span_for,
 )
 from cohort.views import edge_json as _edge_json
 from cohort.views import node_json as _node_json
@@ -685,6 +687,79 @@ def create_app(
                 "markup_stripped": strip_markup,
                 "offsets_align_with_witness": not strip_markup,
                 "text": text[:max_chars],
+            }
+
+        @app.get("/api/passage/context")
+        def passage_context(
+            id: str = Query(..., min_length=1),
+            window: int = Query(default=10, ge=0, le=500),
+        ) -> dict[str, Any]:
+            """A passage in context: `window` characters of the source text on
+            each side of its recorded excerpt — a KWIC line, the way
+            `corpus_search`'s snippet reads, but for one already-recorded
+            passage rather than a fresh query. A stored `excerpt` alone can be
+            as short as the matched span itself (`find_attestations.py` writes
+            whatever the source's own snippet was), which is not enough for a
+            reader to judge the citation against — a matched pair of characters
+            proves nothing about what they meant in situ.
+
+            Re-fetched from the source rather than read off the stored excerpt,
+            for the reason `verify_exact_span` re-fetches: the only text worth
+            showing beside a citation is the text the citation resolves to
+            right now, not what it resolved to when it was proposed.
+
+            Locating the excerpt inside that text prefers the span recorded by
+            the passage's last `EXACT_SPAN` verification over a fresh
+            `str.find` — the same preference `verify_exact_span` itself gives
+            its recorded baseline over a bare containment check, and for the
+            same reason: a short excerpt (CJK witnesses routinely repeat a
+            two-character run many times) can have several occurrences, and an
+            unverified first match is a guess about which one was meant.
+            `location` says which path was taken, so a reader can tell a
+            checked citation from a guessed one."""
+            graph = read()
+            try:
+                try:
+                    node = graph.get_node(id)
+                except NodeNotFound as e:
+                    raise HTTPException(status_code=404, detail=str(e)) from e
+                if node.type != NodeType.PASSAGE:
+                    raise HTTPException(
+                        status_code=400, detail=f"{id} is a {node.type}, not a passage",
+                    )
+                source_ref = node.payload.get("source_ref")
+                excerpt = node.payload.get("excerpt")
+                if not source_ref or not excerpt:
+                    raise HTTPException(
+                        status_code=404,
+                        detail="this passage has no source_ref or no excerpt recorded, "
+                               "so there is nothing to re-fetch context from",
+                    )
+                verified_span = verified_span_for(graph, id)
+            finally:
+                graph.close()
+
+            try:
+                record = source.fetch(source_ref)
+            except Exception as e:
+                raise HTTPException(status_code=404, detail=f"{type(e).__name__}: {e}") from e
+
+            try:
+                start, end, location = locate_passage_span(record.text, excerpt, verified_span)
+            except ValueError as e:
+                raise HTTPException(status_code=409, detail=str(e)) from e
+
+            return {
+                "id": id,
+                "before": record.text[max(0, start - window):start],
+                "excerpt": record.text[start:end],
+                "after": record.text[end:end + window],
+                "has_more_before": start - window > 0,
+                "has_more_after": end + window < len(record.text),
+                "location": location,
+                "window": window,
+                "source_ref": source_ref,
+                "witness_ref": record.witness_ref,
             }
 
     # --- attribution evidence (read-only; parity with `cohort evidence`) ------
