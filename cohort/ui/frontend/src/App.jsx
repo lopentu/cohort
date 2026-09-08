@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getGraph, getHealth, getRefusals } from './api'
 import DetailPanel from './DetailPanel'
 import GraphView, { nodeLegendFor } from './GraphView'
@@ -87,6 +87,26 @@ export default function App() {
   const { trackRef: tabTrackRef, thumbProps: tabThumbProps } =
     useSlidingIndicator(tab, tabs.length, !!data)
 
+  // What the Graph tab and its legend actually draw: `data` minus whatever a
+  // hidden question pulled down with it. Memoized on [data, hiddenQuestions]
+  // specifically, not recomputed on every render — GraphView reloads its
+  // vis-network DataSet (clearing and re-adding every node, which resets
+  // physics and scatters every node back to its unstabilized starting
+  // position) whenever this object's *reference* changes, and a plain
+  // computation in the render body produces a new object on every render,
+  // including one triggered by clicking a node (which only changes
+  // `selectedId` and has nothing to do with what the graph should show).
+  const graphData = useMemo(() => {
+    if (!data) return data
+    const hiddenIds = hiddenIdsForQuestions(data.nodes, data.edges, hiddenQuestions)
+    if (!hiddenIds.size) return data
+    return {
+      ...data,
+      nodes: data.nodes.filter((n) => !hiddenIds.has(n.id)),
+      edges: data.edges.filter((e) => !hiddenIds.has(e.src) && !hiddenIds.has(e.dst)),
+    }
+  }, [data, hiddenQuestions])
+
   const goTab = (key) => {
     if (key === tab) return
     const from = tabs.findIndex(([k]) => k === tab)
@@ -116,16 +136,6 @@ export default function App() {
     )
   }
   if (!data) return <div className="boot"><h1>COHORT</h1><p className="hint">Loading…</p></div>
-
-  // What the Graph tab and its legend actually draw: `data` minus whatever a
-  // hidden question pulled down with it. Not a hook — a plain filter over the
-  // already-loaded graph, so it can sit after the early returns above.
-  const hiddenIds = hiddenIdsForQuestions(data.nodes, data.edges, hiddenQuestions)
-  const graphData = !hiddenIds.size ? data : {
-    ...data,
-    nodes: data.nodes.filter((n) => !hiddenIds.has(n.id)),
-    edges: data.edges.filter((e) => !hiddenIds.has(e.src) && !hiddenIds.has(e.dst)),
-  }
 
   return (
     <div className="app">
