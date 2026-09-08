@@ -323,7 +323,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
       )}
 
       {(data.first === 'pre-Dhr-other' || data.second === 'pre-Dhr-other') && (
-        <p className="hint small">“Other material before Dharmarakṣa” is a mixed corpus group, not a single translator.</p>
+        <p className="hint small">“Other material before Dharmarakṣa 竺法護” is a mixed corpus group, not a single translator.</p>
       )}
       <p className="ev-limits">
         Similarity does not establish translator identity. Scores are not probabilities; repeated passages and genre formulae can affect them.

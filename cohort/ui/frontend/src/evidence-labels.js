@@ -6,7 +6,7 @@ const PROFILES = {
   'Dhkṣ': 'Dharmakṣema 曇無讖',
   ZFn: 'Zhu Fonian 竺佛念',
   ZQ: 'Zhi Qian 支謙',
-  'pre-Dhr-other': 'Other material before Dharmarakṣa',
+  'pre-Dhr-other': 'Other material before Dharmarakṣa 竺法護',
   grey: 'Translator uncertain in this catalogue',
 }
 const TEXTS = {
