@@ -14,21 +14,47 @@ An **ascription** assigns a text to a translator. The broader research question 
 
 Michael Radich supplied the corpus, working catalogue labels and curated string list used in the comparison. Acknowledge that contribution when introducing the material. The talk concerns Cohort’s infrastructure; it does not report a completed solution to his research programme.
 
+## Historical questions for the examples
+
+Introduce the historical question near the beginning, before showing a score. **Radich’s Q1 asks whether tools can help assess translator ascriptions for texts whose translator is uncertain.** Our T0603 example checks a part of that method on a text whose attribution is already accepted.
+
+Use this question:
+
+> Which texts share wording with T0603, and does that similarity reflect a translator’s usage or later reuse?
+
+An Shigao worked in the second century CE. T1694 is a later commentary on T0603; scholarship places it probably in the third century. A commentary can preserve wording from the earlier text while belonging to a different catalogue group. A wording classifier can therefore mistake a relationship between texts from different times for evidence about the translator. That is the historical problem this example makes visible.
+
+T1694 is in the mixed pre-Dharmarakṣa group in the supplied catalogue. Removing it makes An Shigao the highest-ranked group, agreeing with T0603’s accepted attribution. This is a useful known-answer check. It does not show reliable attribution on uncertain texts, and the score does not establish the date or direction of reuse.
+
+For Inquiry, paste the question above and use these instructions:
+
+> Retrieve related passages and compare their wording. Consider translator usage, quotation, commentary and recurring formulas. For T0603, repeat the curated-string comparison with and without T1694. Distinguish historical information supplied by scholarship or the catalogue from what the tools compute. Explain what the passages support and what remains unresolved.
+
+These instructions name the commentary because this is an explicit comparison of a known relationship. Do not describe that run as discovering T1694 without a hint. The existing suggested input is broader; the new question can be entered manually.
+
+**Radich’s Q3 concerns disputed Paramārtha ascriptions.** A related question for future evaluation is: “Do disputed texts resemble Paramārtha’s accepted translations or other textual traditions, and could reuse or revision explain those relationships?” The reviewed branches add feature tests and neighbourhood comparisons. They do not establish a dated transmission history or resolve those ascriptions. Keep Q3 on the reference slide unless its real-corpus results and candidate passages have been independently checked.
+
+The date and commentary relationship are supplied by scholarship. Cohort measures shared wording and the effect of changing the reference material. This supports an investigation of transmission over time without claiming that the software itself infers the chronology.
+
 ## Schedule and slide order
 
-The main slides allocate 24 minutes to speaking and interface use, leaving six minutes for questions. The timings are a plan, not measured presentation durations.
+Use seven main slides and the application. There is no scheduled audience Q&A. These are planned timings, not measured durations.
 
-| Slides | Time | Abstract topic | What to show |
-|---|---:|---|---|
-| 1–3 | 4 minutes | Research environment and material | Purpose, tab map, restricted comparison corpus |
-| 4–5 | 4 minutes | Corpus retrieval and agent work | Corpus search; Inquiry question, instructions and saved run |
-| 6–7 | 2 minutes | Semantic analysis and alignment | Search candidates; exact wording comparison |
-| 8–9 | 5 minutes | Analysis in the interactive environment | Evidence vocabulary, full ranking, T1694 exclusion |
-| 10–11 | 4 minutes | Interpretation and provenance | Findings; one proposal and its sources in Graph |
-| 12–13 | 3 minutes | Human expertise and further investigation | Researcher decisions; read-only AI analysis |
-| 14–15 | 2 minutes | Diachronic scope and research discussion | Present limits and concrete next research tasks |
+| Part | Time | What to show |
+|---|---:|---|
+| Slides 1–4 | 8 minutes | Purpose, research activities, named texts and corpus scope |
+| Slide 5, then application | 16 minutes | Corpus retrieval; vocabulary and exclusion; saved Inquiry; Findings and Graph |
+| Slides 6–7 | 6 minutes | Measured results, failure case and limits |
 
-The reference slides cover vocabulary, all comparison groups, score arithmetic, the T0453 control, Q3 development and the names used in the T0603 example. Skip these unless they help answer a question. You do not need to introduce every historical person in the catalogue.
+The remaining slides are reference material. Do not show each interface diagram and then repeat the same explanation in the application. Keep the diagrams available if the application cannot be reached.
+
+### The live sequence
+
+1. **Corpus → Related passages:** click **Lotus Sūtra · Dharmarakṣa**. The target is `T0263-rest`, a catalogue remainder of the earlier Lotus translation, not a complete edition. Read the model label and coverage. Open a result from `T0262-exDevadatta`, Kumārajīva’s Lotus translation without its separately catalogued Devadatta chapter. The button starts at source position 4000, beyond the opening. Expand **Check shared wording**. In the measured result, the nearest passage is in the other Lotus translation at position 2800, with cosine 0.865 and a longest shared sequence of only three Chinese characters. This illustrates retrieval despite little exact wording in those displayed windows; it is not proof that every returned neighbour is relevant. The result is a candidate for reading, not proof of a historical relationship.
+2. **Vocabulary comparison:** click the Lotus example. Both string lists rank Dharmarakṣa first for this target, with its own work removed from the reference profiles. That answers a different question from passage retrieval. It is one illustrative agreement with a known label, not validation of the classifier. The reverse target, `T0262-exDevadatta`, incorrectly ranks Dharmakṣema first under both lists; say this when discussing limits.
+3. Still in **Vocabulary comparison**, select **T0603**, retain the curated strings, then exclude **T1694**. Explain the changing reference material using the instructions below.
+4. **Inquiry:** open a saved completed run. Show the research question, instructions and one actual tool action. Do not claim every run uses embeddings: the worker must choose `semantic_neighbors`. Do not wait for a fresh run during the presentation.
+5. **Findings → Graph:** follow one proposal to a source passage and its recorded check. Show who proposed it and which model was used. Explain the researcher’s decision controls; do not accept a scholarly proposal merely to illustrate a button.
 
 ## Before opening the slides
 
@@ -36,7 +62,7 @@ Open <http://127.0.0.1:18766/> and refresh to load the current interface. Use th
 
 Use the existing populated session. It contains earlier research records, not a fresh run that started when you opened the page. A new inquiry is optional; it may take time and produce different results. You can show its inputs and a saved completed run without launching another one.
 
-Check that **Run results** in Inquiry lets you select a completed run, that its actions expand, and that Evidence loads T0603. Do not restart the server while a run is active. Reading tabs and repeating Evidence calculations do not call paid models. **Inquire** and **Start analysis** do.
+Check that **Run results** in Inquiry lets you select a completed run, that its actions expand, and that Vocabulary comparison loads T0603. Do not restart the server while a run is active. Reading tabs and repeating Vocabulary comparison calculations do not call paid models. **Inquire** and **Start analysis** do.
 
 Keep corpus inspection to a relevant, bounded passage. The deck uses editable interface diagrams instead of embedding restricted source-text screenshots. Those diagrams explain controls; they are not captured run outputs.
 
@@ -44,17 +70,17 @@ Keep corpus inspection to a relevant, bounded passage. The deck uses editable in
 
 ![Map of the tabs and their connections](diagrams/tabs.svg)
 
-**Corpus** reads the local source material. **Evidence** computes comparisons. Neither operation, by itself, inserts passages or proposals into the graph.
+**Corpus** reads the local source material. **Vocabulary comparison** computes comparisons. Neither operation, by itself, inserts passages or proposals into the graph.
 
 **Inquiry** records a research question and starts agents. Workers can then record passages, searches, claims and conjectures. **Findings** displays those proposals as readable entries. **Graph** displays their relationships and opens the researcher’s decision controls.
 
-The **Analyze this view** button in Graph and Evidence opens a separate analyst. It can investigate using read-only tools and save an explanation. Its answer does not become a claim or an accepted finding automatically.
+The **Analyze this view** button in Graph and Vocabulary comparison opens a separate analyst. It can investigate using read-only tools and save an explanation. Its answer does not become a claim or an accepted finding automatically.
 
 ## The source collection and the comparison groups
 
 CBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.
 
-Evidence uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.
+Vocabulary comparison uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.
 
 The current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.
 
@@ -103,23 +129,31 @@ A new question need not produce a large graph. A worker can search many texts bu
 
 ## Semantic analysis and alignment
 
-These are tools available to agents; they are not separate top-level tabs.
+**Corpus → Related passages** now exposes the stored embedding search directly. The same embeddings are also available to Inquiry workers and read-only analysts through `semantic_neighbors`; they use them only when they call that tool.
 
-**Semantic neighbours** searches an embedding index. An embedding is a numerical representation used to retrieve passages with similar content. It supplies candidates to inspect. It does not establish who translated a passage. A nearest neighbour is the closest among the candidates searched; that alone does not make it a useful match.
+The worker’s language model chooses actions and writes proposals. The embedding model previously converted passages into vectors. Searching compares stored vectors; it does not retrain the model or embed a new typed question.
+
+Select an indexed text, then a source position, or use an example button. **Next passage** and **Previous passage** navigate its indexed windows. Results are ordered by cosine similarity and exclude every unit of the target’s Taishō work. Expand **Check shared wording** to see matching Chinese-character sequences within the two displayed windows. Positions are zero-based local source character offsets, with the end excluded, not CBETA page/line numbers. Several results can belong to the same other work.
+
+The running index contains 54,616 windows from 2,160 text/chapter units. This is selected local material, not all CBETA. The filename identifies `mitra-qwen35-embedder`; the index has no recorded model revision or source hashes from generation. The UI distinguishes that filename-based model label from verified provenance. Hashes shown with results describe the source texts read now.
+
+The [published model card](https://huggingface.co/buddhist-nlp/mitra-qwen35-embedder/blob/main/README.md) describes training on Buddhist literature, including Buddhist Chinese and multilingual parallel data. It does not name CBETA or establish whether these example passages were absent from training. Do not claim a blind test of unseen material.
+
+Embeddings retrieve candidates with similar content. A nearest neighbour is the closest among the indexed candidates; it is not necessarily a relevant passage, a quotation or a text by the same translator. Vocabulary comparison separately ranks pooled corpus groups using string frequencies. The scores are not combined.
 
 **Align passages** compares two selected texts for exact shared Chinese-character sequences and returns matching runs with source positions. Normalisation removes material such as punctuation from that comparison. Shared wording can suggest reuse, a common source or a recurring formula. Its direction and historical explanation require further evidence.
 
-T0603 is the *Yin chi ru jing* 陰持入經, traditionally associated with **An Shigao 安世高**. T1694 is the *Yin chi ru jing zhu* 陰持入經註, a commentary on it. The character 註 in the title means commentary, and the relationship is identified in scholarship. Cohort did not discover the genre from a similarity score. See the scholarly references at the end of this guide.
+T0603 is a Buddhist text about body, mind and senses: the *Yin chi ru jing* 陰持入經, traditionally associated with **An Shigao 安世高**. T1694 is the *Yin chi ru jing zhu* 陰持入經註, a commentary on it. The character 註 in the title means commentary, and the relationship is identified in scholarship. Cohort did not discover the genre from a similarity score. See the scholarly references at the end of this guide.
 
 In a saved run, show the action that retrieved candidates and the action that compared T0603 with T1694. Explain the tool inputs before the result. If the worker searched a short string taken from an earlier alignment, say that it reused a retrieved string. Do not describe a previously observed match as an independent prediction.
 
 The tools for comparing edition apparatus require the appropriate XML source configuration. The current plain-text setup supports the exact-overlap example; do not present it as a full textual-variant collation or a reconstruction of a text’s genealogy.
 
-## Evidence: choose the comparison
+## Vocabulary comparison: choose the comparison
 
-![Evidence controls](diagrams/evidence.svg)
+![Vocabulary comparison controls](diagrams/evidence.svg)
 
-1. Select **Evidence** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.
+1. Select **Vocabulary comparison** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.
 2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.
 3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.
 4. Leave the vocabulary unchanged while testing an exclusion.
@@ -140,7 +174,7 @@ The full ranking’s **Score relative to leader** is a total score difference: t
 
 **Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.
 
-## Evidence: repeat without T1694
+## Vocabulary comparison: repeat without T1694
 
 Under **Does the result depend on another text?**, enter **T1694** in **Exclude additional texts** and click **Repeat comparison**. The target remains T0603; only the reference material changes. **Restore these texts** removes the additional exclusion.
 
@@ -223,13 +257,15 @@ An eligible attested record can be accepted. Accepting a passage changes that pa
 
 The reviewer is fallible. In the current implementation, its tool re-fetches cited passages and checks their spans, but the reviewer does not have a complete evidence-reading workflow before choosing its semantic verdict. A reviewer’s statement that it checked an interpretation or reproduced a calculation is not enough to establish that it did so. The researcher should inspect the passages and numerical output directly. This limitation remains open; do not say it has been repaired by changing model names.
 
-The Evidence tab does not currently offer a grounded `quotes` or `parallel_of` edge proposal for later acceptance. Accepting a graph record also does not change Evidence profiles. The exclusion above is a separate researcher-controlled calculation.
+The Vocabulary comparison tab does not currently offer a grounded `quotes` or `parallel_of` edge proposal for later acceptance. Accepting a graph record also does not change Vocabulary comparison profiles. The exclusion above is a separate researcher-controlled calculation.
 
-## AI analysis in Graph and Evidence
+## AI analysis in Graph and Vocabulary comparison
 
 Click **Analyze this view**. A side panel opens without moving the main tab. Choose or retain the model, then click **Start analysis**. Merely opening the panel does not call a model.
 
 The analyst can inspect records, search passages, read bounded source material and repeat available evidence comparisons. Its final answer is formatted text with expandable actions and reasons. It cannot propose, accept, reject or modify graph records. Its explanation is an AI interpretation, not a verification.
+
+Use **Follow-up question** and **Send** to continue the conversation. A follow-up retains the original view and previous exchanges; use **New analysis** after changing the view or comparison settings. Switching tabs closes the panel but retains the conversation.
 
 Select an entry under **Saved analyses** to reopen it. The answer describes the view supplied when that analysis began; later changes to the graph or exclusion settings do not rewrite it. Close the panel to inspect the underlying view. Closing or switching tabs does not stop an active run. Only one inquiry or analysis runs at a time in this instance.
 
@@ -237,7 +273,7 @@ Select an entry under **Saved analyses** to reopen it. The answer describes the 
 
 Questions, proposals, citations, checks, decisions and run events are recorded in the event log. The database is rebuilt from that log. New runs preserve tool explanations and result summaries; older records may not contain them. Reloading the page does not rerun an inquiry.
 
-Evidence selections are stored in the URL. Keep the link if you want the same target, vocabulary and exclusions. A link reproduces settings, not a permanently frozen corpus: results can change if the underlying dataset or implementation changes. The aggregate output used in these slides is saved separately in `measurements.json`.
+Vocabulary comparison selections are stored in the URL. Keep the link if you want the same target, vocabulary and exclusions. A link reproduces settings, not a permanently frozen corpus: results can change if the underlying dataset or implementation changes. The aggregate output used in these slides is saved separately in `measurements.json`.
 
 Exact Corpus searches do not automatically become graph evidence. AI analyses are saved as explanations and can be selected again. To preserve the entire local session, use the existing save-session helper after runs finish; do not move the database or event log while a writer is active.
 
@@ -258,8 +294,9 @@ Use it to explain retrieval and alignment if asked for another example. Do not p
 ## Sources and maintenance notes
 
 - The presentation follows the abstract title and activities supplied by the presenter and the saved explainer’s section 13. It does not reproduce a separately retrieved full conference abstract.
+- [Baley, “Chinese Transcription of Buddhist Terms in the Late Hàn Dynasty”](https://openhumanitiesdata.metajnl.com/articles/10.5334/johd.110), section “Additions and removals,” includes T0603 in An Shigao’s accepted corpus. The [CBC@ discussion of T1694](https://dazangthings.nz/cbc/text/1598/) summarises the probable third-century dating of the commentary; its authorship is debated.
 - [CBETA’s catalogue introduction](https://archive2.cbeta.org/cbreader/help/cbeta_toc_en.htm) describes the wider collection and its organisation. It is distinct from the local comparison dataset.
 - [Zacchetti’s university publication record](https://iris.unive.it/handle/10278/28817) and the [CBC@ entry for T1694](https://dazangthings.nz/cbc/text/1598/) identify the commentary and discuss its scholarship. The earlier background research consulted these records; the repository page returned 403 during this update. The complete study has not been independently read for this walkthrough.
 - [Silk, “Maitreya”](https://openphilology.eu/publications-jonathan-silk/articles_2019d_maitreya.pdf) and the earlier background guide provide context for T0453. No new quantitative claim about that example is added here.
-- `measurements.json` contains only aggregate output from the local Evidence API, captured 9 September 2026. It contains no source passages or private file paths.
-- Interface descriptions were checked against `AnalysisPanel.jsx`, `CorpusPanel.jsx`, `EvidencePanel.jsx`, `FindingsPanel.jsx`, `RunPanel.jsx`, the graph vocabulary and the current agent tools. Diagrams are simplified guides, not output screenshots.
+- `measurements.json` contains only aggregate output from the local Vocabulary comparison API, captured 9 September 2026. It contains no source passages or private file paths.
+- Interface descriptions were checked against `AnalysisPanel.jsx`, `CorpusPanel.jsx`, `Vocabulary comparisonPanel.jsx`, `FindingsPanel.jsx`, `RunPanel.jsx`, the graph vocabulary and the current agent tools. Diagrams are simplified guides, not output screenshots.

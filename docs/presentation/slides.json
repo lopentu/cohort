@@ -86,14 +86,14 @@
     "appendix": false
   },
   {
-    "title": "The research activities and their controls",
-    "topic": "Research environment",
-    "minutes": 1,
-    "notes": "Orient the audience using the abstract. These rows map research activities to available tools. They are not a pipeline in which every arrow writes a new record.\n\nDiagram: Map of the tabs and their connections](diagrams/tabs.svg)\n\n**Corpus** reads the local source material. **Evidence** computes comparisons. Neither operation, by itself, inserts passages or proposals into the graph.\n\n**Inquiry** records a research question and starts agents. Workers can then record passages, searches, claims and conjectures. **Findings** displays those proposals as readable entries. **Graph** displays their relationships and opens the researcher’s decision controls.\n\nThe **Analyze this view** button in Graph and Evidence opens a separate analyst. It can investigate using read-only tools and save an explanation. Its answer does not become a claim or an accepted finding automatically.",
+    "title": "What the researcher can do",
+    "topic": "Cohort",
+    "minutes": 2,
+    "notes": "Follow the abstract’s retrieval, semantic analysis, alignment, interpretation and provenance activities. Do not tour every control now; the application will supply the examples. The worker language model chooses tools; the frozen embedding vectors support related-passage retrieval. Neither alignment nor vocabulary scoring uses embeddings.",
     "items": [
       {
         "kind": "text",
-        "text": "Research environment",
+        "text": "Cohort",
         "x": 52,
         "y": 25,
         "w": 1120,
@@ -104,11 +104,11 @@
       },
       {
         "kind": "text",
-        "text": "The research activities and their controls",
+        "text": "What the researcher can do",
         "x": 52,
         "y": 84,
         "w": 1176,
-        "h": 105,
+        "h": 120,
         "size": 32,
         "color": "24384A",
         "bold": true
@@ -121,139 +121,117 @@
         "w": 950,
         "h": 22,
         "size": 11,
-        "color": "526778",
-        "bold": false
+        "color": "526778"
       },
       {
         "kind": "text",
-        "text": "2",
-        "x": 1180,
-        "y": 676,
-        "w": 48,
-        "h": 25,
-        "size": 12,
-        "color": "526778",
-        "bold": false
+        "text": "Find passages — exact phrases or similar content.",
+        "x": 58,
+        "y": 225,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
       },
       {
         "kind": "text",
-        "text": "Corpus retrieval",
-        "x": 55,
-        "y": 208,
-        "w": 330,
-        "h": 72,
-        "size": 23,
-        "color": "126B85",
-        "bold": true
+        "text": "Compare wording — shared sequences and vocabulary frequencies.",
+        "x": 58,
+        "y": 360,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
       },
       {
         "kind": "text",
-        "text": "Corpus search and agent retrieval tools",
-        "x": 420,
-        "y": 208,
-        "w": 805,
-        "h": 72,
-        "size": 23,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Semantic analysis",
-        "x": 55,
-        "y": 292,
-        "w": 330,
-        "h": 72,
-        "size": 23,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Semantic neighbours and wording comparisons",
-        "x": 420,
-        "y": 292,
-        "w": 805,
-        "h": 72,
-        "size": 23,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Alignment",
-        "x": 55,
-        "y": 376,
-        "w": 330,
-        "h": 72,
-        "size": 23,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Shared passages with source positions",
-        "x": 420,
-        "y": 376,
-        "w": 805,
-        "h": 72,
-        "size": 23,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Interpretation",
-        "x": 55,
-        "y": 460,
-        "w": 330,
-        "h": 72,
-        "size": 23,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Proposals in Findings; read-only AI analysis",
-        "x": 420,
-        "y": 460,
-        "w": 805,
-        "h": 72,
-        "size": 23,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Provenance and decisions",
-        "x": 55,
-        "y": 544,
-        "w": 330,
-        "h": 72,
-        "size": 23,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Graph records, checks and researcher actions",
-        "x": 420,
-        "y": 544,
-        "w": 805,
-        "h": 72,
-        "size": 23,
-        "color": "24384A",
-        "bold": false
+        "text": "Inspect proposals — sources, checks, alternatives and researcher decisions.",
+        "x": 58,
+        "y": 495,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
       }
     ],
-    "appendix": false,
-    "diagram": "tabs"
+    "appendix": false
+  },
+  {
+    "title": "Two kinds of resemblance",
+    "topic": "Cohort",
+    "minutes": 3,
+    "notes": "Introduce the Lotus Sūtra by name, not just its catalogue IDs. T0263 is Dharmarakṣa’s 正法華經; T0262 is Kumārajīva’s 妙法蓮華經. Our indexed units omit particular separately catalogued sections: these are not complete editions. The T0603 case is a known commentary relationship, not a new attribution. Acknowledge Michael Radich’s corpus, labels and string list. T0263 catalogue: https://dazangthings.nz/cbc/text/398/ .",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Two kinds of resemblance",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 120,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "Same content, different wording: two Chinese translations of the Lotus Sūtra.",
+        "x": 58,
+        "y": 225,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Repeated wording across time: T0603, a text about body, mind and senses, and its later commentary T1694.",
+        "x": 58,
+        "y": 360,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "The dates and textual relationships come from scholarship. Cohort searches and measures.",
+        "x": 58,
+        "y": 495,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      }
+    ],
+    "appendix": false
   },
   {
     "title": "The comparison uses a selected corpus",
     "topic": "Research material",
     "minutes": 2,
-    "notes": "Explain the restriction before presenting a ranking. CBETA is much larger than this dataset. The counts below come from the current selection ledger, before target withholding.\n\nCBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.\n\nEvidence uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.\n\nThe current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.\n\nTo qualify initially, a labelled unit must have at least 2,000 Chinese characters, and a group must have at least five qualifying units. Texts marked as having an uncertain translator are excluded from these reference profiles. Their wording supplies the frequent-string vocabulary instead. Missing text files and rejected units are counted in the selection ledger.\n\nThese are implementation choices for this experiment. They do not establish that the remaining groups are equally representative or that their inherited ascriptions are infallible. After withholding, some groups can have little material left; the interface flags these as thin. Groups with no usable profile are listed as not judged.\n\nSay:\n\n> The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.\n\nThe catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.",
+    "notes": "Explain the restriction before presenting a ranking. CBETA is much larger than this dataset. The counts below come from the current selection ledger, before target withholding.\n\nCBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.\n\nVocabulary comparison uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.\n\nThe current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.\n\nTo qualify initially, a labelled unit must have at least 2,000 Chinese characters, and a group must have at least five qualifying units. Texts marked as having an uncertain translator are excluded from these reference profiles. Their wording supplies the frequent-string vocabulary instead. Missing text files and rejected units are counted in the selection ledger.\n\nThese are implementation choices for this experiment. They do not establish that the remaining groups are equally representative or that their inherited ascriptions are infallible. After withholding, some groups can have little material left; the interface flags these as thin. Groups with no usable profile are listed as not judged.\n\nSay:\n\n> The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.\n\nThe catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.",
     "items": [
       {
         "kind": "text",
@@ -290,7 +268,7 @@
       },
       {
         "kind": "text",
-        "text": "3",
+        "text": "4",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -379,9 +357,308 @@
     "appendix": false
   },
   {
+    "title": "In Cohort",
+    "topic": "Cohort",
+    "minutes": 16,
+    "notes": "Switch to the light interface here. Spend approximately 4 minutes retrieving the Lotus Sūtra example, 5 on vocabulary and the T0603 exclusion, 4 on a saved inquiry and one finding, and 3 on provenance and researcher controls. These are planned times. Do not wait for a new language-model run. Return to the slides for the last six minutes. Read the walkthrough for exact inputs and interpretation. The reference diagrams are fallback material, not a second walkthrough.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "In Cohort",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 120,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "Corpus → related passages → inspect shared wording",
+        "x": 58,
+        "y": 225,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Vocabulary comparison → repeat with a source excluded",
+        "x": 58,
+        "y": 360,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Inquiry → saved actions → Findings → Graph",
+        "x": 58,
+        "y": 495,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "What the examples show",
+    "topic": "Cohort",
+    "minutes": 3,
+    "notes": "The first count concerns T0263-rest and T0262-exDevadatta, not every passage in complete editions. Nearest means first under vector similarity among indexed other works. This is an illustrative case selected after inspecting outputs, not a retrieval accuracy benchmark. Vocabulary excludes the target’s entire Taishō work, but other dependence and genre effects remain. Reverse control: T0262-exDevadatta ranks with Dharmakṣema under both vocabularies, not its catalogue label Kumārajīva. Mention that failure verbally: agreement for one example does not validate attribution. Measurements: scripts/check_method_examples.py; docs/presentation/method-examples.json.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "What the examples show",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 120,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "Lotus Sūtra: 283 of 327 indexed passages retrieve the other translation as their nearest passage.",
+        "x": 58,
+        "y": 225,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Vocabulary: the earlier Lotus translation ranks with Dharmarakṣa’s group under both string lists.",
+        "x": 58,
+        "y": 360,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "T0603: excluding its commentary changes the leading group. The reference material matters.",
+        "x": 58,
+        "y": 495,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "What remains the researcher’s work",
+    "topic": "Cohort",
+    "minutes": 3,
+    "notes": "Close on the concrete division of labour. No scheduled audience Q&A. We have shown retrieval, comparison and a record of investigation. We have not validated translator attribution, inferred dates or proved a transmission genealogy. Training overlap is unknown: the embedding model card describes Buddhist Chinese training but does not identify CBETA texts. The index lacks a recorded model revision and source hashes at generation time; its UI discloses that. The present source spans can be read and checked. Stop after the final point.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "What remains the researcher’s work",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 120,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "Decide whether a retrieved passage is relevant and what explains the resemblance.",
+        "x": 58,
+        "y": 225,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Check chronology, reuse and genre before drawing conclusions about a translator.",
+        "x": 58,
+        "y": 360,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Inspect and accept a proposal. A located citation does not make an interpretation true.",
+        "x": 58,
+        "y": 495,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Translator usage or later reuse?",
+    "topic": "Historical question · adapted from Radich’s Q1",
+    "minutes": 0,
+    "notes": "Introduce the historical question here, before the interface. Radich’s Q1 concerns translator ascriptions for uncertain texts. This is a narrower methodological question adapted from it: which shared wording helps assess a translator, and which comes from later textual reuse? T0603 is attributed to An Shigao in modern scholarship; its later commentary, T1694, supplies a known relationship against which to examine the calculation. We are not answering an unknown ascription. The later commentary can pull an earlier text toward the group containing the commentary because the ranking counts wording without inferring its chronology. Dates and the commentary relationship come from scholarship; the tools measure similarity and overlap. Keep the original question about uncertain ascriptions as the motivation, rather than claiming this example answers Q1.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Historical question · adapted from Radich’s Q1",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Translator usage or later reuse?",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "8",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Which texts share wording with T0603, and does that similarity reflect a translator’s usage or later reuse?",
+        "x": 55,
+        "y": 227,
+        "w": 1150,
+        "h": 163,
+        "size": 31,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "T0603 has an accepted attribution to An Shigao.\nIts later commentary repeats wording from the earlier text.",
+        "x": 55,
+        "y": 442,
+        "w": 1140,
+        "h": 125,
+        "size": 26,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Use this known case to examine the method before applying it to disputed texts.",
+        "x": 55,
+        "y": 603,
+        "w": 1140,
+        "h": 60,
+        "size": 22,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": true
+  },
+  {
     "title": "Find a phrase and open its source",
     "topic": "Corpus retrieval · Corpus",
-    "minutes": 2,
+    "minutes": 0,
     "notes": "Open Corpus. Use the suggested opening formula. Inspect one result and explain corpus order. Investigate this passage prepares a question; it does not launch an agent.\n\nDiagram: Corpus controls](diagrams/corpus.svg)\n\n1. Select **Corpus**.\n2. Click **Opening formula · 如是我聞**, or type an exact phrase. This familiar opening is often translated as “Thus have I heard.” It is useful for explaining why an ordinary shared expression does not identify a translator.\n3. Read the result count and ordering. If the list is cut off, narrow the search. The first entries are in corpus order, not ranked by relevance.\n4. Open one result to read its context. **Show/hide TEI markup** changes the reading display. Do not calculate citation offsets from the markup-stripped view.\n5. Click **Investigate this passage** if you want to move into Inquiry. It prepares a research question and instructions using that result; it does not start an agent or attach a new citation.\n\nYou can also click **Phrase from T0603 · 多熱如是名遍** for the worked example. Explain that this phrase was taken from an earlier comparison. You are checking known wording, not asking the search box to discover a research topic.\n\nA witness is a retrieved source record. Multiple witnesses or passages may contain related or repeated material; their count is not automatically a count of independent confirmations.",
     "items": [
       {
@@ -419,7 +696,7 @@
       },
       {
         "kind": "text",
-        "text": "4",
+        "text": "9",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -600,14 +877,14 @@
         "bold": false
       }
     ],
-    "appendix": false,
+    "appendix": true,
     "diagram": "corpus"
   },
   {
     "title": "Give the agent a question and instructions",
     "topic": "Agent-based architecture · Inquiry",
-    "minutes": 2,
-    "notes": "Show the fields and a completed run. Do not start a paid run simply to fill presentation time. Point out the distinct Record question and Inquire actions.\n\nDiagram: Inquiry fields](diagrams/inquiry.svg)\n\nThe two fields have different jobs:\n\n- **Research question:** what you want to find out. For example, “Which passages elsewhere in the corpus are closely related to the Yin chi ru jing (陰持入經, T0603), and what might explain those relationships?”\n- **Research instructions:** how you want the investigation approached and what evidence you want back. Ask for candidate passages, source references, comparisons, alternatives and limitations. These instructions guide the worker; they do not guarantee compliance or a successful answer.\n\nSuggested inputs fill the draft. **Record question** saves a question and selects it. **Inquire** starts the agents. The question becomes a star in Graph; further nodes depend on what the worker actually records.\n\nExpand **Agent roles and settings** only if discussing model configuration. A worker searches, compares and proposes. A reviewer is a separate agent, required to use a different model family, that records checks on proposals. Read the configured model names from the interface; do not assume a name from an older run describes a new run.\n\nThe local session has no monetary stopping threshold or output-token cap. A worker still has a 32-turn limit and can finish earlier. A turn is an iteration of its model/tool loop, not a guarantee of a new text or finding. Switching tabs does not stop the server-side run. The stop control requests a stop after the current turn.\n\nUse **Run results** to reopen a completed run. Expand an action to show its inputs and result. New worker actions have a recorded explanation of why the worker chose that action or string. This is the model’s stated rationale, not proof that the choice was good or a transcript of its hidden reasoning. Older runs can lack these explanations.\n\nA new question need not produce a large graph. A worker can search many texts but attach only a few passages to its proposals. In Graph, **Show exploration** adds recorded search activity. Those dashed activity records are separate from evidence supporting a proposal.",
+    "minutes": 0,
+    "notes": "The slide shows a proposed question you can type or paste, not a claim that the existing suggestion button has been changed. Full question: Which texts share wording with T0603, and does that similarity reflect a translator’s usage or later reuse? Instructions: retrieve candidate passages; align shared wording; compare the T0603 ranking with and without T1694 while keeping vocabulary fixed; distinguish catalogue or scholarly chronology from computed overlap; state what cannot be concluded about translator identity or borrowing direction.\n\nShow the fields and a completed run. Do not start a paid run simply to fill presentation time. Point out the distinct Record question and Inquire actions.\n\nDiagram: Inquiry fields](diagrams/inquiry.svg)\n\nThe two fields have different jobs:\n\n- **Research question:** what you want to find out. For example, “Which passages elsewhere in the corpus are closely related to the Yin chi ru jing (陰持入經, T0603), and what might explain those relationships?”\n- **Research instructions:** how you want the investigation approached and what evidence you want back. Ask for candidate passages, source references, comparisons, alternatives and limitations. These instructions guide the worker; they do not guarantee compliance or a successful answer.\n\nSuggested inputs fill the draft. **Record question** saves a question and selects it. **Inquire** starts the agents. The question becomes a star in Graph; further nodes depend on what the worker actually records.\n\nExpand **Agent roles and settings** only if discussing model configuration. A worker searches, compares and proposes. A reviewer is a separate agent, required to use a different model family, that records checks on proposals. Read the configured model names from the interface; do not assume a name from an older run describes a new run.\n\nThe local session has no monetary stopping threshold or output-token cap. A worker still has a 32-turn limit and can finish earlier. A turn is an iteration of its model/tool loop, not a guarantee of a new text or finding. Switching tabs does not stop the server-side run. The stop control requests a stop after the current turn.\n\nUse **Run results** to reopen a completed run. Expand an action to show its inputs and result. New worker actions have a recorded explanation of why the worker chose that action or string. This is the model’s stated rationale, not proof that the choice was good or a transcript of its hidden reasoning. Older runs can lack these explanations.\n\nA new question need not produce a large graph. A worker can search many texts but attach only a few passages to its proposals. In Graph, **Show exploration** adds recorded search activity. Those dashed activity records are separate from evidence supporting a proposal.",
     "items": [
       {
         "kind": "text",
@@ -644,7 +921,7 @@
       },
       {
         "kind": "text",
-        "text": "5",
+        "text": "10",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -740,7 +1017,7 @@
       },
       {
         "kind": "text",
-        "text": "Which passages are related to T0603,\nand what might explain the relationship?",
+        "text": "Does T0603’s shared wording reflect\na translator’s usage or later reuse?",
         "x": 89,
         "y": 363,
         "w": 640,
@@ -772,7 +1049,7 @@
       },
       {
         "kind": "text",
-        "text": "Return passages, comparisons and alternatives.",
+        "text": "Find passages; compare reuse and translator usage.",
         "x": 89,
         "y": 496,
         "w": 640,
@@ -835,13 +1112,13 @@
         "bold": false
       }
     ],
-    "appendix": false,
+    "appendix": true,
     "diagram": "inquiry"
   },
   {
     "title": "Retrieve candidates by content",
     "topic": "Semantic analysis · agent tools",
-    "minutes": 1,
+    "minutes": 0,
     "notes": "Use a saved semantic_neighbors action if available. Read its target and returned candidate IDs. Do not call this translator identification. The diagram is the tool workflow, not a new measured run.\n\nThese are tools available to agents; they are not separate top-level tabs.\n\n**Semantic neighbours** searches an embedding index. An embedding is a numerical representation used to retrieve passages with similar content. It supplies candidates to inspect. It does not establish who translated a passage. A nearest neighbour is the closest among the candidates searched; that alone does not make it a useful match.\n\n**Align passages** compares two selected texts for exact shared Chinese-character sequences and returns matching runs with source positions. Normalisation removes material such as punctuation from that comparison. Shared wording can suggest reuse, a common source or a recurring formula. Its direction and historical explanation require further evidence.\n\nT0603 is the *Yin chi ru jing* 陰持入經, traditionally associated with **An Shigao 安世高**. T1694 is the *Yin chi ru jing zhu* 陰持入經註, a commentary on it. The character 註 in the title means commentary, and the relationship is identified in scholarship. Cohort did not discover the genre from a similarity score. See the scholarly references at the end of this guide.\n\nIn a saved run, show the action that retrieved candidates and the action that compared T0603 with T1694. Explain the tool inputs before the result. If the worker searched a short string taken from an earlier alignment, say that it reused a retrieved string. Do not describe a previously observed match as an independent prediction.\n\nThe tools for comparing edition apparatus require the appropriate XML source configuration. The current plain-text setup supports the exact-overlap example; do not present it as a full textual-variant collation or a reconstruction of a text’s genealogy.",
     "items": [
       {
@@ -879,7 +1156,7 @@
       },
       {
         "kind": "text",
-        "text": "6",
+        "text": "11",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -966,13 +1243,13 @@
         "bold": false
       }
     ],
-    "appendix": false
+    "appendix": true
   },
   {
     "title": "Locate shared wording in a selected pair",
     "topic": "Alignment · agent tools",
-    "minutes": 1,
-    "notes": "Explain the titles. T0603 is the Yin chi ru jing, associated with An Shigao. T1694 is its commentary; this relationship is known from scholarship. The tool locates shared runs, not the historical direction of borrowing.\n\nThese are tools available to agents; they are not separate top-level tabs.\n\n**Semantic neighbours** searches an embedding index. An embedding is a numerical representation used to retrieve passages with similar content. It supplies candidates to inspect. It does not establish who translated a passage. A nearest neighbour is the closest among the candidates searched; that alone does not make it a useful match.\n\n**Align passages** compares two selected texts for exact shared Chinese-character sequences and returns matching runs with source positions. Normalisation removes material such as punctuation from that comparison. Shared wording can suggest reuse, a common source or a recurring formula. Its direction and historical explanation require further evidence.\n\nT0603 is the *Yin chi ru jing* 陰持入經, traditionally associated with **An Shigao 安世高**. T1694 is the *Yin chi ru jing zhu* 陰持入經註, a commentary on it. The character 註 in the title means commentary, and the relationship is identified in scholarship. Cohort did not discover the genre from a similarity score. See the scholarly references at the end of this guide.\n\nIn a saved run, show the action that retrieved candidates and the action that compared T0603 with T1694. Explain the tool inputs before the result. If the worker searched a short string taken from an earlier alignment, say that it reused a retrieved string. Do not describe a previously observed match as an independent prediction.\n\nThe tools for comparing edition apparatus require the appropriate XML source configuration. The current plain-text setup supports the exact-overlap example; do not present it as a full textual-variant collation or a reconstruction of a text’s genealogy.",
+    "minutes": 0,
+    "notes": "Historical orientation: An Shigao worked in the second century CE. Scholarship identifies T1694 as a later commentary, probably from the third century; do not treat the date as inferred by Cohort. Its title repeats 陰持入經 and adds 註, commentary. This is why shared wording may reflect transmission over time rather than the same translator.\n\nExplain the titles. T0603 is the Yin chi ru jing, associated with An Shigao. T1694 is its commentary; this relationship is known from scholarship. The tool locates shared runs, not the historical direction of borrowing.\n\nThese are tools available to agents; they are not separate top-level tabs.\n\n**Semantic neighbours** searches an embedding index. An embedding is a numerical representation used to retrieve passages with similar content. It supplies candidates to inspect. It does not establish who translated a passage. A nearest neighbour is the closest among the candidates searched; that alone does not make it a useful match.\n\n**Align passages** compares two selected texts for exact shared Chinese-character sequences and returns matching runs with source positions. Normalisation removes material such as punctuation from that comparison. Shared wording can suggest reuse, a common source or a recurring formula. Its direction and historical explanation require further evidence.\n\nT0603 is the *Yin chi ru jing* 陰持入經, traditionally associated with **An Shigao 安世高**. T1694 is the *Yin chi ru jing zhu* 陰持入經註, a commentary on it. The character 註 in the title means commentary, and the relationship is identified in scholarship. Cohort did not discover the genre from a similarity score. See the scholarly references at the end of this guide.\n\nIn a saved run, show the action that retrieved candidates and the action that compared T0603 with T1694. Explain the tool inputs before the result. If the worker searched a short string taken from an earlier alignment, say that it reused a retrieved string. Do not describe a previously observed match as an independent prediction.\n\nThe tools for comparing edition apparatus require the appropriate XML source configuration. The current plain-text setup supports the exact-overlap example; do not present it as a full textual-variant collation or a reconstruction of a text’s genealogy.",
     "items": [
       {
         "kind": "text",
@@ -1009,7 +1286,7 @@
       },
       {
         "kind": "text",
-        "text": "7",
+        "text": "12",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1072,7 +1349,7 @@
       },
       {
         "kind": "text",
-        "text": "align_passages returns shared runs and positions in both texts.",
+        "text": "Earlier translation → later commentary: a relationship known from scholarship.",
         "x": 55,
         "y": 475,
         "w": 1160,
@@ -1083,7 +1360,7 @@
       },
       {
         "kind": "text",
-        "text": "Read the passages before deciding what explains the overlap.",
+        "text": "Alignment locates shared wording; it does not establish the chronology.",
         "x": 55,
         "y": 593,
         "w": 1160,
@@ -1093,13 +1370,13 @@
         "bold": false
       }
     ],
-    "appendix": false
+    "appendix": true
   },
   {
     "title": "Compare string counts across groups",
     "topic": "Analysis · Evidence",
-    "minutes": 2,
-    "notes": "Open Evidence and use the T0603 example. Explain the vocabulary as short character strings, then show the full ranking. The example resets to curated strings and no additional exclusions.\n\nDiagram: Evidence controls](diagrams/evidence.svg)\n\n1. Select **Evidence** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
+    "minutes": 0,
+    "notes": "Open Vocabulary comparison and use the T0603 example. Explain the vocabulary as short character strings, then show the full ranking. The example resets to curated strings and no additional exclusions.\n\nDiagram: Vocabulary comparison controls](diagrams/evidence.svg)\n\n1. Select **Vocabulary comparison** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
     "items": [
       {
         "kind": "text",
@@ -1136,7 +1413,7 @@
       },
       {
         "kind": "text",
-        "text": "8",
+        "text": "13",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1189,12 +1466,12 @@
       },
       {
         "kind": "text",
-        "text": "Evidence",
+        "text": "Vocabulary comparison",
         "x": 77,
         "y": 277,
         "w": 691,
         "h": 35,
-        "size": 22,
+        "size": 16,
         "color": "126B85",
         "bold": true
       },
@@ -1276,14 +1553,14 @@
         "bold": false
       }
     ],
-    "appendix": false,
+    "appendix": true,
     "diagram": "evidence"
   },
   {
     "title": "Repeat T0603 without its commentary",
     "topic": "Analysis · controlled exclusion",
-    "minutes": 3,
-    "notes": "T1694 is assigned to the mixed pre-Dharmarakṣa group. Its shared wording contributes to that group’s profile. Removing it changes the reference profile, not T0603. An Shigao worked in the second century CE; Dharmarakṣa later, in the late third and early fourth centuries. “Before Dharmarakṣa” is a catalogue category, not his own work.\n\nLive action: enter T1694 and click Repeat comparison. Keep curated vocabulary fixed. The leading group changes, so both names must be read. This demonstrates sensitivity to included material, not successful attribution.\n\nUnder **Does the result depend on another text?**, enter **T1694** in **Exclude additional texts** and click **Repeat comparison**. The target remains T0603; only the reference material changes. **Restore these texts** removes the additional exclusion.\n\nThe reproduced results on 9 September 2026 are:\n\n| Setup | Highest-ranked group | Next group | Per-string margin |\n|---|---|---|---:|\n| Curated strings, no additional exclusion | Other material before Dharmarakṣa 竺法護 | An Shigao 安世高 | 1.696 |\n| Same strings, T1694 excluded | An Shigao 安世高 | Other material before Dharmarakṣa 竺法護 | 0.096 |\n\nT1694 contributes to the mixed group in the first row. “Other material before Dharmarakṣa” is a catalogue category for early material, not one competing translator. Excluding the commentary changes the leader and greatly reduces the lead.\n\nSay:\n\n> Including this commentary has a large effect on the ranking. Once we remove it, the initial leading group no longer comes first. We need to inspect the shared passages and the composition of the comparison groups before using this as evidence about a translator.\n\nDo not translate 0.096 into a probability or call it a statistically established tie. An Shigao’s new first place does not establish his authorship. The comparison does not determine which text borrowed from which.\n\nThe before-and-after table is calculated by the application. If it fails to load, the slide contains the recorded aggregate result and its settings. Do not substitute a value from another vocabulary. Additional exclusions currently take exact corpus unit IDs; a collection identifier is not a promise that all its chapters will be removed. The target’s own work is withheld automatically.",
+    "minutes": 0,
+    "notes": "This calculation illustrates a historical-dependence problem: the later commentary contains wording from the earlier text, but belongs to another reference group. Excluding it makes An Shigao the top-ranked group, matching the accepted attribution, by a small uncalibrated margin. It is one known-answer check, not evidence of reliable attribution on unknown texts.\n\nT1694 is assigned to the mixed pre-Dharmarakṣa group. Its shared wording contributes to that group’s profile. Removing it changes the reference profile, not T0603. An Shigao worked in the second century CE; Dharmarakṣa later, in the late third and early fourth centuries. “Before Dharmarakṣa” is a catalogue category, not his own work.\n\nLive action: enter T1694 and click Repeat comparison. Keep curated vocabulary fixed. The leading group changes, so both names must be read. This demonstrates sensitivity to included material, not successful attribution.\n\nUnder **Does the result depend on another text?**, enter **T1694** in **Exclude additional texts** and click **Repeat comparison**. The target remains T0603; only the reference material changes. **Restore these texts** removes the additional exclusion.\n\nThe reproduced results on 9 September 2026 are:\n\n| Setup | Highest-ranked group | Next group | Per-string margin |\n|---|---|---|---:|\n| Curated strings, no additional exclusion | Other material before Dharmarakṣa 竺法護 | An Shigao 安世高 | 1.696 |\n| Same strings, T1694 excluded | An Shigao 安世高 | Other material before Dharmarakṣa 竺法護 | 0.096 |\n\nT1694 contributes to the mixed group in the first row. “Other material before Dharmarakṣa” is a catalogue category for early material, not one competing translator. Excluding the commentary changes the leader and greatly reduces the lead.\n\nSay:\n\n> Including this commentary has a large effect on the ranking. Once we remove it, the initial leading group no longer comes first. We need to inspect the shared passages and the composition of the comparison groups before using this as evidence about a translator.\n\nDo not translate 0.096 into a probability or call it a statistically established tie. An Shigao’s new first place does not establish his authorship. The comparison does not determine which text borrowed from which.\n\nThe before-and-after table is calculated by the application. If it fails to load, the slide contains the recorded aggregate result and its settings. Do not substitute a value from another vocabulary. Additional exclusions currently take exact corpus unit IDs; a collection identifier is not a promise that all its chapters will be removed. The target’s own work is withheld automatically.",
     "items": [
       {
         "kind": "text",
@@ -1320,7 +1597,7 @@
       },
       {
         "kind": "text",
-        "text": "9",
+        "text": "14",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1428,22 +1705,22 @@
       },
       {
         "kind": "text",
-        "text": "The first ranking depends heavily on including a closely related text.",
+        "text": "Removing the later commentary brings the prediction into agreement with the accepted attribution.",
         "x": 55,
         "y": 577,
         "w": 1145,
-        "h": 68,
-        "size": 25,
+        "h": 78,
+        "size": 23,
         "color": "24384A",
         "bold": false
       }
     ],
-    "appendix": false
+    "appendix": true
   },
   {
     "title": "Read the proposal and its alternatives",
     "topic": "Interpretation · Findings",
-    "minutes": 2,
+    "minutes": 0,
     "notes": "Open one saved proposal and read its actual status. Claims and conjectures are both hypotheses. The field labels make the agent’s argument inspectable; they do not guarantee that it is a good argument.\n\nDiagram: Findings fields](diagrams/findings.svg)\n\nOpen **Findings** and expand one relevant proposal. Entries are newest first, not sorted by confidence. Read its type and status before the text.\n\n**Hypothesis** is an umbrella term. A hypothesis can be a **claim** or a **conjecture**; it is not a container assembled from claims. A claim states something its cited passages are supposed to support. A conjecture offers an explanation that goes beyond the observations and must include a test. Neither label certifies truth.\n\nThe system checks required fields and relationships. It cannot reliably decide whether a statement is historically sound merely by checking its structure. Its grounding rule checks whether a supplied string exists; a very short or irrelevant string can pass that existence check. Do not call grounding a relevance guarantee.\n\n| Field | What to read it as |\n|---|---|\n| How the proposal was reached (`derivation`) | The observations and steps the worker says led to it |\n| Material examined (`corpus_boundary`) | What the worker reports examining or excluding |\n| What could bias the comparison (`selection_risks`) | Ways that choosing these texts or strings could distort the result |\n| Other possible explanations (`alternative_explanations`) | Competing accounts, such as reuse, a shared source or a recurring expression |\n| Test | A recorded query and expected result intended to challenge the conjecture |\n\nInspect whether a test could distinguish the alternatives. A search returning a phrase already seen is weak evidence for a new historical explanation. The presence of a test field does not establish that a useful test was run prospectively.\n\nClick a cited passage to open it in Graph. The AI interpretation in the side panel is separate from these recorded hypotheses.",
     "items": [
       {
@@ -1481,7 +1758,7 @@
       },
       {
         "kind": "text",
-        "text": "10",
+        "text": "15",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1632,13 +1909,13 @@
         "bold": false
       }
     ],
-    "appendix": false,
+    "appendix": true,
     "diagram": "findings"
   },
   {
     "title": "Follow a proposal back to its sources",
     "topic": "Provenance · Graph",
-    "minutes": 2,
+    "minutes": 0,
     "notes": "The arrows here follow schema direction: passage part_of source; passage attests proposal; proposal addresses question. Shapes are simplified but match node types. Use one selected record rather than narrating the entire graph.\n\nDiagram: Graph relationships](diagrams/graph.svg)\n\nUse the question checkboxes to show the investigation you are discussing. Hiding a question changes the view; it does not delete its records. Several proposals can address one question. An older session can also contain earlier questions.\n\nSelect a single node. Its inspector shows the record’s type, status, worker, model, sources and relationships. New records can show the worker’s action reason. The historical model name describes the recorded call, not a later profile setting.\n\n| Shape or link | Meaning |\n|---|---|\n| Star | A research question |\n| Diamond | A claim or conjecture |\n| Rectangle | A located passage |\n| Ellipse | A source record, called a witness in the schema |\n| Dot | A search query |\n| `part_of` | A passage belongs to a source record |\n| `attests` | A passage is offered as support for a proposal |\n| `addresses` | A proposal addresses a question |\n| `searched_for` | A recorded search used in proposing a claim or conjecture |\n| `tests` | A query is offered as a test of a conjecture |\n\nA search pointing to a claim records retrieval activity; it does not itself prove the claim. The **Show exploration** overlay adds works inspected in recorded tool activity, including some that were never attached as evidence. It is not a map of every source available in the corpus or every thought the model had.\n\n**Verified with an exact span** means a recorded check found the quoted passage at its source location. Repeated verification attempts remain in the history but are not presented as multiple independent witnesses.",
     "items": [
       {
@@ -1676,7 +1953,7 @@
       },
       {
         "kind": "text",
-        "text": "11",
+        "text": "16",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1838,14 +2115,14 @@
         "bold": false
       }
     ],
-    "appendix": false,
+    "appendix": true,
     "diagram": "graph"
   },
   {
     "title": "Separate citation checks from researcher decisions",
     "topic": "Human expertise · Graph",
-    "minutes": 2,
-    "notes": "Do not click Accept just to create an ending. Show available controls and explain their actual eligibility rules. The reviewer cannot be treated as a reliable semantic validator; explain the current limitation if asked.\n\n| Status | Meaning |\n|---|---|\n| Proposed | Submitted for consideration |\n| Attested | The required promotion checks for that record type passed |\n| Accepted | The researcher approved this record under Cohort’s citation rules |\n| Rejected | The researcher rejected this record with a reason |\n\nA **contradiction** relationship is distinct from a researcher’s rejection. Colour alone is insufficient: some imported experiment records also have calculated assessment colours. Read the selected record’s status.\n\nAn eligible attested record can be accepted. Accepting a passage changes that passage’s status; it does not accept every connected claim. Rejecting a record preserves it and the reason rather than deleting a source text. Reopening a rejected record also requires a reason.\n\nThe reviewer is fallible. In the current implementation, its tool re-fetches cited passages and checks their spans, but the reviewer does not have a complete evidence-reading workflow before choosing its semantic verdict. A reviewer’s statement that it checked an interpretation or reproduced a calculation is not enough to establish that it did so. The researcher should inspect the passages and numerical output directly. This limitation remains open; do not say it has been repaired by changing model names.\n\nThe Evidence tab does not currently offer a grounded `quotes` or `parallel_of` edge proposal for later acceptance. Accepting a graph record also does not change Evidence profiles. The exclusion above is a separate researcher-controlled calculation.",
+    "minutes": 0,
+    "notes": "Do not click Accept just to create an ending. Show available controls and explain their actual eligibility rules. The reviewer cannot be treated as a reliable semantic validator; explain the current limitation if asked.\n\n| Status | Meaning |\n|---|---|\n| Proposed | Submitted for consideration |\n| Attested | The required promotion checks for that record type passed |\n| Accepted | The researcher approved this record under Cohort’s citation rules |\n| Rejected | The researcher rejected this record with a reason |\n\nA **contradiction** relationship is distinct from a researcher’s rejection. Colour alone is insufficient: some imported experiment records also have calculated assessment colours. Read the selected record’s status.\n\nAn eligible attested record can be accepted. Accepting a passage changes that passage’s status; it does not accept every connected claim. Rejecting a record preserves it and the reason rather than deleting a source text. Reopening a rejected record also requires a reason.\n\nThe reviewer is fallible. In the current implementation, its tool re-fetches cited passages and checks their spans, but the reviewer does not have a complete evidence-reading workflow before choosing its semantic verdict. A reviewer’s statement that it checked an interpretation or reproduced a calculation is not enough to establish that it did so. The researcher should inspect the passages and numerical output directly. This limitation remains open; do not say it has been repaired by changing model names.\n\nThe Vocabulary comparison tab does not currently offer a grounded `quotes` or `parallel_of` edge proposal for later acceptance. Accepting a graph record also does not change Vocabulary comparison profiles. The exclusion above is a separate researcher-controlled calculation.",
     "items": [
       {
         "kind": "text",
@@ -1882,7 +2159,7 @@
       },
       {
         "kind": "text",
-        "text": "12",
+        "text": "17",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1969,12 +2246,12 @@
         "bold": false
       }
     ],
-    "appendix": false
+    "appendix": true
   },
   {
     "title": "Ask for an explanation of the current view",
     "topic": "Further investigation · Graph and Evidence",
-    "minutes": 1,
+    "minutes": 0,
     "notes": "Open Analyze this view without starting a run. Show a saved analysis if one is available. The analyst can use read-only tools, but does not promote its answer into a graph proposal.\n\nClick **Analyze this view**. A side panel opens without moving the main tab. Choose or retain the model, then click **Start analysis**. Merely opening the panel does not call a model.\n\nThe analyst can inspect records, search passages, read bounded source material and repeat available evidence comparisons. Its final answer is formatted text with expandable actions and reasons. It cannot propose, accept, reject or modify graph records. Its explanation is an AI interpretation, not a verification.\n\nSelect an entry under **Saved analyses** to reopen it. The answer describes the view supplied when that analysis began; later changes to the graph or exclusion settings do not rewrite it. Close the panel to inspect the underlying view. Closing or switching tabs does not stop an active run. Only one inquiry or analysis runs at a time in this instance.",
     "items": [
       {
@@ -2012,7 +2289,7 @@
       },
       {
         "kind": "text",
-        "text": "13",
+        "text": "18",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2099,13 +2376,13 @@
         "bold": false
       }
     ],
-    "appendix": false
+    "appendix": true
   },
   {
-    "title": "What “diachronic” means in this prototype",
+    "title": "Historical information and measured results",
     "topic": "Diachronic digital humanities",
-    "minutes": 1,
-    "notes": "State the gap plainly. The research questions are historical and the records can support their investigation. There is no implemented model that infers language change or historical dates.\n\nDiachronic research studies change through time. Translator ascriptions, the reuse of earlier texts and commentary relationships are historical questions. This dataset also supplies an ordering of its catalogue groups.\n\nCohort currently supports retrieval, comparison and documentation for those questions. It does not infer dates, estimate a trajectory of language change, or reconstruct a transmission tree. Present dating and transmission modelling as further work. Do not describe a similarity ranking as a chronology.\n\nA useful discussion question is: which controls would make this comparison useful in your research? Possible answers include separating genre, revising the reference groups, excluding repeated sources and comparing editions. Each requires data preparation and scholarly choices in addition to agent tooling.",
+    "minutes": 0,
+    "notes": "Return to diachronic research through the distinction between supplied history and computed observations. The question asks how wording travels between texts produced at different times. Cohort locates and compares that wording; the current implementation does not date texts or reconstruct language change. Applying it to uncertain texts would require independent chronological and textual evidence.",
     "items": [
       {
         "kind": "text",
@@ -2120,7 +2397,7 @@
       },
       {
         "kind": "text",
-        "text": "What “diachronic” means in this prototype",
+        "text": "Historical information and measured results",
         "x": 52,
         "y": 84,
         "w": 1176,
@@ -2142,7 +2419,7 @@
       },
       {
         "kind": "text",
-        "text": "14",
+        "text": "19",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2153,44 +2430,77 @@
       },
       {
         "kind": "text",
-        "text": "Questions about historical production and transmission",
+        "text": "From scholarship",
         "x": 55,
-        "y": 238,
-        "w": 1120,
-        "h": 76,
-        "size": 30,
+        "y": 239,
+        "w": 330,
+        "h": 97,
+        "size": 24,
         "color": "126B85",
         "bold": true
       },
       {
         "kind": "text",
-        "text": "Translator ascriptions\nRelationships between texts and commentaries\nReuse of earlier wording",
-        "x": 55,
-        "y": 357,
-        "w": 1150,
-        "h": 186,
-        "size": 28,
+        "text": "Attributions, approximate dates and the commentary relationship",
+        "x": 440,
+        "y": 239,
+        "w": 750,
+        "h": 97,
+        "size": 24,
         "color": "24384A",
         "bold": false
       },
       {
         "kind": "text",
-        "text": "Dating, language change and transmission reconstruction remain further work.",
+        "text": "From Cohort",
         "x": 55,
-        "y": 592,
-        "w": 1140,
-        "h": 65,
-        "size": 23,
-        "color": "526778",
+        "y": 356,
+        "w": 330,
+        "h": 97,
+        "size": 24,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Located passages, shared wording and the effect of excluding a source",
+        "x": 440,
+        "y": 356,
+        "w": 750,
+        "h": 97,
+        "size": 24,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Further research",
+        "x": 55,
+        "y": 473,
+        "w": 330,
+        "h": 97,
+        "size": 24,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Whether the wording supports an ascription, revision or reuse hypothesis",
+        "x": 440,
+        "y": 473,
+        "w": 750,
+        "h": 97,
+        "size": 24,
+        "color": "24384A",
         "bold": false
       }
     ],
-    "appendix": false
+    "appendix": true
   },
   {
     "title": "Research tasks to develop with scholars",
     "topic": "Discussion",
-    "minutes": 1,
+    "minutes": 0,
     "notes": "Leave time for questions. Ask which operation would help the audience with material they already work on. The Q3 branch is described in a reference slide; do not imply it is merged or that its real-corpus findings were reproduced in this review.\n\nDiachronic research studies change through time. Translator ascriptions, the reuse of earlier texts and commentary relationships are historical questions. This dataset also supplies an ordering of its catalogue groups.\n\nCohort currently supports retrieval, comparison and documentation for those questions. It does not infer dates, estimate a trajectory of language change, or reconstruct a transmission tree. Present dating and transmission modelling as further work. Do not describe a similarity ranking as a chronology.\n\nA useful discussion question is: which controls would make this comparison useful in your research? Possible answers include separating genre, revising the reference groups, excluding repeated sources and comparing editions. Each requires data preparation and scholarly choices in addition to agent tooling.",
     "items": [
       {
@@ -2228,7 +2538,7 @@
       },
       {
         "kind": "text",
-        "text": "15",
+        "text": "20",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2304,13 +2614,13 @@
         "bold": false
       }
     ],
-    "appendix": false
+    "appendix": true
   },
   {
     "title": "Choosing a vocabulary",
     "topic": "Reference · Evidence settings",
     "minutes": 0,
-    "notes": "These choices change what the method counts. Curated is the setting for the checked exclusion example, not a claim that it is universally best.\n\nDiagram: Evidence controls](diagrams/evidence.svg)\n\n1. Select **Evidence** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
+    "notes": "These choices change what the method counts. Curated is the setting for the checked exclusion example, not a claim that it is universally best.\n\nDiagram: Vocabulary comparison controls](diagrams/evidence.svg)\n\n1. Select **Vocabulary comparison** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
     "items": [
       {
         "kind": "text",
@@ -2347,7 +2657,7 @@
       },
       {
         "kind": "text",
-        "text": "16",
+        "text": "21",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2429,7 +2739,7 @@
     "title": "The comparison groups",
     "topic": "Reference · current dataset",
     "minutes": 0,
-    "notes": "This list gives catalogue membership labels, not a ranking. The two mixed categories are not individual translators. Counts are before target withholding.\n\nCBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.\n\nEvidence uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.\n\nThe current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.\n\nTo qualify initially, a labelled unit must have at least 2,000 Chinese characters, and a group must have at least five qualifying units. Texts marked as having an uncertain translator are excluded from these reference profiles. Their wording supplies the frequent-string vocabulary instead. Missing text files and rejected units are counted in the selection ledger.\n\nThese are implementation choices for this experiment. They do not establish that the remaining groups are equally representative or that their inherited ascriptions are infallible. After withholding, some groups can have little material left; the interface flags these as thin. Groups with no usable profile are listed as not judged.\n\nSay:\n\n> The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.\n\nThe catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.",
+    "notes": "This list gives catalogue membership labels, not a ranking. The two mixed categories are not individual translators. Counts are before target withholding.\n\nCBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.\n\nVocabulary comparison uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.\n\nThe current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.\n\nTo qualify initially, a labelled unit must have at least 2,000 Chinese characters, and a group must have at least five qualifying units. Texts marked as having an uncertain translator are excluded from these reference profiles. Their wording supplies the frequent-string vocabulary instead. Missing text files and rejected units are counted in the selection ledger.\n\nThese are implementation choices for this experiment. They do not establish that the remaining groups are equally representative or that their inherited ascriptions are infallible. After withholding, some groups can have little material left; the interface flags these as thin. Groups with no usable profile are listed as not judged.\n\nSay:\n\n> The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.\n\nThe catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.",
     "items": [
       {
         "kind": "text",
@@ -2466,7 +2776,7 @@
       },
       {
         "kind": "text",
-        "text": "17",
+        "text": "22",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2625,7 +2935,7 @@
     "title": "Two score displays, two scales",
     "topic": "Reference · reading the numbers",
     "minutes": 0,
-    "notes": "Do not compute the headline margin by dividing the already rounded gap displayed in a table. The backend computes it from unrounded scores before display rounding.\n\nDiagram: Evidence controls](diagrams/evidence.svg)\n\n1. Select **Evidence** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
+    "notes": "Do not compute the headline margin by dividing the already rounded gap displayed in a table. The backend computes it from unrounded scores before display rounding.\n\nDiagram: Vocabulary comparison controls](diagrams/evidence.svg)\n\n1. Select **Vocabulary comparison** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
     "items": [
       {
         "kind": "text",
@@ -2662,7 +2972,7 @@
       },
       {
         "kind": "text",
-        "text": "18",
+        "text": "23",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2770,7 +3080,7 @@
       },
       {
         "kind": "text",
-        "text": "19",
+        "text": "24",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2816,10 +3126,10 @@
     "appendix": true
   },
   {
-    "title": "Q3 work on separate branches",
+    "title": "Q3: disputed Paramārtha ascriptions",
     "topic": "Reference · development review",
     "minutes": 0,
-    "notes": "The inspected branches are feat/rq3 at 39bcc98 and feat/rq3-force at 2f8b97c. They are not in the current presentation app. The focused synthetic suite passed 104 tests; lint and type checks fail. The researcher review documents chapter dependence and limits of the claimed genre control. Real-corpus Q3 numbers were not reproduced in this review. Do not present the scripted seed as an autonomous agent run.\n\n",
+    "notes": "This is a plain-language adaptation of Radich’s Q3, not a quotation. It asks whether disputed works can be associated with Paramārtha or another reference point. Reuse, genre and revision are explanations to investigate, not branch findings. The present branch calculates feature occurrence and neighbourhoods but does not establish a dated transmission history.\n\nThe inspected branches are feat/rq3 at 39bcc98 and feat/rq3-force at 2f8b97c. They are not in the current presentation app. The focused synthetic suite passed 104 tests; lint and type checks fail. The researcher review documents chapter dependence and limits of the claimed genre control. Real-corpus Q3 numbers were not reproduced in this review. Do not present the scripted seed as an autonomous agent run.\n\n",
     "items": [
       {
         "kind": "text",
@@ -2834,7 +3144,7 @@
       },
       {
         "kind": "text",
-        "text": "Q3 work on separate branches",
+        "text": "Q3: disputed Paramārtha ascriptions",
         "x": 52,
         "y": 84,
         "w": 1176,
@@ -2856,7 +3166,7 @@
       },
       {
         "kind": "text",
-        "text": "20",
+        "text": "25",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2867,78 +3177,34 @@
       },
       {
         "kind": "text",
-        "text": "Paramārtha study",
+        "text": "Do disputed texts resemble Paramārtha’s accepted translations or other textual traditions?",
         "x": 55,
-        "y": 229,
-        "w": 330,
-        "h": 94,
-        "size": 23,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Benchmark, disputed works and a negative-control group",
-        "x": 420,
-        "y": 229,
-        "w": 805,
-        "h": 94,
-        "size": 23,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Feature testing",
-        "x": 55,
-        "y": 335,
-        "w": 330,
-        "h": 94,
-        "size": 23,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Register a prediction, measure controls, retain failed candidates",
-        "x": 420,
-        "y": 335,
-        "w": 805,
-        "h": 94,
-        "size": 23,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Wider comparison",
-        "x": 55,
-        "y": 441,
-        "w": 330,
-        "h": 94,
-        "size": 23,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Inspect nearby works using character-bigram distances",
-        "x": 420,
-        "y": 441,
-        "w": 805,
-        "h": 94,
-        "size": 23,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Promising research workflows; separate from the running application and not an answered ascription.",
-        "x": 55,
-        "y": 578,
+        "y": 222,
         "w": 1150,
-        "h": 76,
-        "size": 23,
+        "h": 130,
+        "size": 29,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Compare candidate features against benchmark and control works.\nInspect whether reuse, genre or revision explains the resemblance.",
+        "x": 55,
+        "y": 411,
+        "w": 1140,
+        "h": 139,
+        "size": 25,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Separate development branches; results and historical explanations still need review.",
+        "x": 55,
+        "y": 603,
+        "w": 1140,
+        "h": 60,
+        "size": 22,
         "color": "526778",
         "bold": false
       }
@@ -2987,7 +3253,7 @@
       },
       {
         "kind": "text",
-        "text": "21",
+        "text": "26",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -3063,5 +3329,169 @@
         "bold": false
       }
     ]
+  },
+  {
+    "title": "The research activities and their controls",
+    "topic": "Reference · research activities",
+    "minutes": 0,
+    "notes": "Orient the audience using the abstract. These rows map research activities to available tools. They are not a pipeline in which every arrow writes a new record.\n\nDiagram: Map of the tabs and their connections](diagrams/tabs.svg)\n\n**Corpus** reads the local source material. **Vocabulary comparison** computes comparisons. Neither operation, by itself, inserts passages or proposals into the graph.\n\n**Inquiry** records a research question and starts agents. Workers can then record passages, searches, claims and conjectures. **Findings** displays those proposals as readable entries. **Graph** displays their relationships and opens the researcher’s decision controls.\n\nThe **Analyze this view** button in Graph and Vocabulary comparison opens a separate analyst. It can investigate using read-only tools and save an explanation. Its answer does not become a claim or an accepted finding automatically.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Reference · research activities",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "The research activities and their controls",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "27",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Corpus retrieval",
+        "x": 55,
+        "y": 208,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Corpus search and agent retrieval tools",
+        "x": 420,
+        "y": 208,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Semantic analysis",
+        "x": 55,
+        "y": 292,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Semantic neighbours and wording comparisons",
+        "x": 420,
+        "y": 292,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Alignment",
+        "x": 55,
+        "y": 376,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Shared passages with source positions",
+        "x": 420,
+        "y": 376,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Interpretation",
+        "x": 55,
+        "y": 460,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Proposals in Findings; read-only AI analysis",
+        "x": 420,
+        "y": 460,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Provenance and decisions",
+        "x": 55,
+        "y": 544,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Graph records, checks and researcher actions",
+        "x": 420,
+        "y": 544,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": true,
+    "diagram": "tabs"
   }
 ]

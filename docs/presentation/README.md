@@ -1,6 +1,6 @@
 # PNC presentation source
 
-The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 15 main slides and six reference slides. The speaking plan allocates 24 minutes plus six minutes for questions.
+The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 7 main slides and 20 reference slides. The plan is eight minutes of introduction, sixteen minutes in the application and six minutes of results and limits, with no scheduled audience Q&A.
 
 - [Walkthrough](walkthrough.md): current controls, speaking guidance and background explanations.
 - [Researcher review](researcher-review.md): usefulness, limitations and inspection of the Q3 branches.
@@ -17,3 +17,5 @@ uv run --script docs/presentation/build.py --output /path/to/presentation-output
 The prepared local files are in `/home/richard/github/cohort/data/pnc-abstract/`. The same current deck and walkthrough are copied to `data/pnc-revised/` for existing links. Its previous presentation files are retained in `data/pnc-revised/previous-20260909/`.
 
 The PDF is rendered from the shared HTML layout. PowerPoint text and shapes are native objects, but font substitution still needs a check in the application used to present. The source files contain no private correspondence, source passages or dataset paths.
+
+Related-passage examples are reproduced by `scripts/check_method_examples.py`; `method-examples.json` contains aggregate measurements only.

@@ -1,0 +1,280 @@
+{
+  "selection": "Illustrative known relationships, selected after inspecting candidate outputs; not an accuracy benchmark.",
+  "index_file": "mitra-qwen35-embedder.npz",
+  "index_sha256": "6ea04f65839ce2d1037a3685f8fc2251f5c9d849580c30ec769947ddc9040e35",
+  "coverage": {
+    "windows": 54616,
+    "units": 2160,
+    "dim": 4096,
+    "window_chars": 400
+  },
+  "cases": [
+    {
+      "uid": "T0263-rest",
+      "vocabulary": [
+        {
+          "features": "radich",
+          "label": "Dhr",
+          "first": "Dhr",
+          "second": "ZQ",
+          "margin": 1.79,
+          "distinct": 3184,
+          "hits": 12242,
+          "withheld_units": 1
+        },
+        {
+          "features": "generic",
+          "label": "Dhr",
+          "first": "Dhr",
+          "second": "ZQ",
+          "margin": 3.561,
+          "distinct": 3451,
+          "hits": 31068,
+          "withheld_units": 1
+        }
+      ],
+      "windows": 327,
+      "nearest_unit_tally": [
+        [
+          "T0262-exDevadatta",
+          283
+        ],
+        [
+          "T0285",
+          4
+        ],
+        [
+          "T0418-revised-verses",
+          4
+        ],
+        [
+          "T0262-Devadatta",
+          4
+        ],
+        [
+          "T0425",
+          3
+        ],
+        [
+          "T0657",
+          2
+        ],
+        [
+          "T0186-verses",
+          2
+        ],
+        [
+          "T0606-sanpin",
+          2
+        ]
+      ],
+      "nearest_label_tally": [
+        [
+          "Kj",
+          283
+        ],
+        [
+          "grey",
+          20
+        ],
+        [
+          "Dhr",
+          15
+        ],
+        [
+          "post-Lkṣ",
+          4
+        ],
+        [
+          "Dhkṣ",
+          2
+        ],
+        [
+          "ZQ",
+          1
+        ],
+        [
+          "Guṇabhadra",
+          1
+        ],
+        [
+          "ZFn",
+          1
+        ]
+      ],
+      "example_window": {
+        "start": 4000,
+        "nearest_uid": "T0262-exDevadatta",
+        "nearest_start": 2800,
+        "cosine": 0.865,
+        "longest_shared_run": 3
+      }
+    },
+    {
+      "uid": "T0262-exDevadatta",
+      "vocabulary": [
+        {
+          "features": "radich",
+          "label": "Kj",
+          "first": "Dhkṣ",
+          "second": "Buddhabhadra",
+          "margin": 0.923,
+          "distinct": 1284,
+          "hits": 4736,
+          "withheld_units": 1
+        },
+        {
+          "features": "generic",
+          "label": "Kj",
+          "first": "Dhkṣ",
+          "second": "Buddhabhadra",
+          "margin": 3.42,
+          "distinct": 4163,
+          "hits": 37977,
+          "withheld_units": 1
+        }
+      ],
+      "windows": 260,
+      "nearest_unit_tally": [
+        [
+          "T0263-rest",
+          247
+        ],
+        [
+          "T1339",
+          2
+        ],
+        [
+          "T0987",
+          2
+        ],
+        [
+          "T0156",
+          1
+        ],
+        [
+          "T0456",
+          1
+        ],
+        [
+          "T0185",
+          1
+        ],
+        [
+          "T0397-8-虛空藏品",
+          1
+        ],
+        [
+          "T0663",
+          1
+        ]
+      ],
+      "nearest_label_tally": [
+        [
+          "Dhr",
+          248
+        ],
+        [
+          "grey",
+          9
+        ],
+        [
+          "Dhkṣ",
+          2
+        ],
+        [
+          "ZQ",
+          1
+        ]
+      ],
+      "example_window": {
+        "start": 4000,
+        "nearest_uid": "T0263-rest",
+        "nearest_start": 6000,
+        "cosine": 0.93,
+        "longest_shared_run": 12
+      }
+    },
+    {
+      "uid": "T0603",
+      "vocabulary": [
+        {
+          "features": "radich",
+          "label": "ASg",
+          "first": "pre-Dhr-other",
+          "second": "ASg",
+          "margin": 1.696,
+          "distinct": 35,
+          "hits": 45,
+          "withheld_units": 1
+        },
+        {
+          "features": "generic",
+          "label": "ASg",
+          "first": "ASg",
+          "second": "pre-Dhr-other",
+          "margin": 0.493,
+          "distinct": 657,
+          "hits": 2815,
+          "withheld_units": 1
+        }
+      ],
+      "windows": 30,
+      "nearest_unit_tally": [
+        [
+          "T1694",
+          25
+        ],
+        [
+          "T1541",
+          1
+        ],
+        [
+          "T0006-fascicle-1",
+          1
+        ],
+        [
+          "T1553",
+          1
+        ],
+        [
+          "T0057",
+          1
+        ],
+        [
+          "T0125-49-放牛品-5",
+          1
+        ]
+      ],
+      "nearest_label_tally": [
+        [
+          "pre-Dhr-other",
+          25
+        ],
+        [
+          "grey",
+          2
+        ],
+        [
+          "ZQ",
+          1
+        ],
+        [
+          "ASg",
+          1
+        ],
+        [
+          "ZFn",
+          1
+        ]
+      ],
+      "example_window": {
+        "start": 4000,
+        "nearest_uid": "T1694",
+        "nearest_start": 11200,
+        "cosine": 0.932,
+        "longest_shared_run": 23
+      }
+    }
+  ]
+}
