@@ -38,7 +38,14 @@ export const STATUS_ORDER = ['proposed', 'attested', 'accepted', 'rejected']
 
 export const EDGE_STYLE = {
   attests:      { klass: 'e-attests',      label: 'attests' },
-  part_of:      { klass: 'e-structural',   label: 'part of' },
+  // The edge is still stored passage -> witness (schemas.py EDGE_DOMAINS;
+  // unchanged, and every arrow on the canvas still points that way), but
+  // "passage part of witness" read subordinate-first — the passage as the
+  // primary thing, the witness as a location note. "contains" reads the
+  // other way on purpose: witness (the arrow's head) contains passage (the
+  // arrow's tail), which is the direction that actually matches how a
+  // witness is the container and a passage is what was found inside it.
+  part_of:      { klass: 'e-structural',   label: 'contains' },
   verifies:     { klass: 'e-structural',   label: 'verifies' },
   searched_for: { klass: 'e-structural',   label: 'searched for' },
   tests:        { klass: 'e-tests',        label: 'tests' },
