@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cohort tab guide</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#faf9f6;color:#252525;font:17px/1.6 system-ui,sans-serif}main{max-width:980px;margin:36px auto;padding:0 24px 70px}h1{font-size:34px;line-height:1.15;margin:24px 0 12px}h2{font-size:29px;line-height:1.2}h3{font-size:19px;margin:24px 0 8px}a{color:#006778}p{max-width:780px}nav{display:flex;flex-wrap:wrap;gap:8px 24px;padding:12px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd}nav a{padding:4px 0}section{scroll-margin-top:24px;padding:25px 0 40px;border-bottom:1px solid #ccc}details{background:#fff;border:1px solid #ddd;border-radius:6px;margin:12px 0;padding:14px 18px}summary{font-weight:650;cursor:pointer}table{border-collapse:collapse;width:100%;margin:14px 0;font-size:16px}th,td{padding:10px;text-align:left;vertical-align:top;border-bottom:1px solid #e1e1db}th:first-child,td:first-child{width:25%}ol{padding-left:24px}li{padding:3px 0}.demo{border-left:3px solid #007582;padding:3px 0 3px 16px}.purpose{font-size:20px;line-height:1.45}.effects{font-size:15px;color:#4c4c4c}code{font-size:.9em}footer{font-size:14px;margin-top:28px;color:#555}@media(max-width:600px){main{padding:0 16px}h1{font-size:29px}h2{font-size:25px}table{font-size:14px}th,td{padding:8px}details{padding:12px}nav{gap:8px 18px}}
+</style>
+<main>
+<a href="/">Open Cohort</a>
+<h1>What each tab is for</h1>
+<p>You do not need every control. Use the main steps below; open the details when you need to inspect a method, check a record or change the setup.</p>
+<nav aria-label="Tab guides"><a href="#inquiry">Inquiry</a><a href="#corpus">Corpus</a><a href="#evidence">Evidence</a><a href="#findings">Findings</a><a href="#graph">Graph</a></nav>
+<p><strong>Inquiry</strong> starts agent work. <strong>Corpus</strong> searches source texts. <strong>Evidence</strong> runs comparisons. <strong>Findings</strong> lists proposals. <strong>Graph</strong> shows their sources and relationships.</p>
+
+<section id="inquiry">
+<h2>Inquiry</h2>
+<p class="purpose">Give agents a research question and inspect what they produce.</p>
+<h3>Start here</h3>
+<ol><li>Choose an example, write a question or select a saved question.</li><li>Edit <strong>Research instructions</strong> to specify the approach and evidence you want.</li><li>Click <strong>Record question</strong>, then <strong>Inquire</strong>.</li></ol>
+<p class="effects">Recording saves the question. Inquire starts paid model calls. Opening the tab or choosing an example starts no run.</p>
+<details><summary>Question versus instructions</summary>
+<p><strong>Question:</strong> “Where else does this wording occur, and what explains the parallels?”</p>
+<p><strong>Instructions:</strong> “Find matching passages, compare their contexts and cite the sources. Consider quotation and recurring expressions.”</p>
+<p>The instructions guide the agents. They are not an automatically enforced test of whether the question has been answered.</p>
+</details>
+<details><summary>Optional controls</summary>
+<table><tr><th>Control</th><th>Use it when…</th></tr>
+<tr><td>Agent roles and settings</td><td>You want to inspect who will do the work. Workers retrieve and propose; reviewers check claims after the workers finish.</td></tr>
+<tr><td>Customize the roster</td><td>You need specific worker tasks or models. For the demo, keep the automatic setup.</td></tr>
+<tr><td>Agent ID / Model</td><td>You need identifiable authors and different model families. An agent cannot review its own claim.</td></tr>
+<tr><td>Corpus scope / Method</td><td>You want to give an agent a narrower task or approach. These fields are included in its instructions; they do not impose a separate corpus-access filter.</td></tr>
+<tr><td>Add agent / reviewer</td><td>You need another task or a separate review. More agents do not automatically mean stronger evidence.</td></tr>
+<tr><td>Saved questions</td><td>You want to investigate an existing question again. Selecting it does not restart its old run.</td></tr>
+<tr><td>Hide a question</td><td>You want to remove it and its exclusively associated records from the graph view. This is a display preference; the records remain saved.</td></tr>
+<tr><td>Stop after this turn</td><td>You want the active run to stop. An in-flight request can still finish.</td></tr>
+</table>
+</details>
+<details><summary>What the outputs mean</summary>
+<p><strong>Current run:</strong> execution state, elapsed time, model calls, tool activity and costs. A finished run may contain proposals, refusals or no useful finding.</p>
+<p><strong>Refusal:</strong> the graph blocked an attempted operation. Open the reason; a refusal is not the same as finding no corpus match.</p>
+<p><strong>Previous runs:</strong> saved execution summaries. Findings and Graph hold the resulting research records.</p>
+<p>Runs continue on the server when you leave the tab. Records save automatically; the server must stay running. This demo has no monetary stopping limit. Turn limits and the stop control still apply.</p>
+</details>
+<p class="demo"><strong>For the demo:</strong> show the question and instructions. Keep model settings and old runs collapsed. Use saved findings as a fallback for live execution.</p>
+</section>
+
+<section id="corpus">
+<h2>Corpus</h2>
+<p class="purpose">Find an exact phrase and read its context.</p>
+<h3>Start here</h3>
+<ol><li>Type a phrase or click a suggested search.</li><li>Open a matching source record.</li><li>Click <strong>Investigate this passage</strong> to prepare a question about that result.</li></ol>
+<p class="effects">Search and reading are local, read-only operations. Investigate opens an editable Inquiry draft containing the selected source reference. It does not record a citation or start agents.</p>
+<details><summary>Controls and outputs</summary>
+<table><tr><th>Item</th><th>Meaning</th></tr>
+<tr><td>Search field</td><td>Exact substring search, automatically run after typing pauses. It does not interpret a research question or find semantic paraphrases.</td></tr>
+<tr><td>Suggested searches</td><td>Ready-to-use phrases. Click one to search immediately.</td></tr>
+<tr><td>Result count</td><td>Matching source records returned. The UI calls these “witnesses”; this is not necessarily a count of distinct works or phrase occurrences.</td></tr>
+<tr><td>Truncation notice</td><td>More results may exist. The displayed list follows corpus order, not relevance ranking.</td></tr>
+<tr><td>Source title / reference</td><td>Opens the local text. The reference identifies the record agents should fetch.</td></tr>
+<tr><td>Markup toggle</td><td>Hides TEI markup for reading. Displayed character positions then differ from source positions.</td></tr>
+<tr><td>Partial text notice</td><td>The displayed content is an excerpt of the fetched record.</td></tr>
+<tr><td>CBETA link</td><td>Opens the published text externally. Verification uses the local source, which may differ from that edition.</td></tr>
+</table>
+</details>
+<p class="demo"><strong>For the demo:</strong> use the suggested T0603 phrase, open one result and show its context. Skip markup and external links unless asked.</p>
+</section>
+
+<section id="evidence">
+<h2>Evidence</h2>
+<p class="purpose">Compare short-string counts and test how the result changes when material is excluded.</p>
+<h3>Start here</h3>
+<ol><li>Choose T0603 or T0453 using a suggested input.</li><li>Read the two leading groups and the score difference.</li><li>For the commentary example, enter <strong>T1694</strong> in exclusions and click <strong>Repeat comparison</strong>.</li></ol>
+<p class="effects">These calculations make no model calls and write no graph records. Excluding a text changes this calculation; it does not delete a source.</p>
+<details><summary>What the main result means</summary>
+<table><tr><th>Output</th><th>Meaning</th></tr>
+<tr><td>Leading groups</td><td>The groups whose short-string profiles most resemble the target under this setup. Some groups contain mixed material rather than one translator’s work.</td></tr>
+<tr><td>Score difference</td><td>The gap between the two leading comparison scores. It is not a probability of translator identity and should not be compared across different target texts.</td></tr>
+<tr><td>No evidence / low evidence</td><td>The selected string set found no usable matches or too few distinct strings for a stronger display. This is a limitation of this comparison.</td></tr>
+<tr><td>Matching occurrences / distinct strings</td><td>Occurrences count repetitions. Distinct strings count different matching strings. Overlapping strings are not independent evidence.</td></tr>
+<tr><td>Excluded units</td><td>Material removed from the profiles before scoring. Profiled chapters of the target’s own work are excluded automatically.</td></tr>
+</table>
+<p>Similarities can come from quotation, genre or shared textual history. The tab does not assign a translator.</p>
+</details>
+<details><summary>Optional controls</summary>
+<table><tr><th>Control</th><th>Use it when…</th></tr>
+<tr><td>Text picker</td><td>You want a target beyond the examples. Search by title, identifier or translator name.</td></tr>
+<tr><td>Vocabulary and method</td><td>You want to change the strings being counted. Curated strings, common label-free strings and their combination are different experiments. Keep one setup for the main demo.</td></tr>
+<tr><td>Additional exclusions</td><td>You suspect related material is driving the result. Use exact corpus-unit IDs. Chaptered works need each chapter ID; a whole-work ID does not expand automatically.</td></tr>
+<tr><td>Restore these texts</td><td>You want to remove the additional exclusions and compare the baseline again.</td></tr>
+<tr><td>Highlighting groups</td><td>You want a fixed colour comparison between two groups. This changes highlighting, not the overall ranking. Empty means automatic selection, which can change when the setup changes.</td></tr>
+<tr><td>Text overview strip</td><td>You want to jump to a section of the target. Each cell represents a block of characters.</td></tr>
+<tr><td>Corpus exclusions and counts</td><td>You need to audit which material entered the experiment.</td></tr>
+</table>
+</details>
+<details><summary>Detailed tables and colours</summary>
+<p><strong>Teal and rust:</strong> strings favouring the two named highlighting groups. Stronger colour means greater weight under the calculation, not greater historical certainty.</p>
+<p><strong>All groups:</strong> rankings and remaining profile material. A thin profile contains little comparison material.</p>
+<p><strong>String counts and weights:</strong> which strings drive the colour comparison. Counts are raw occurrences; rates use string hits as their denominator, not characters. Weights are scores, not confidence estimates.</p>
+<p>The corpus’s group order is not a newly inferred date for the target.</p>
+</details>
+<p class="demo"><strong>For the demo:</strong> use the text selector, result and exclusion box. Keep vocabulary, highlighting controls and detailed tables closed unless a question calls for them.</p>
+</section>
+
+<section id="findings">
+<h2>Findings</h2>
+<p class="purpose">Read the proposals and inspect their evidence.</p>
+<h3>Start here</h3>
+<ol><li>Open one hypothesis.</li><li>Read its statement, supporting passages and alternatives.</li><li>Follow a citation into Graph to inspect the record or make a decision.</li></ol>
+<p class="effects">Opening Findings reads saved records. It does not generate, approve or rank proposals by confidence.</p>
+<details><summary>What the outputs mean</summary>
+<table><tr><th>Output</th><th>Meaning</th></tr>
+<tr><td>Hypotheses</td><td>Claims and conjectures, newest first. “Hypothesis” is the heading for either kind, not a container made of claims.</td></tr>
+<tr><td>Status</td><td>Proposed, attested, accepted or rejected. Appearing in Findings does not mean accepted.</td></tr>
+<tr><td>Assurance</td><td>The kind of checking recorded. A span check establishes quotation location, not the truth of an interpretation.</td></tr>
+<tr><td>Supporting passages / witnesses</td><td>Recorded supporting material. Several passages can come from one source. Related sources may repeat the same evidence.</td></tr>
+<tr><td>No support</td><td>No supporting passage is attached. Treat that as a gap to inspect.</td></tr>
+<tr><td>Explanation and alternatives</td><td>The proposal’s recorded argument, other possible explanations and limitations. These are authored statements, not automatically verified conclusions.</td></tr>
+<tr><td>Prospective test</td><td>A query with an expected result recorded in advance. A query without a result has not yet been tested; this is not necessarily a corpus holdout experiment.</td></tr>
+<tr><td>Verifications</td><td>Latest recorded checks by method, with mechanical results and reviewer comments distinguished.</td></tr>
+</table>
+</details>
+<details><summary>Optional sections</summary>
+<p><strong>Researcher decisions:</strong> approved records and rejections with reasons.</p>
+<p><strong>Record integrity:</strong> checks hashes and compares database reconstruction with the event log. Useful for auditing storage, not for deciding historical questions.</p>
+</details>
+<p class="demo"><strong>For the demo:</strong> open one proposal and one citation. Leave integrity checks and the full decision lists closed.</p>
+</section>
+
+<section id="graph">
+<h2>Graph</h2>
+<p class="purpose">See which records support a proposal and which question it addresses.</p>
+<p><a href="/assets/graph-guide.html">Open the illustrated node-and-link guide</a></p>
+<h3>Start here</h3>
+<ol><li>Select a question or hypothesis.</li><li>Follow its links to supporting passages and source texts.</li><li>Inspect the selected record’s checks and status.</li></ol>
+<p class="effects">Graph reads the saved investigation. It refreshes on entry and while visible. Selecting or moving a node changes no research record.</p>
+<details><summary>Shapes and links</summary>
+<p><strong>Star:</strong> research question. <strong>Diamond:</strong> claim or conjecture. <strong>Ellipse:</strong> source text. <strong>Rectangle:</strong> passage. <strong>Dot:</strong> query. <strong>Square:</strong> audit record.</p>
+<p><strong>Attests, blue:</strong> a passage supports a proposal. <strong>Addresses, magenta:</strong> a proposal responds to a question. Neither link proves that the proposal is correct.</p>
+<p><strong>Parallel / descent:</strong> related source records; their support is discounted as independent evidence. <strong>Tests:</strong> a query tests a conjecture.</p>
+<p>The legend can show possible statuses that have not occurred in this session. Some imported experiment records use assessment colours; colour alone does not establish researcher acceptance.</p>
+</details>
+<details><summary>Inspector controls and outputs</summary>
+<table><tr><th>Item</th><th>Meaning</th></tr>
+<tr><td>Source context</td><td>Reads the passage around the recorded quotation.</td></tr>
+<tr><td>Payload</td><td>The stored fields for this record. Useful for detailed inspection; usually unnecessary on stage.</td></tr>
+<tr><td>Span verification</td><td>Whether the latest exact-span check located the quotation. Repeated attempts remain in expandable history.</td></tr>
+<tr><td>Incoming / outgoing links</td><td>Relationships pointing to or from this record. Click a linked record to inspect it.</td></tr>
+<tr><td>Authorship</td><td>Who created or checked the record and who made decisions about it.</td></tr>
+<tr><td>Attest</td><td>Requests promotion after the type-specific prerequisites and reviewer rules are checked. This is not researcher acceptance.</td></tr>
+<tr><td>Accept</td><td>Records researcher approval of this record. It must first be attested. Accepting a passage does not accept connected claims.</td></tr>
+<tr><td>Reject / reopen</td><td>Records rejection or reopens a rejected record, with a reason. History is preserved.</td></tr>
+<tr><td>Retract / restore edge</td><td>Changes whether a relationship is active. This can change independence assessments; it is an advanced research decision.</td></tr>
+</table>
+</details>
+<details><summary>Optional graph controls</summary>
+<p><strong>Refused writes:</strong> blocked operations and their reasons. Open this when discussing a specific refusal.</p>
+<p><strong>Counts:</strong> numbers of stored record types, including audit records. More records do not mean more independent evidence.</p>
+<p><strong>Settings:</strong> theme and audit-node visibility. Repeated passage span checks stay grouped in the inspector even with audit nodes enabled.</p>
+<p><strong>Drag and zoom:</strong> arrange the display. These positions do not encode a scholarly ranking.</p>
+</details>
+<p class="demo"><strong>For the demo:</strong> follow one evidence chain. Expand the link explanation if needed. You do not need to accept records or narrate the whole network.</p>
+</section>
+<footer>This guide describes the current presentation build. It explains controls, not guarantees of research accuracy. The source corpus, saved graph and Evidence calculations remain separate.</footer>
+</main></html>

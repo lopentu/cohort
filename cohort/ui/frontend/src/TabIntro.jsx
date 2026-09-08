@@ -101,7 +101,7 @@ export default function TabIntro({ tab, open, onToggle }) {
       <button
         className={`icon-btn help ${open ? 'on' : ''} ${unseen ? 'unseen' : ''}`}
         onClick={() => onToggle(!open)}
-        aria-label={intro.title}
+        aria-label={`${intro.title} help`}
         aria-expanded={open}
         title={intro.title}
       >
@@ -115,6 +115,7 @@ export default function TabIntro({ tab, open, onToggle }) {
           aria-label={intro.title}
         >
           <h3>{intro.title}</h3>
+          <p><a href={`/assets/ui-guide.html#${tab === 'run' ? 'inquiry' : tab}`} target="_blank" rel="noopener noreferrer">Controls, outputs and what to use in the demo</a></p>
           {tab === 'graph' && <p><a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">How to read the graph — illustrated guide</a></p>}
           <dl className="tab-intro-body">
             {intro.body.map(([term, text]) => (
