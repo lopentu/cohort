@@ -1,0 +1,3067 @@
+[
+  {
+    "title": "Agent-Based Infrastructures for\nDiachronic Digital Humanities",
+    "topic": "",
+    "minutes": 1,
+    "notes": "Opening. Introduce yourself and your affiliation verbally. This is a presentation of working research tools, with a bounded example, not a claim to solve translator ascription.\n\nThe title is **Agent-Based Infrastructures for Diachronic Digital Humanities**. Present the software through the activities named in the abstract: retrieve corpus material, analyse it, align passages, develop interpretations, preserve provenance, and let researchers make decisions.\n\nA plain opening you can use:\n\n> Cohort lets a researcher ask agents to find and compare passages, then inspect their proposals and sources. I’ll show the tools, the records they produce, and the decisions the researcher can make. Our examples use early Chinese Buddhist texts and a question about translator ascriptions.\n\nAn **ascription** assigns a text to a translator. The broader research question is whether computational evidence can help assess those assignments. This presentation does not identify an unknown translator. It shows the operations available for investigating that question.\n\nMichael Radich supplied the corpus, working catalogue labels and curated string list used in the comparison. Acknowledge that contribution when introducing the material. The talk concerns Cohort’s infrastructure; it does not report a completed solution to his research programme.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Agent-Based Infrastructures for\nDiachronic Digital Humanities",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "1",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 55,
+        "y": 270,
+        "w": 1100,
+        "h": 95,
+        "size": 58,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Agents for retrieving, comparing and documenting textual evidence",
+        "x": 58,
+        "y": 415,
+        "w": 1060,
+        "h": 105,
+        "size": 28,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Chinese Buddhist texts · researcher-controlled investigation",
+        "x": 58,
+        "y": 568,
+        "w": 1100,
+        "h": 45,
+        "size": 21,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "The research activities and their controls",
+    "topic": "Research environment",
+    "minutes": 1,
+    "notes": "Orient the audience using the abstract. These rows map research activities to available tools. They are not a pipeline in which every arrow writes a new record.\n\nDiagram: Map of the tabs and their connections](diagrams/tabs.svg)\n\n**Corpus** reads the local source material. **Evidence** computes comparisons. Neither operation, by itself, inserts passages or proposals into the graph.\n\n**Inquiry** records a research question and starts agents. Workers can then record passages, searches, claims and conjectures. **Findings** displays those proposals as readable entries. **Graph** displays their relationships and opens the researcher’s decision controls.\n\nThe **Analyze this view** button in Graph and Evidence opens a separate analyst. It can investigate using read-only tools and save an explanation. Its answer does not become a claim or an accepted finding automatically.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Research environment",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "The research activities and their controls",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "2",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Corpus retrieval",
+        "x": 55,
+        "y": 208,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Corpus search and agent retrieval tools",
+        "x": 420,
+        "y": 208,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Semantic analysis",
+        "x": 55,
+        "y": 292,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Semantic neighbours and wording comparisons",
+        "x": 420,
+        "y": 292,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Alignment",
+        "x": 55,
+        "y": 376,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Shared passages with source positions",
+        "x": 420,
+        "y": 376,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Interpretation",
+        "x": 55,
+        "y": 460,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Proposals in Findings; read-only AI analysis",
+        "x": 420,
+        "y": 460,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Provenance and decisions",
+        "x": 55,
+        "y": 544,
+        "w": 330,
+        "h": 72,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Graph records, checks and researcher actions",
+        "x": 420,
+        "y": 544,
+        "w": 805,
+        "h": 72,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false,
+    "diagram": "tabs"
+  },
+  {
+    "title": "The comparison uses a selected corpus",
+    "topic": "Research material",
+    "minutes": 2,
+    "notes": "Explain the restriction before presenting a ranking. CBETA is much larger than this dataset. The counts below come from the current selection ledger, before target withholding.\n\nCBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.\n\nEvidence uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.\n\nThe current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.\n\nTo qualify initially, a labelled unit must have at least 2,000 Chinese characters, and a group must have at least five qualifying units. Texts marked as having an uncertain translator are excluded from these reference profiles. Their wording supplies the frequent-string vocabulary instead. Missing text files and rejected units are counted in the selection ledger.\n\nThese are implementation choices for this experiment. They do not establish that the remaining groups are equally representative or that their inherited ascriptions are infallible. After withholding, some groups can have little material left; the interface flags these as thin. Groups with no usable profile are listed as not judged.\n\nSay:\n\n> The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.\n\nThe catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Research material",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "The comparison uses a selected corpus",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "3",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "CBETA-derived local texts",
+        "x": 55,
+        "y": 230,
+        "w": 660,
+        "h": 55,
+        "size": 29,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Michael Radich’s catalogue supplies the group labels.\nCohort builds a count profile for each eligible group.",
+        "x": 55,
+        "y": 315,
+        "w": 720,
+        "h": 170,
+        "size": 25,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 850,
+        "y": 221,
+        "w": 360,
+        "h": 292,
+        "fill": "EDF4F7",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "368",
+        "x": 882,
+        "y": 250,
+        "w": 290,
+        "h": 73,
+        "size": 43,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "retained corpus units",
+        "x": 884,
+        "y": 323,
+        "w": 290,
+        "h": 45,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "13 comparison groups",
+        "x": 883,
+        "y": 408,
+        "w": 290,
+        "h": 80,
+        "size": 25,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "A unit can be a chapter. The groups do not cover every possible translator.",
+        "x": 55,
+        "y": 556,
+        "w": 1120,
+        "h": 70,
+        "size": 25,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Find a phrase and open its source",
+    "topic": "Corpus retrieval · Corpus",
+    "minutes": 2,
+    "notes": "Open Corpus. Use the suggested opening formula. Inspect one result and explain corpus order. Investigate this passage prepares a question; it does not launch an agent.\n\nDiagram: Corpus controls](diagrams/corpus.svg)\n\n1. Select **Corpus**.\n2. Click **Opening formula · 如是我聞**, or type an exact phrase. This familiar opening is often translated as “Thus have I heard.” It is useful for explaining why an ordinary shared expression does not identify a translator.\n3. Read the result count and ordering. If the list is cut off, narrow the search. The first entries are in corpus order, not ranked by relevance.\n4. Open one result to read its context. **Show/hide TEI markup** changes the reading display. Do not calculate citation offsets from the markup-stripped view.\n5. Click **Investigate this passage** if you want to move into Inquiry. It prepares a research question and instructions using that result; it does not start an agent or attach a new citation.\n\nYou can also click **Phrase from T0603 · 多熱如是名遍** for the worked example. Explain that this phrase was taken from an earlier comparison. You are checking known wording, not asking the search box to discover a research topic.\n\nA witness is a retrieved source record. Multiple witnesses or passages may contain related or repeated material; their count is not automatically a count of independent confirmations.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Corpus retrieval · Corpus",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Find a phrase and open its source",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "4",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 210,
+        "w": 735,
+        "h": 410,
+        "fill": "FFFFFF",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 210,
+        "w": 735,
+        "h": 48,
+        "fill": "EDF4F7",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 70,
+        "y": 222,
+        "w": 80,
+        "h": 25,
+        "size": 15,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Graph    Findings    Corpus    Evidence    Inquiry",
+        "x": 170,
+        "y": 223,
+        "w": 605,
+        "h": 26,
+        "size": 14,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Corpus",
+        "x": 77,
+        "y": 277,
+        "w": 691,
+        "h": 35,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Interface diagram",
+        "x": 75,
+        "y": 636,
+        "w": 695,
+        "h": 20,
+        "size": 10,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 77,
+        "y": 325,
+        "w": 495,
+        "h": 46,
+        "fill": "FFFFFF",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "如是我聞",
+        "x": 89,
+        "y": 333,
+        "w": 440,
+        "h": 34,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 587,
+        "y": 325,
+        "w": 145,
+        "h": 42,
+        "fill": "EDF4F7",
+        "color": "126B85"
+      },
+      {
+        "kind": "text",
+        "text": "Search",
+        "x": 597,
+        "y": 335,
+        "w": 125,
+        "h": 28,
+        "size": 15,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Suggested searches",
+        "x": 77,
+        "y": 400,
+        "w": 620,
+        "h": 34,
+        "size": 18,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Opening formula · 如是我聞",
+        "x": 77,
+        "y": 443,
+        "w": 620,
+        "h": 35,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Open a matching source record",
+        "x": 77,
+        "y": 505,
+        "w": 620,
+        "h": 38,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 77,
+        "y": 564,
+        "w": 255,
+        "h": 42,
+        "fill": "EDF4F7",
+        "color": "126B85"
+      },
+      {
+        "kind": "text",
+        "text": "Investigate this passage",
+        "x": 87,
+        "y": 574,
+        "w": 235,
+        "h": 28,
+        "size": 15,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Exact wording\n\nRead the context\n\nPrepare an inquiry",
+        "x": 836,
+        "y": 255,
+        "w": 375,
+        "h": 260,
+        "size": 25,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false,
+    "diagram": "corpus"
+  },
+  {
+    "title": "Give the agent a question and instructions",
+    "topic": "Agent-based architecture · Inquiry",
+    "minutes": 2,
+    "notes": "Show the fields and a completed run. Do not start a paid run simply to fill presentation time. Point out the distinct Record question and Inquire actions.\n\nDiagram: Inquiry fields](diagrams/inquiry.svg)\n\nThe two fields have different jobs:\n\n- **Research question:** what you want to find out. For example, “Which passages elsewhere in the corpus are closely related to the Yin chi ru jing (陰持入經, T0603), and what might explain those relationships?”\n- **Research instructions:** how you want the investigation approached and what evidence you want back. Ask for candidate passages, source references, comparisons, alternatives and limitations. These instructions guide the worker; they do not guarantee compliance or a successful answer.\n\nSuggested inputs fill the draft. **Record question** saves a question and selects it. **Inquire** starts the agents. The question becomes a star in Graph; further nodes depend on what the worker actually records.\n\nExpand **Agent roles and settings** only if discussing model configuration. A worker searches, compares and proposes. A reviewer is a separate agent, required to use a different model family, that records checks on proposals. Read the configured model names from the interface; do not assume a name from an older run describes a new run.\n\nThe local session has no monetary stopping threshold or output-token cap. A worker still has a 32-turn limit and can finish earlier. A turn is an iteration of its model/tool loop, not a guarantee of a new text or finding. Switching tabs does not stop the server-side run. The stop control requests a stop after the current turn.\n\nUse **Run results** to reopen a completed run. Expand an action to show its inputs and result. New worker actions have a recorded explanation of why the worker chose that action or string. This is the model’s stated rationale, not proof that the choice was good or a transcript of its hidden reasoning. Older runs can lack these explanations.\n\nA new question need not produce a large graph. A worker can search many texts but attach only a few passages to its proposals. In Graph, **Show exploration** adds recorded search activity. Those dashed activity records are separate from evidence supporting a proposal.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Agent-based architecture · Inquiry",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Give the agent a question and instructions",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "5",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 210,
+        "w": 735,
+        "h": 410,
+        "fill": "FFFFFF",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 210,
+        "w": 735,
+        "h": 48,
+        "fill": "EDF4F7",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 70,
+        "y": 222,
+        "w": 80,
+        "h": 25,
+        "size": 15,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Graph    Findings    Corpus    Evidence    Inquiry",
+        "x": 170,
+        "y": 223,
+        "w": 605,
+        "h": 26,
+        "size": 14,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Inquiry",
+        "x": 77,
+        "y": 277,
+        "w": 691,
+        "h": 35,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Interface diagram",
+        "x": 75,
+        "y": 636,
+        "w": 695,
+        "h": 20,
+        "size": 10,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Research question",
+        "x": 77,
+        "y": 319,
+        "w": 625,
+        "h": 30,
+        "size": 17,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 77,
+        "y": 353,
+        "w": 665,
+        "h": 83,
+        "fill": "FFFFFF",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "Which passages are related to T0603,\nand what might explain the relationship?",
+        "x": 89,
+        "y": 363,
+        "w": 640,
+        "h": 64,
+        "size": 19,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Research instructions",
+        "x": 77,
+        "y": 452,
+        "w": 620,
+        "h": 30,
+        "size": 17,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 77,
+        "y": 485,
+        "w": 665,
+        "h": 60,
+        "fill": "FFFFFF",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "Return passages, comparisons and alternatives.",
+        "x": 89,
+        "y": 496,
+        "w": 640,
+        "h": 45,
+        "size": 18,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 77,
+        "y": 564,
+        "w": 180,
+        "h": 42,
+        "fill": "EDF4F7",
+        "color": "126B85"
+      },
+      {
+        "kind": "text",
+        "text": "Record question",
+        "x": 87,
+        "y": 574,
+        "w": 160,
+        "h": 28,
+        "size": 15,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 275,
+        "y": 564,
+        "w": 125,
+        "h": 42,
+        "fill": "EDF4F7",
+        "color": "126B85"
+      },
+      {
+        "kind": "text",
+        "text": "Inquire",
+        "x": 285,
+        "y": 574,
+        "w": 105,
+        "h": 28,
+        "size": 15,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Question: what to investigate\n\nInstructions: how to approach it\n\nRun results: what the agents did",
+        "x": 836,
+        "y": 241,
+        "w": 373,
+        "h": 333,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false,
+    "diagram": "inquiry"
+  },
+  {
+    "title": "Retrieve candidates by content",
+    "topic": "Semantic analysis · agent tools",
+    "minutes": 1,
+    "notes": "Use a saved semantic_neighbors action if available. Read its target and returned candidate IDs. Do not call this translator identification. The diagram is the tool workflow, not a new measured run.\n\nThese are tools available to agents; they are not separate top-level tabs.\n\n**Semantic neighbours** searches an embedding index. An embedding is a numerical representation used to retrieve passages with similar content. It supplies candidates to inspect. It does not establish who translated a passage. A nearest neighbour is the closest among the candidates searched; that alone does not make it a useful match.\n\n**Align passages** compares two selected texts for exact shared Chinese-character sequences and returns matching runs with source positions. Normalisation removes material such as punctuation from that comparison. Shared wording can suggest reuse, a common source or a recurring formula. Its direction and historical explanation require further evidence.\n\nT0603 is the *Yin chi ru jing* 陰持入經, traditionally associated with **An Shigao 安世高**. T1694 is the *Yin chi ru jing zhu* 陰持入經註, a commentary on it. The character 註 in the title means commentary, and the relationship is identified in scholarship. Cohort did not discover the genre from a similarity score. See the scholarly references at the end of this guide.\n\nIn a saved run, show the action that retrieved candidates and the action that compared T0603 with T1694. Explain the tool inputs before the result. If the worker searched a short string taken from an earlier alignment, say that it reused a retrieved string. Do not describe a previously observed match as an independent prediction.\n\nThe tools for comparing edition apparatus require the appropriate XML source configuration. The current plain-text setup supports the exact-overlap example; do not present it as a full textual-variant collation or a reconstruction of a text’s genealogy.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Semantic analysis · agent tools",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Retrieve candidates by content",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "6",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Input",
+        "x": 55,
+        "y": 242,
+        "w": 330,
+        "h": 96,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "A text or passage",
+        "x": 420,
+        "y": 242,
+        "w": 805,
+        "h": 96,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Semantic neighbours",
+        "x": 55,
+        "y": 350,
+        "w": 330,
+        "h": 96,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Retrieve similar passages from the embedding index",
+        "x": 420,
+        "y": 350,
+        "w": 805,
+        "h": 96,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Researcher’s next step",
+        "x": 55,
+        "y": 458,
+        "w": 330,
+        "h": 96,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Read candidates and choose pairs to compare",
+        "x": 420,
+        "y": 458,
+        "w": 805,
+        "h": 96,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Similar content can come from a shared subject, a formula or textual reuse.",
+        "x": 55,
+        "y": 592,
+        "w": 1155,
+        "h": 60,
+        "size": 23,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Locate shared wording in a selected pair",
+    "topic": "Alignment · agent tools",
+    "minutes": 1,
+    "notes": "Explain the titles. T0603 is the Yin chi ru jing, associated with An Shigao. T1694 is its commentary; this relationship is known from scholarship. The tool locates shared runs, not the historical direction of borrowing.\n\nThese are tools available to agents; they are not separate top-level tabs.\n\n**Semantic neighbours** searches an embedding index. An embedding is a numerical representation used to retrieve passages with similar content. It supplies candidates to inspect. It does not establish who translated a passage. A nearest neighbour is the closest among the candidates searched; that alone does not make it a useful match.\n\n**Align passages** compares two selected texts for exact shared Chinese-character sequences and returns matching runs with source positions. Normalisation removes material such as punctuation from that comparison. Shared wording can suggest reuse, a common source or a recurring formula. Its direction and historical explanation require further evidence.\n\nT0603 is the *Yin chi ru jing* 陰持入經, traditionally associated with **An Shigao 安世高**. T1694 is the *Yin chi ru jing zhu* 陰持入經註, a commentary on it. The character 註 in the title means commentary, and the relationship is identified in scholarship. Cohort did not discover the genre from a similarity score. See the scholarly references at the end of this guide.\n\nIn a saved run, show the action that retrieved candidates and the action that compared T0603 with T1694. Explain the tool inputs before the result. If the worker searched a short string taken from an earlier alignment, say that it reused a retrieved string. Do not describe a previously observed match as an independent prediction.\n\nThe tools for comparing edition apparatus require the appropriate XML source configuration. The current plain-text setup supports the exact-overlap example; do not present it as a full textual-variant collation or a reconstruction of a text’s genealogy.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Alignment · agent tools",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Locate shared wording in a selected pair",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "7",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "T0603",
+        "x": 55,
+        "y": 229,
+        "w": 520,
+        "h": 55,
+        "size": 29,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Yin chi ru jing\n陰持入經",
+        "x": 55,
+        "y": 302,
+        "w": 510,
+        "h": 115,
+        "size": 30,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "T1694",
+        "x": 716,
+        "y": 229,
+        "w": 500,
+        "h": 55,
+        "size": 29,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Yin chi ru jing zhu\n陰持入經註",
+        "x": 716,
+        "y": 302,
+        "w": 500,
+        "h": 115,
+        "size": 30,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "line",
+        "x": 563,
+        "y": 347,
+        "w": 108,
+        "h": 0,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "align_passages returns shared runs and positions in both texts.",
+        "x": 55,
+        "y": 475,
+        "w": 1160,
+        "h": 90,
+        "size": 26,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Read the passages before deciding what explains the overlap.",
+        "x": 55,
+        "y": 593,
+        "w": 1160,
+        "h": 50,
+        "size": 23,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Compare string counts across groups",
+    "topic": "Analysis · Evidence",
+    "minutes": 2,
+    "notes": "Open Evidence and use the T0603 example. Explain the vocabulary as short character strings, then show the full ranking. The example resets to curated strings and no additional exclusions.\n\nDiagram: Evidence controls](diagrams/evidence.svg)\n\n1. Select **Evidence** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Analysis · Evidence",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Compare string counts across groups",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "8",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 210,
+        "w": 735,
+        "h": 410,
+        "fill": "FFFFFF",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 210,
+        "w": 735,
+        "h": 48,
+        "fill": "EDF4F7",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 70,
+        "y": 222,
+        "w": 80,
+        "h": 25,
+        "size": 15,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Graph    Findings    Corpus    Evidence    Inquiry",
+        "x": 170,
+        "y": 223,
+        "w": 605,
+        "h": 26,
+        "size": 14,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Evidence",
+        "x": 77,
+        "y": 277,
+        "w": 691,
+        "h": 35,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Interface diagram",
+        "x": 75,
+        "y": 636,
+        "w": 695,
+        "h": 20,
+        "size": 10,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Text: T0603 · 陰持入經",
+        "x": 77,
+        "y": 325,
+        "w": 650,
+        "h": 42,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Vocabulary and method",
+        "x": 77,
+        "y": 387,
+        "w": 650,
+        "h": 32,
+        "size": 18,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Radich’s curated strings",
+        "x": 77,
+        "y": 434,
+        "w": 650,
+        "h": 40,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "All comparison groups, ranked",
+        "x": 77,
+        "y": 502,
+        "w": 650,
+        "h": 35,
+        "size": 21,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Rank     Group     Score relative to leader",
+        "x": 77,
+        "y": 554,
+        "w": 650,
+        "h": 35,
+        "size": 17,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Select the strings\n\nRead the ranked groups\n\nInspect the wording behind the scores",
+        "x": 836,
+        "y": 242,
+        "w": 365,
+        "h": 303,
+        "size": 24,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false,
+    "diagram": "evidence"
+  },
+  {
+    "title": "Repeat T0603 without its commentary",
+    "topic": "Analysis · controlled exclusion",
+    "minutes": 3,
+    "notes": "T1694 is assigned to the mixed pre-Dharmarakṣa group. Its shared wording contributes to that group’s profile. Removing it changes the reference profile, not T0603. An Shigao worked in the second century CE; Dharmarakṣa later, in the late third and early fourth centuries. “Before Dharmarakṣa” is a catalogue category, not his own work.\n\nLive action: enter T1694 and click Repeat comparison. Keep curated vocabulary fixed. The leading group changes, so both names must be read. This demonstrates sensitivity to included material, not successful attribution.\n\nUnder **Does the result depend on another text?**, enter **T1694** in **Exclude additional texts** and click **Repeat comparison**. The target remains T0603; only the reference material changes. **Restore these texts** removes the additional exclusion.\n\nThe reproduced results on 9 September 2026 are:\n\n| Setup | Highest-ranked group | Next group | Per-string margin |\n|---|---|---|---:|\n| Curated strings, no additional exclusion | Other material before Dharmarakṣa 竺法護 | An Shigao 安世高 | 1.696 |\n| Same strings, T1694 excluded | An Shigao 安世高 | Other material before Dharmarakṣa 竺法護 | 0.096 |\n\nT1694 contributes to the mixed group in the first row. “Other material before Dharmarakṣa” is a catalogue category for early material, not one competing translator. Excluding the commentary changes the leader and greatly reduces the lead.\n\nSay:\n\n> Including this commentary has a large effect on the ranking. Once we remove it, the initial leading group no longer comes first. We need to inspect the shared passages and the composition of the comparison groups before using this as evidence about a translator.\n\nDo not translate 0.096 into a probability or call it a statistically established tie. An Shigao’s new first place does not establish his authorship. The comparison does not determine which text borrowed from which.\n\nThe before-and-after table is calculated by the application. If it fails to load, the slide contains the recorded aggregate result and its settings. Do not substitute a value from another vocabulary. Additional exclusions currently take exact corpus unit IDs; a collection identifier is not a promise that all its chapters will be removed. The target’s own work is withheld automatically.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Analysis · controlled exclusion",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Repeat T0603 without its commentary",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "9",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "T1694 belongs to “Other material before Dharmarakṣa” in this catalogue.",
+        "x": 55,
+        "y": 200,
+        "w": 1150,
+        "h": 70,
+        "size": 23,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 300,
+        "w": 575,
+        "h": 247,
+        "fill": "EDF4F7",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "With T1694",
+        "x": 77,
+        "y": 318,
+        "w": 530,
+        "h": 40,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Other material before\nDharmarakṣa 竺法護",
+        "x": 77,
+        "y": 381,
+        "w": 530,
+        "h": 87,
+        "size": 26,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Lead over next group: 1.696",
+        "x": 77,
+        "y": 491,
+        "w": 530,
+        "h": 45,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 680,
+        "y": 300,
+        "w": 575,
+        "h": 247,
+        "fill": "EDF4F7",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "Without T1694",
+        "x": 702,
+        "y": 318,
+        "w": 530,
+        "h": 40,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "An Shigao 安世高",
+        "x": 702,
+        "y": 381,
+        "w": 530,
+        "h": 87,
+        "size": 26,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Lead over next group: 0.096",
+        "x": 702,
+        "y": 491,
+        "w": 530,
+        "h": 45,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "The first ranking depends heavily on including a closely related text.",
+        "x": 55,
+        "y": 577,
+        "w": 1145,
+        "h": 68,
+        "size": 25,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Read the proposal and its alternatives",
+    "topic": "Interpretation · Findings",
+    "minutes": 2,
+    "notes": "Open one saved proposal and read its actual status. Claims and conjectures are both hypotheses. The field labels make the agent’s argument inspectable; they do not guarantee that it is a good argument.\n\nDiagram: Findings fields](diagrams/findings.svg)\n\nOpen **Findings** and expand one relevant proposal. Entries are newest first, not sorted by confidence. Read its type and status before the text.\n\n**Hypothesis** is an umbrella term. A hypothesis can be a **claim** or a **conjecture**; it is not a container assembled from claims. A claim states something its cited passages are supposed to support. A conjecture offers an explanation that goes beyond the observations and must include a test. Neither label certifies truth.\n\nThe system checks required fields and relationships. It cannot reliably decide whether a statement is historically sound merely by checking its structure. Its grounding rule checks whether a supplied string exists; a very short or irrelevant string can pass that existence check. Do not call grounding a relevance guarantee.\n\n| Field | What to read it as |\n|---|---|\n| How the proposal was reached (`derivation`) | The observations and steps the worker says led to it |\n| Material examined (`corpus_boundary`) | What the worker reports examining or excluding |\n| What could bias the comparison (`selection_risks`) | Ways that choosing these texts or strings could distort the result |\n| Other possible explanations (`alternative_explanations`) | Competing accounts, such as reuse, a shared source or a recurring expression |\n| Test | A recorded query and expected result intended to challenge the conjecture |\n\nInspect whether a test could distinguish the alternatives. A search returning a phrase already seen is weak evidence for a new historical explanation. The presence of a test field does not establish that a useful test was run prospectively.\n\nClick a cited passage to open it in Graph. The AI interpretation in the side panel is separate from these recorded hypotheses.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Interpretation · Findings",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Read the proposal and its alternatives",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "10",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 210,
+        "w": 735,
+        "h": 410,
+        "fill": "FFFFFF",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 55,
+        "y": 210,
+        "w": 735,
+        "h": 48,
+        "fill": "EDF4F7",
+        "color": "D2DAE0"
+      },
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 70,
+        "y": 222,
+        "w": 80,
+        "h": 25,
+        "size": 15,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Graph    Findings    Corpus    Evidence    Inquiry",
+        "x": 170,
+        "y": 223,
+        "w": 605,
+        "h": 26,
+        "size": 14,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Findings",
+        "x": 77,
+        "y": 277,
+        "w": 691,
+        "h": 35,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Interface diagram",
+        "x": 75,
+        "y": 636,
+        "w": 695,
+        "h": 20,
+        "size": 10,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Claim or conjecture",
+        "x": 77,
+        "y": 325,
+        "w": 600,
+        "h": 40,
+        "size": 24,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Status: read the recorded state",
+        "x": 77,
+        "y": 374,
+        "w": 600,
+        "h": 35,
+        "size": 18,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "How the proposal was reached",
+        "x": 77,
+        "y": 433,
+        "w": 640,
+        "h": 36,
+        "size": 19,
+        "color": "126B85",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Material examined",
+        "x": 77,
+        "y": 473,
+        "w": 640,
+        "h": 36,
+        "size": 19,
+        "color": "126B85",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Other possible explanations",
+        "x": 77,
+        "y": 513,
+        "w": 640,
+        "h": 36,
+        "size": 19,
+        "color": "126B85",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Cited passages",
+        "x": 77,
+        "y": 553,
+        "w": 640,
+        "h": 36,
+        "size": 19,
+        "color": "126B85",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Expand one proposal\n\nCompare its explanation with the sources\n\nFollow a citation into Graph",
+        "x": 836,
+        "y": 246,
+        "w": 364,
+        "h": 313,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false,
+    "diagram": "findings"
+  },
+  {
+    "title": "Follow a proposal back to its sources",
+    "topic": "Provenance · Graph",
+    "minutes": 2,
+    "notes": "The arrows here follow schema direction: passage part_of source; passage attests proposal; proposal addresses question. Shapes are simplified but match node types. Use one selected record rather than narrating the entire graph.\n\nDiagram: Graph relationships](diagrams/graph.svg)\n\nUse the question checkboxes to show the investigation you are discussing. Hiding a question changes the view; it does not delete its records. Several proposals can address one question. An older session can also contain earlier questions.\n\nSelect a single node. Its inspector shows the record’s type, status, worker, model, sources and relationships. New records can show the worker’s action reason. The historical model name describes the recorded call, not a later profile setting.\n\n| Shape or link | Meaning |\n|---|---|\n| Star | A research question |\n| Diamond | A claim or conjecture |\n| Rectangle | A located passage |\n| Ellipse | A source record, called a witness in the schema |\n| Dot | A search query |\n| `part_of` | A passage belongs to a source record |\n| `attests` | A passage is offered as support for a proposal |\n| `addresses` | A proposal addresses a question |\n| `searched_for` | A recorded search used in proposing a claim or conjecture |\n| `tests` | A query is offered as a test of a conjecture |\n\nA search pointing to a claim records retrieval activity; it does not itself prove the claim. The **Show exploration** overlay adds works inspected in recorded tool activity, including some that were never attached as evidence. It is not a map of every source available in the corpus or every thought the model had.\n\n**Verified with an exact span** means a recorded check found the quoted passage at its source location. Repeated verification attempts remain in the history but are not presented as multiple independent witnesses.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Provenance · Graph",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Follow a proposal back to its sources",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "11",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "ellipse",
+        "x": 80,
+        "y": 305,
+        "w": 135,
+        "h": 95,
+        "fill": "EDF4F7",
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "Source",
+        "x": 76,
+        "y": 430,
+        "w": 200,
+        "h": 45,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 351,
+        "y": 305,
+        "w": 135,
+        "h": 95,
+        "fill": "EDF4F7",
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "Passage",
+        "x": 341,
+        "y": 430,
+        "w": 200,
+        "h": 45,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "diamond",
+        "x": 663,
+        "y": 290,
+        "w": 145,
+        "h": 124,
+        "fill": "EDF4F7",
+        "color": "126B85"
+      },
+      {
+        "kind": "text",
+        "text": "Claim or\nconjecture",
+        "x": 636,
+        "y": 430,
+        "w": 255,
+        "h": 85,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "star",
+        "x": 1000,
+        "y": 284,
+        "w": 143,
+        "h": 130,
+        "fill": "F4EEF5",
+        "color": "9C2469"
+      },
+      {
+        "kind": "text",
+        "text": "Research\nquestion",
+        "x": 977,
+        "y": 430,
+        "w": 260,
+        "h": 85,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "line",
+        "x": 348,
+        "y": 350,
+        "w": -125,
+        "h": 0,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "part_of",
+        "x": 224,
+        "y": 300,
+        "w": 122,
+        "h": 33,
+        "size": 16,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "line",
+        "x": 490,
+        "y": 350,
+        "w": 165,
+        "h": 0,
+        "color": "126B85"
+      },
+      {
+        "kind": "text",
+        "text": "attests",
+        "x": 535,
+        "y": 300,
+        "w": 130,
+        "h": 33,
+        "size": 16,
+        "color": "126B85",
+        "bold": false
+      },
+      {
+        "kind": "line",
+        "x": 817,
+        "y": 350,
+        "w": 172,
+        "h": 0,
+        "color": "9C2469"
+      },
+      {
+        "kind": "text",
+        "text": "addresses",
+        "x": 849,
+        "y": 300,
+        "w": 155,
+        "h": 33,
+        "size": 16,
+        "color": "9C2469",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Select a record to inspect its worker, model, citations and checks.",
+        "x": 55,
+        "y": 575,
+        "w": 1135,
+        "h": 65,
+        "size": 25,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false,
+    "diagram": "graph"
+  },
+  {
+    "title": "Separate citation checks from researcher decisions",
+    "topic": "Human expertise · Graph",
+    "minutes": 2,
+    "notes": "Do not click Accept just to create an ending. Show available controls and explain their actual eligibility rules. The reviewer cannot be treated as a reliable semantic validator; explain the current limitation if asked.\n\n| Status | Meaning |\n|---|---|\n| Proposed | Submitted for consideration |\n| Attested | The required promotion checks for that record type passed |\n| Accepted | The researcher approved this record under Cohort’s citation rules |\n| Rejected | The researcher rejected this record with a reason |\n\nA **contradiction** relationship is distinct from a researcher’s rejection. Colour alone is insufficient: some imported experiment records also have calculated assessment colours. Read the selected record’s status.\n\nAn eligible attested record can be accepted. Accepting a passage changes that passage’s status; it does not accept every connected claim. Rejecting a record preserves it and the reason rather than deleting a source text. Reopening a rejected record also requires a reason.\n\nThe reviewer is fallible. In the current implementation, its tool re-fetches cited passages and checks their spans, but the reviewer does not have a complete evidence-reading workflow before choosing its semantic verdict. A reviewer’s statement that it checked an interpretation or reproduced a calculation is not enough to establish that it did so. The researcher should inspect the passages and numerical output directly. This limitation remains open; do not say it has been repaired by changing model names.\n\nThe Evidence tab does not currently offer a grounded `quotes` or `parallel_of` edge proposal for later acceptance. Accepting a graph record also does not change Evidence profiles. The exclusion above is a separate researcher-controlled calculation.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Human expertise · Graph",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Separate citation checks from researcher decisions",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "12",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Span verification",
+        "x": 55,
+        "y": 226,
+        "w": 330,
+        "h": 97,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Was the quotation found in the source?",
+        "x": 420,
+        "y": 226,
+        "w": 805,
+        "h": 97,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Review",
+        "x": 55,
+        "y": 335,
+        "w": 330,
+        "h": 97,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "What did a separate agent check and report?",
+        "x": 420,
+        "y": 335,
+        "w": 805,
+        "h": 97,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Researcher decision",
+        "x": 55,
+        "y": 444,
+        "w": 330,
+        "h": 97,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Should this particular record be accepted or rejected?",
+        "x": 420,
+        "y": 444,
+        "w": 805,
+        "h": 97,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Accepting a passage does not accept every claim connected to it.",
+        "x": 55,
+        "y": 586,
+        "w": 1140,
+        "h": 60,
+        "size": 24,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Ask for an explanation of the current view",
+    "topic": "Further investigation · Graph and Evidence",
+    "minutes": 1,
+    "notes": "Open Analyze this view without starting a run. Show a saved analysis if one is available. The analyst can use read-only tools, but does not promote its answer into a graph proposal.\n\nClick **Analyze this view**. A side panel opens without moving the main tab. Choose or retain the model, then click **Start analysis**. Merely opening the panel does not call a model.\n\nThe analyst can inspect records, search passages, read bounded source material and repeat available evidence comparisons. Its final answer is formatted text with expandable actions and reasons. It cannot propose, accept, reject or modify graph records. Its explanation is an AI interpretation, not a verification.\n\nSelect an entry under **Saved analyses** to reopen it. The answer describes the view supplied when that analysis began; later changes to the graph or exclusion settings do not rewrite it. Close the panel to inspect the underlying view. Closing or switching tabs does not stop an active run. Only one inquiry or analysis runs at a time in this instance.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Further investigation · Graph and Evidence",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Ask for an explanation of the current view",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "13",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Analyze this view",
+        "x": 55,
+        "y": 235,
+        "w": 330,
+        "h": 91,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Open the side panel; choose a model",
+        "x": 420,
+        "y": 235,
+        "w": 805,
+        "h": 91,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Start analysis",
+        "x": 55,
+        "y": 338,
+        "w": 330,
+        "h": 91,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Inspect records, retrieve passages and repeat comparisons",
+        "x": 420,
+        "y": 338,
+        "w": 805,
+        "h": 91,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Saved analyses",
+        "x": 55,
+        "y": 441,
+        "w": 330,
+        "h": 91,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Reopen the explanation and its actions",
+        "x": 420,
+        "y": 441,
+        "w": 805,
+        "h": 91,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "The analyst cannot modify graph records. Its explanation refers to the selected snapshot.",
+        "x": 55,
+        "y": 579,
+        "w": 1130,
+        "h": 77,
+        "size": 23,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "What “diachronic” means in this prototype",
+    "topic": "Diachronic digital humanities",
+    "minutes": 1,
+    "notes": "State the gap plainly. The research questions are historical and the records can support their investigation. There is no implemented model that infers language change or historical dates.\n\nDiachronic research studies change through time. Translator ascriptions, the reuse of earlier texts and commentary relationships are historical questions. This dataset also supplies an ordering of its catalogue groups.\n\nCohort currently supports retrieval, comparison and documentation for those questions. It does not infer dates, estimate a trajectory of language change, or reconstruct a transmission tree. Present dating and transmission modelling as further work. Do not describe a similarity ranking as a chronology.\n\nA useful discussion question is: which controls would make this comparison useful in your research? Possible answers include separating genre, revising the reference groups, excluding repeated sources and comparing editions. Each requires data preparation and scholarly choices in addition to agent tooling.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Diachronic digital humanities",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "What “diachronic” means in this prototype",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "14",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Questions about historical production and transmission",
+        "x": 55,
+        "y": 238,
+        "w": 1120,
+        "h": 76,
+        "size": 30,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Translator ascriptions\nRelationships between texts and commentaries\nReuse of earlier wording",
+        "x": 55,
+        "y": 357,
+        "w": 1150,
+        "h": 186,
+        "size": 28,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Dating, language change and transmission reconstruction remain further work.",
+        "x": 55,
+        "y": 592,
+        "w": 1140,
+        "h": 65,
+        "size": 23,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Research tasks to develop with scholars",
+    "topic": "Discussion",
+    "minutes": 1,
+    "notes": "Leave time for questions. Ask which operation would help the audience with material they already work on. The Q3 branch is described in a reference slide; do not imply it is merged or that its real-corpus findings were reproduced in this review.\n\nDiachronic research studies change through time. Translator ascriptions, the reuse of earlier texts and commentary relationships are historical questions. This dataset also supplies an ordering of its catalogue groups.\n\nCohort currently supports retrieval, comparison and documentation for those questions. It does not infer dates, estimate a trajectory of language change, or reconstruct a transmission tree. Present dating and transmission modelling as further work. Do not describe a similarity ranking as a chronology.\n\nA useful discussion question is: which controls would make this comparison useful in your research? Possible answers include separating genre, revising the reference groups, excluding repeated sources and comparing editions. Each requires data preparation and scholarly choices in addition to agent tooling.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Discussion",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Research tasks to develop with scholars",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "15",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Find useful parallels",
+        "x": 55,
+        "y": 249,
+        "w": 330,
+        "h": 100,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Which retrieved passages deserve close reading?",
+        "x": 420,
+        "y": 249,
+        "w": 805,
+        "h": 100,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Test a comparison",
+        "x": 55,
+        "y": 361,
+        "w": 330,
+        "h": 100,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Does it persist across genre, length and source exclusions?",
+        "x": 420,
+        "y": 361,
+        "w": 805,
+        "h": 100,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Assess an ascription",
+        "x": 55,
+        "y": 473,
+        "w": 330,
+        "h": 100,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Which observations could distinguish competing explanations?",
+        "x": 420,
+        "y": 473,
+        "w": 805,
+        "h": 100,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Choosing a vocabulary",
+    "topic": "Reference · Evidence settings",
+    "minutes": 0,
+    "notes": "These choices change what the method counts. Curated is the setting for the checked exclusion example, not a claim that it is universally best.\n\nDiagram: Evidence controls](diagrams/evidence.svg)\n\n1. Select **Evidence** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Reference · Evidence settings",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Choosing a vocabulary",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "16",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Curated strings",
+        "x": 55,
+        "y": 249,
+        "w": 330,
+        "h": 99,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Built for work on a Dharmarakṣa dictionary; uneven coverage",
+        "x": 420,
+        "y": 249,
+        "w": 805,
+        "h": 99,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Frequent corpus strings",
+        "x": 55,
+        "y": 360,
+        "w": 330,
+        "h": 99,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Selected without translator labels; can favour genre formulas",
+        "x": 420,
+        "y": 360,
+        "w": 805,
+        "h": 99,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Combined lists",
+        "x": 55,
+        "y": 471,
+        "w": 330,
+        "h": 99,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Union of both lists; their biases remain",
+        "x": 420,
+        "y": 471,
+        "w": 805,
+        "h": 99,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": true
+  },
+  {
+    "title": "The comparison groups",
+    "topic": "Reference · current dataset",
+    "minutes": 0,
+    "notes": "This list gives catalogue membership labels, not a ranking. The two mixed categories are not individual translators. Counts are before target withholding.\n\nCBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.\n\nEvidence uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.\n\nThe current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.\n\nTo qualify initially, a labelled unit must have at least 2,000 Chinese characters, and a group must have at least five qualifying units. Texts marked as having an uncertain translator are excluded from these reference profiles. Their wording supplies the frequent-string vocabulary instead. Missing text files and rejected units are counted in the selection ledger.\n\nThese are implementation choices for this experiment. They do not establish that the remaining groups are equally representative or that their inherited ascriptions are infallible. After withholding, some groups can have little material left; the interface flags these as thin. Groups with no usable profile are listed as not judged.\n\nSay:\n\n> The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.\n\nThe catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Reference · current dataset",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "The comparison groups",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "17",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "An Shigao 安世高",
+        "x": 55,
+        "y": 213,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Baoyun 寶雲",
+        "x": 55,
+        "y": 269,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Buddhabhadra 佛陀跋陀羅",
+        "x": 55,
+        "y": 325,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Dharmakṣema 曇無讖",
+        "x": 55,
+        "y": 381,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Dharmarakṣa 竺法護",
+        "x": 55,
+        "y": 437,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Guṇabhadra 求那跋陀羅",
+        "x": 55,
+        "y": 493,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Kumārajīva 鳩摩羅什",
+        "x": 680,
+        "y": 213,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Lokakṣema 支婁迦讖",
+        "x": 680,
+        "y": 269,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Gautama Saṅghadeva 僧伽提婆",
+        "x": 680,
+        "y": 325,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Zhu Fonian 竺佛念",
+        "x": 680,
+        "y": 381,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Zhi Qian 支謙",
+        "x": 680,
+        "y": 437,
+        "w": 585,
+        "h": 51,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Mixed categories",
+        "x": 55,
+        "y": 570,
+        "w": 1170,
+        "h": 32,
+        "size": 17,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Other material before Dharmarakṣa 竺法護\nMaterial after Lokakṣema 支婁迦讖",
+        "x": 55,
+        "y": 610,
+        "w": 1150,
+        "h": 65,
+        "size": 18,
+        "color": "24384A",
+        "bold": false
+      }
+    ],
+    "appendix": true
+  },
+  {
+    "title": "Two score displays, two scales",
+    "topic": "Reference · reading the numbers",
+    "minutes": 0,
+    "notes": "Do not compute the headline margin by dividing the already rounded gap displayed in a table. The backend computes it from unrounded scores before display rounding.\n\nDiagram: Evidence controls](diagrams/evidence.svg)\n\n1. Select **Evidence** and click the **T0603** example. The example resets the vocabulary to the curated strings and clears additional exclusions.\n2. Open **Vocabulary and method**. Explain that “vocabulary” means the list of two-, three- and four-character strings being counted. These are not necessarily words.\n3. Read the highest-ranked group and the next group, then the visible full ranking below them. Full names and Chinese names are included.\n4. Leave the vocabulary unchanged while testing an exclusion.\n\nThe three options are:\n\n| Option | How strings were selected | Limitation |\n|---|---|---|\n| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |\n| Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |\n| Combined lists | The union of the two lists | Combining them does not remove either selection problem |\n\nUse the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.\n\nA profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.\n\nThe full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.\n\n**Highlighting groups** sets which two groups determine the passage colours. It does not change the overall ranking. The highlighted pair can differ from the top two, so read its labels. Leave this setting alone during the exclusion comparison unless explaining that specific control.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Reference · reading the numbers",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Two score displays, two scales",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "18",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Full ranking",
+        "x": 55,
+        "y": 241,
+        "w": 470,
+        "h": 50,
+        "size": 29,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Group score − highest score\n\nLeader = 0; others are negative",
+        "x": 55,
+        "y": 325,
+        "w": 530,
+        "h": 171,
+        "size": 25,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Headline margin",
+        "x": 704,
+        "y": 241,
+        "w": 510,
+        "h": 50,
+        "size": 29,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Highest score − next score\n────────────────────\nDistinct matched strings",
+        "x": 704,
+        "y": 325,
+        "w": 510,
+        "h": 171,
+        "size": 25,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Neither display gives a probability that a translator is correct.",
+        "x": 55,
+        "y": 589,
+        "w": 1160,
+        "h": 58,
+        "size": 25,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": true
+  },
+  {
+    "title": "Another retrieval and alignment example",
+    "topic": "Reference · T0453",
+    "minutes": 0,
+    "notes": "This is a known textual relationship. Use it as a retrieval control, not a discovery. The earlier task did not supply the counterpart ID, but pretrained knowledge cannot be ruled out.\n\nT0453 is a Maitreya text, **Maitreya’s descent 彌勒下生經**. It has a known textual relation to material in the **Ekottarikāgama 增壹阿含經, T0125**, section 48.3. The earlier retrieval exercise reached that counterpart without supplying its identifier in the task. This is a control for finding a relevant parallel, not a new discovery or an attribution of an unknown text.\n\nUse it to explain retrieval and alignment if asked for another example. Do not promise that a fresh model run will take the same route. Withholding an identifier from a prompt also does not exclude pretrained knowledge. The main slides omit the old overlap percentages because their different denominators require a separate explanation and are unnecessary for introducing the tools.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Reference · T0453",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Another retrieval and alignment example",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "19",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "T0453 · Maitreya’s descent\n彌勒下生經",
+        "x": 55,
+        "y": 242,
+        "w": 1130,
+        "h": 117,
+        "size": 29,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Known parallel in the Ekottarikāgama\n增壹阿含經 · T0125, section 48.3",
+        "x": 55,
+        "y": 408,
+        "w": 1130,
+        "h": 117,
+        "size": 28,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Use the located parallel to inspect what retrieval and alignment return.",
+        "x": 55,
+        "y": 589,
+        "w": 1150,
+        "h": 60,
+        "size": 23,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": true
+  },
+  {
+    "title": "Q3 work on separate branches",
+    "topic": "Reference · development review",
+    "minutes": 0,
+    "notes": "The inspected branches are feat/rq3 at 39bcc98 and feat/rq3-force at 2f8b97c. They are not in the current presentation app. The focused synthetic suite passed 104 tests; lint and type checks fail. The researcher review documents chapter dependence and limits of the claimed genre control. Real-corpus Q3 numbers were not reproduced in this review. Do not present the scripted seed as an autonomous agent run.\n\n",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Reference · development review",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Q3 work on separate branches",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "20",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Paramārtha study",
+        "x": 55,
+        "y": 229,
+        "w": 330,
+        "h": 94,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Benchmark, disputed works and a negative-control group",
+        "x": 420,
+        "y": 229,
+        "w": 805,
+        "h": 94,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Feature testing",
+        "x": 55,
+        "y": 335,
+        "w": 330,
+        "h": 94,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Register a prediction, measure controls, retain failed candidates",
+        "x": 420,
+        "y": 335,
+        "w": 805,
+        "h": 94,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Wider comparison",
+        "x": 55,
+        "y": 441,
+        "w": 330,
+        "h": 94,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Inspect nearby works using character-bigram distances",
+        "x": 420,
+        "y": 441,
+        "w": 805,
+        "h": 94,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Promising research workflows; separate from the running application and not an answered ascription.",
+        "x": 55,
+        "y": 578,
+        "w": 1150,
+        "h": 76,
+        "size": 23,
+        "color": "526778",
+        "bold": false
+      }
+    ],
+    "appendix": true
+  },
+  {
+    "title": "The names used in the T0603 comparison",
+    "topic": "Reference · historical orientation",
+    "minutes": 0,
+    "appendix": true,
+    "notes": "An Shigao worked in the second century CE. Dharmarakṣa worked in the late third and early fourth centuries. The pre-Dharmarakṣa group is an inherited catalogue category; T1694 belongs to it in the supplied data. This label does not settle the debated date or authorship of the commentary. Explain the chronological ordering without attempting to date every group.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Reference · historical orientation",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "The names used in the T0603 comparison",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "21",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "An Shigao 安世高",
+        "x": 55,
+        "y": 238,
+        "w": 365,
+        "h": 108,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Second century CE; T0603 is traditionally associated with him",
+        "x": 455,
+        "y": 238,
+        "w": 745,
+        "h": 108,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Dharmarakṣa 竺法護",
+        "x": 55,
+        "y": 361,
+        "w": 365,
+        "h": 108,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Late third / early fourth centuries CE; a later reference point",
+        "x": 455,
+        "y": 361,
+        "w": 745,
+        "h": 108,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "T1694 · 陰持入經註",
+        "x": 55,
+        "y": 484,
+        "w": 365,
+        "h": 108,
+        "size": 23,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Commentary on T0603; assigned to the mixed pre-Dharmarakṣa group",
+        "x": 455,
+        "y": 484,
+        "w": 745,
+        "h": 108,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      }
+    ]
+  }
+]

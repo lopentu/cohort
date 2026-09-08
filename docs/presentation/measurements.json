@@ -1,0 +1,174 @@
+{
+  "before": {
+    "first": "pre-Dhr-other",
+    "second": "ASg",
+    "margin": 1.696,
+    "gap": 59.4,
+    "distinct": 35,
+    "hits": 45,
+    "ranking": [
+      {
+        "label": "pre-Dhr-other",
+        "delta": 0.0
+      },
+      {
+        "label": "ASg",
+        "delta": -59.4
+      },
+      {
+        "label": "ZQ",
+        "delta": -70.2
+      },
+      {
+        "label": "Lkṣ",
+        "delta": -79.3
+      },
+      {
+        "label": "ZFn",
+        "delta": -81.3
+      },
+      {
+        "label": "Dhr",
+        "delta": -83.8
+      },
+      {
+        "label": "Baoyun",
+        "delta": -85.6
+      },
+      {
+        "label": "post-Lkṣ",
+        "delta": -87.8
+      },
+      {
+        "label": "Saṅghadeva",
+        "delta": -95.3
+      },
+      {
+        "label": "Dhkṣ",
+        "delta": -97.9
+      },
+      {
+        "label": "Kj",
+        "delta": -106.0
+      },
+      {
+        "label": "Guṇabhadra",
+        "delta": -109.1
+      },
+      {
+        "label": "Buddhabhadra",
+        "delta": -112.1
+      }
+    ],
+    "withheld_extra": [],
+    "features": "radich",
+    "uid": "T0603"
+  },
+  "after": {
+    "first": "ASg",
+    "second": "pre-Dhr-other",
+    "margin": 0.096,
+    "gap": 3.4,
+    "distinct": 35,
+    "hits": 45,
+    "ranking": [
+      {
+        "label": "ASg",
+        "delta": 0.0
+      },
+      {
+        "label": "pre-Dhr-other",
+        "delta": -3.4
+      },
+      {
+        "label": "ZQ",
+        "delta": -10.8
+      },
+      {
+        "label": "Lkṣ",
+        "delta": -20.0
+      },
+      {
+        "label": "ZFn",
+        "delta": -21.9
+      },
+      {
+        "label": "Dhr",
+        "delta": -24.4
+      },
+      {
+        "label": "Baoyun",
+        "delta": -26.2
+      },
+      {
+        "label": "post-Lkṣ",
+        "delta": -28.4
+      },
+      {
+        "label": "Saṅghadeva",
+        "delta": -36.0
+      },
+      {
+        "label": "Dhkṣ",
+        "delta": -38.5
+      },
+      {
+        "label": "Kj",
+        "delta": -46.6
+      },
+      {
+        "label": "Guṇabhadra",
+        "delta": -49.7
+      },
+      {
+        "label": "Buddhabhadra",
+        "delta": -52.7
+      }
+    ],
+    "withheld_extra": [
+      "T1694"
+    ],
+    "features": "radich",
+    "uid": "T0603"
+  },
+  "units": {
+    "ledger": {
+      "catalogue units, non-grey": 1367,
+      "catalogue units, grey": 968,
+      "dropped: under the 2,000-character floor": 964,
+      "dropped (non-grey): directory has no base text": 17,
+      "dropped (non-grey): no such directory": 3,
+      "dropped (grey): directory has no base text": 1,
+      "dropped (grey): no such directory": 8,
+      "dropped: class too small to profile (AX-YFt, 1 units)": 1,
+      "dropped: class too small to profile (Daotai, 3 units)": 3,
+      "dropped: class too small to profile (Fx, 3 units)": 3,
+      "dropped: class too small to profile (KMx, 1 units)": 1,
+      "dropped: class too small to profile (KSh, 4 units)": 4,
+      "dropped: class too small to profile (post-KMx, 1 units)": 1,
+      "dropped: class too small to profile (pre-T1694, 1 units)": 1,
+      "dropped: class too small to profile (pseudo-BaiYan, 1 units)": 1,
+      "kept for profiling": 368,
+      "classes profiled": 13,
+      "features: radich": 7270,
+      "features: generic": 7270,
+      "features: shared by both": 383,
+      "grey texts the generic vocabulary was drawn from": 959
+    },
+    "classes": [
+      "ASg",
+      "Baoyun",
+      "Buddhabhadra",
+      "Dhkṣ",
+      "Dhr",
+      "Guṇabhadra",
+      "Kj",
+      "Lkṣ",
+      "Saṅghadeva",
+      "ZFn",
+      "ZQ",
+      "post-Lkṣ",
+      "pre-Dhr-other"
+    ]
+  }
+}
