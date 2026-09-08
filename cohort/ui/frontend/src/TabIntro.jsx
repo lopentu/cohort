@@ -3,46 +3,43 @@ import { usePresence } from './motion'
 
 const INTROS = {
   graph: {
-    title: 'What the Graph shows',
+    title: 'Inspect evidence and researcher decisions',
     body: [
-      ['What it is', 'Every piece of evidence and every assertion, as a chain read left to right: witnesses (source texts) → passages (located spans of them) → claims and conjectures → the research questions they address. The layout is fixed, not a physics simulation, so the same graph always draws the same way.'],
-      ['Edges', 'Blue attests: a passage supports an assertion. Orange dashed parallel of / descends from / quotes: two sources are not independent (copies, the same passage in two texts, or one text quoting another) — this discounts support rather than adding it. Red contradicts. Violet dotted tests: the query that would refute a conjecture, recorded before the evidence was in. Cyan addresses: which question an assertion answers. Grey: structure and audit.'],
-      ['Nodes', 'The outline is the status: dashed = proposed by an agent, solid = attested (its citations were checked by a different agent), heavier = accepted by the researcher — the only citable state; a struck-through title = rejected. Click any node for its provenance: who wrote it, what attests it, and whether that support is independent.'],
-      ['Refused writes', 'The counter in the top bar is an output, not an error log: every write the rules refused, and which rule. Zero is a fact worth showing.'],
+      ['Next step', 'Select a record to open its sources, authorship and checks. Researcher decision controls are in that inspector. Drag and zoom to explore the graph.'],
+      ['Status', 'Proposed means submitted for consideration; attested means the required checks passed; accepted means the researcher endorsed it. Colour alone does not mean accepted.'],
+      ['Relationships', 'Use the legend to distinguish support from relationships that reduce independence. Two records can repeat the same evidence. Refused writes show operations the graph declined and why.'],
     ],
   },
   findings: {
-    title: 'What Findings shows',
+    title: 'Read proposals before deciding',
     body: [
-      ['What it is', 'Every claim and conjecture as a hypothesis, beside what the researcher has accepted (the only citable nodes) and what they rejected, with reasons. Rejections sit next to findings on purpose: conclusions without the discards would misrepresent the record.'],
-      ['Not ranked', 'Sorting by how much attests a hypothesis would be a confidence score under another name, which is the habit this system exists to break. Where support does not survive the independence check the row says so; the count of citations is left unchanged.'],
-      ['The dossier', 'Open a hypothesis for how it was derived, the corpus boundary it was framed against, its selection risks, the alternative explanations, the prior-art search actually run, the prediction recorded at proposal time and what the query found, the evidence with excerpts, and the verifications — the machine\'s finding and the reviewer\'s reading in separate fields.'],
-      ['Integrity', 'Two checks, on demand: re-hash every stored payload against its recorded hash, and replay the event log to confirm the database matches it.'],
+      ['Next step', 'Expand a hypothesis to read its argument, alternatives, cited passages and review outcomes. Follow a citation into Graph to inspect the record.'],
+      ['Decisions', 'Citable contains researcher-accepted records. Rejected retains the reasons for rejection. Hypotheses are listed newest first, not ranked by confidence.'],
+      ['Integrity', 'The checks compare stored hashes and replay the event log. They check record consistency, not historical truth. They run when this tab opens and can be repeated.'],
     ],
   },
   corpus: {
-    title: 'What Corpus does',
+    title: 'Find exact wording in the source texts',
     body: [
-      ['Search', 'Exact substring match over every citable span — no wildcards, no stemming: what you type is what is found. Results come back in corpus order, not ranked: a relevance model would favour short commentaries over the scriptures they quote, a scholarly judgement smuggled into infrastructure. The count of what is not shown is stated.'],
-      ['Reading', 'Open a hit to read the record, with its length stated. When the source carries TEI markup, a toggle strips it for reading — and warns that stripped text no longer shares character offsets with the witness, so it is for reading, never for locating a span.'],
-      ['Sending to an agent', 'A phrase can be handed to the Inquiry tab as the seed of a task. Every record carries the licence terms of the corpus it came from.'],
+      ['Next step', 'Search a phrase, then open a matching record to read its context. Results are in corpus order, not ranked by relevance.'],
+      ['Continue in Inquiry', 'Send to agent prepares a task in Inquiry. It does not launch a run or attach a citation; inspect the task before starting.'],
+      ['Reading', 'Removing TEI markup changes displayed character positions. Use that view for reading, not for locating a citation.'],
     ],
   },
   evidence: {
-    title: 'What Evidence shows',
+    title: 'Compare wording; investigate what explains it',
     body: [
-      ['What it is', 'For one text of Radich\'s pre-450 corpus: which translator\'s profile of short strings (2–4 characters) it fits best, by how much, and where in the text the evidence falls — painted onto the characters. A leaning with its reasons on show, not an attribution.'],
-      ['Colours', 'Teal pulls toward translator A, rust toward translator B. A is the text\'s own catalogue label when it has one (otherwise the leader), B its strongest rival; the pair stays fixed when you switch vocabularies, so a change of colour is a change of evidence. Saturation is the weight of evidence on that character.'],
-      ['What is withheld', 'Every unit of the text\'s own Taishō work is removed from the profiles before counting; otherwise the method recognises the book, not the translator (82% that was really 52%). You can withhold further units — a commentary you suspect of quoting the text — and recompute.'],
-      ['Two vocabularies', 'Radich\'s curated strings (harvested for a Dharmarakṣa dictionary) and the commonest strings of the grey texts, chosen without reading a label. Their disagreement is the bias, made visible. "No evidence" means nothing in the vocabulary occurs; nothing is ranked.'],
+      ['Next step', 'Choose a text, read the comparison, and try excluding material that might repeat it. A profile is a table of short-string counts for a translator or corpus group.'],
+      ['Colours', 'Teal and rust compare two named groups. Choose a fixed pair before comparing vocabularies; automatic selection can change the pair.'],
+      ['Limits', 'Resemblance can reflect genre or reused passages. This tab assigns no translator and does not change the graph. Exclusions affect this calculation only.'],
     ],
   },
   run: {
-    title: 'What Inquiry does',
+    title: 'Ask a question and start agent work',
     body: [
-      ['What it is', 'The only tab that spends money. It opens on a research question — what is being asked and what would count as an answer, stated before looking — and runs agents against it with a hard budget per run that the browser cannot raise.'],
-      ['The roster', 'Workers search the corpus and propose claims and conjectures through tools whose rules are enforced by the graph; a reviewer, which must be a different model family, checks that their citations resolve and attests or withholds. An agent cannot check its own work.'],
-      ['What you see', 'Spend, tool calls, and refusals as the run proceeds. Everything an agent writes lands in the graph as proposed; nothing becomes citable here. The researcher accepts or rejects in Findings.'],
+      ['Next step', 'Record a question and what would count as an answer. Inspect the agent tasks and models, then choose a budget before starting. Opening this tab does not spend money.'],
+      ['Review', 'Workers retrieve and propose; a different agent from a different model family reviews citations. A citation check does not settle an interpretation.'],
+      ['Continue in Findings', 'Read the resulting proposals in Findings, then follow records into Graph for researcher decisions. The spending threshold stops later calls; an in-flight call can exceed it.'],
     ],
   },
 }

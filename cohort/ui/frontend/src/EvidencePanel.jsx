@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getEvidence, getEvidenceUnits } from './api'
+import { profileName, textName } from './evidence-labels'
 
 // Where one text leans between translator profiles, painted onto the text.
 //
@@ -17,12 +18,9 @@ import { getEvidence, getEvidenceUnits } from './api'
 //   * raw counts beside every rate, because "988 per 100,000" can be ten
 //     occurrences in a profile of a thousand tokens.
 //
-// Colour compares a *pinned pair* of translators, A (teal) against B (rust),
-// not the leader against the runner-up: by default A is the text's own
-// catalogue label. That is what lets the same text painted under two
-// vocabularies mean the same thing in both — under one it may be rust, under
-// the other teal, and that change is the finding. Painting "whoever is
-// winning" in teal would make every text teal.
+// Colours compare two named groups, which may include a mixed corpus class.
+// Only an explicit pair stays fixed across vocabulary changes. Keep the pair
+// labels visible so automatic selection cannot masquerade as changed evidence.
 
 const FEATURE_LABEL = {
   radich: "Radich's curated strings",
@@ -63,7 +61,7 @@ export default function EvidencePanel() {
   const [data, setData] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
-  const [showHow, setShowHow] = useState(!initial.uid)
+  const [showHow, setShowHow] = useState(false)
   const [showLedger, setShowLedger] = useState(false)
 
   useEffect(() => {
@@ -93,7 +91,7 @@ export default function EvidencePanel() {
     if (!units) return []
     const q = query.trim().toLowerCase()
     const rows = units.units.filter((r) =>
-      !q || r.uid.toLowerCase().includes(q) || r.label.toLowerCase().includes(q))
+      !q || textName(r.uid).toLowerCase().includes(q) || profileName(r.label).toLowerCase().includes(q))
     rows.sort((a, b) => (a.label === 'grey') === (b.label === 'grey')
       ? a.uid.localeCompare(b.uid)
       : a.label === 'grey' ? -1 : 1)
@@ -102,39 +100,24 @@ export default function EvidencePanel() {
 
   return (
     <section className="evidence">
-      <h2>Evidence</h2>
-      <p className="hint">
-        For one text: which short strings (2-4 characters) occur more often in one
-        translator's securely ascribed work than another's, and where in the text
-        they fall. A leaning with its reasons on show, not an attribution.
+      <h2>Compare a text's wording</h2>
+      <p className="ev-introduction">
+        Compare wording, inspect the source text, and test whether repeated material drives the result.
       </p>
 
-      <button className="btn tiny" onClick={() => setShowHow((v) => !v)} aria-expanded={showHow}>
-        {showHow ? 'hide' : 'show'} how to read this
-      </button>
-      {showHow && <HowToRead />}
-
+      <details className="ev-options ev-chooser" open={!uid}>
+        <summary>{uid ? 'Change the selected text' : 'Choose a text to examine'}</summary>
       <div className="ev-controls">
         <label className="ev-filter">
-          <span className="visually-hidden">filter units</span>
+          <span>Choose a text</span>
           <input
             className="corpus-input"
-            placeholder="filter by unit id or label, e.g. T0603, grey, ASg"
+            placeholder="Search by title, catalogue ID or translator name"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
         </label>
-        <div className="ev-features" role="radiogroup" aria-label="feature vocabulary">
-          {Object.entries(FEATURE_LABEL).map(([k, label]) => (
-            <button
-              key={k}
-              role="radio"
-              aria-checked={features === k}
-              className={`btn tiny ${features === k ? 'on' : ''}`}
-              onClick={() => setFeatures(k)}
-            >{label}</button>
-          ))}
-        </div>
+
       </div>
 
       {units && (
@@ -144,11 +127,11 @@ export default function EvidencePanel() {
               <li key={r.uid}>
                 <button
                   className={`ev-unit ${uid === r.uid ? 'on' : ''}`}
-                  onClick={() => choose(r.uid)}
+                  onClick={(e) => { choose(r.uid); e.currentTarget.closest('details').open = false }}
                   title={`${r.uid} — ${r.profiled ? 'in the profiles; its whole work is withheld when judged' : 'not in the profiles'}`}
                 >
-                  <span className="ev-uid">{r.uid}</span>
-                  <span className={`ev-label ${r.label === 'grey' ? 'grey' : ''}`}>{r.label}</span>
+                  <span className="ev-uid">{textName(r.uid)}</span>
+                  <span className={`ev-label ${r.label === 'grey' ? 'grey' : ''}`}>{profileName(r.label)}</span>
                   <span className="ev-chars">{r.han_chars.toLocaleString()}</span>
                 </button>
               </li>
@@ -157,7 +140,7 @@ export default function EvidencePanel() {
           </ul>
           <div className="ev-ledger">
             <button className="btn tiny" onClick={() => setShowLedger((v) => !v)} aria-expanded={showLedger}>
-              {showLedger ? 'hide' : 'show'} what was discarded
+              {showLedger ? 'Hide' : 'Show'} corpus exclusions and counts
             </button>
             {showLedger && (
               <table className="ev-table">
@@ -173,10 +156,31 @@ export default function EvidencePanel() {
         </div>
       )}
 
+      </details>
+
       <div aria-live="polite">
         {error && <p className="error">{error}</p>}
         {busy && <p className="hint">Counting…</p>}
       </div>
+      <details className="ev-options">
+        <summary>Vocabulary and method</summary>
+        <p>A vocabulary is the list of short strings counted in the comparison.</p>
+        <div className="ev-features" role="radiogroup" aria-label="feature vocabulary">
+          {Object.entries(FEATURE_LABEL).map(([k, label]) => (
+            <button
+              key={k}
+              role="radio"
+              aria-checked={features === k}
+              className={`btn tiny ${features === k ? 'on' : ''}`}
+              onClick={() => setFeatures(k)}
+            >{label}</button>
+          ))}
+        </div>
+        <button className="btn" onClick={() => setShowHow((v) => !v)} aria-expanded={showHow}>
+          {showHow ? 'Hide method explanation' : 'Explain the calculation and its limits'}
+        </button>
+        {showHow && <HowToRead />}
+      </details>
       {data && !busy && (
         <Reading
           data={data}
@@ -207,8 +211,8 @@ function HowToRead() {
         <b>What the colours mean.</b> <span className="ev-swatch a" /> spans pull toward
         translator A, <span className="ev-swatch b" /> spans toward translator B.
         A is the text's own catalogue label when it has one, otherwise the leading
-        candidate; B is the strongest rival. The pair stays fixed when you switch
-        vocabularies, so a change of colour is a change of evidence. Saturation is
+        candidate; B is the strongest rival. Choose a fixed pair below before switching vocabularies; otherwise the
+        comparison groups may change. Saturation is
         the weight of evidence on that character.
       </p>
       <p>
@@ -230,8 +234,8 @@ function HowToRead() {
       </p>
       <p>
         <b>What it is not.</b> "No evidence" means not one string of the vocabulary occurs
-        in the text; nothing is ranked. A margin near zero is "nothing either way", not a
-        weak attribution. A text composed in Chinese has no translator to find. The
+        in the text; nothing is ranked. A margin near zero means the two scores are close. There is no calibrated
+        threshold here for deciding an ascription. A text composed in Chinese has no translator to find. The
         researcher reads; the panel only points.
       </p>
     </div>
@@ -281,10 +285,11 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
   return (
     <div className="ev-reading">
       <div className="ev-head">
-        <h3>{data.uid} <span className="hint small">catalogue label <b>{data.label}</b></span></h3>
+        <h3>{textName(data.uid)}</h3>
+        <p className="ev-catalogue">Catalogue classification: <b>{profileName(data.label)}</b></p>
         <p className="hint small">
           {data.han_chars.toLocaleString()} Han characters ({data.code_points.toLocaleString()} code points)
-          · {data.hits.toLocaleString()} feature hits · {data.distinct.toLocaleString()} distinct
+          · {data.hits.toLocaleString()} matched string occurrences · {data.distinct.toLocaleString()} different strings
           · vocabulary: {FEATURE_LABEL[data.features]} ({data.n_features.toLocaleString()} strings)
           {data.withheld_units > 0 && (
             <> · <b>{data.withheld_units} unit{data.withheld_units > 1 ? 's' : ''} withheld</b> from the profiles
@@ -293,40 +298,6 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
         </p>
       </div>
 
-      <form
-        className="ev-withhold"
-        onSubmit={(e) => { e.preventDefault(); onWithhold(withholdDraft.trim()) }}
-      >
-        <label>
-          <span className="hint small">also withhold (unit ids, comma-separated), the sensitivity test:</span>
-          <input
-            className="corpus-input"
-            value={withholdDraft}
-            placeholder="e.g. T1694"
-            onChange={(e) => setWithholdDraft(e.target.value)}
-          />
-        </label>
-        <button className="btn tiny" type="submit">recompute</button>
-        {withhold && <button className="btn tiny" type="button" onClick={() => onWithhold('')}>clear</button>}
-      </form>
-
-      <form
-        className="ev-withhold"
-        onSubmit={(e) => { e.preventDefault(); onPair(pairDraft.replace(/\s+/g, '')) }}
-      >
-        <label>
-          <span className="hint small">paint A against B (two class labels, A,B); empty = label or leader vs strongest rival:</span>
-          <input
-            className="corpus-input"
-            value={pairDraft}
-            placeholder="e.g. Dhr,ZFn"
-            onChange={(e) => setPairDraft(e.target.value)}
-          />
-        </label>
-        <button className="btn tiny" type="submit">repaint</button>
-        {pinnedPair && <button className="btn tiny" type="button" onClick={() => onPair('')}>clear</button>}
-      </form>
-
       {data.verdict === 'no evidence' ? (
         <div className="ev-verdict">
           <div><b className="warn">no evidence</b>
@@ -334,10 +305,10 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
         </div>
       ) : (
         <div className="ev-verdict">
-          <div><span className="hint small">leans</span><b>{data.first}</b><span className="hint small">{seq(data.first)}</span></div>
-          <div><span className="hint small">over</span><b>{data.second}</b><span className="hint small">{seq(data.second)}</span></div>
+          <div><span className="hint small">Highest-ranked comparison group</span><b>{profileName(data.first)}</b><span className="hint small">{seq(data.first)}</span></div>
+          <div><span className="hint small">Next comparison group</span><b>{profileName(data.second)}</b><span className="hint small">{seq(data.second)}</span></div>
           <div>
-            <span className="hint small">margin</span>
+            <span className="hint small">Score difference</span>
             <b>{data.margin > 0 ? '+' : ''}{data.margin.toFixed(2)}</b>
             <span className="hint small">log-odds per distinct string; not comparable across texts</span>
           </div>
@@ -346,6 +317,61 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
           )}
         </div>
       )}
+
+      {(data.first === 'pre-Dhr-other' || data.second === 'pre-Dhr-other') && (
+        <p className="hint small">“Other material before Dharmarakṣa” is a mixed corpus group, not a single translator.</p>
+      )}
+      <p className="ev-limits">
+        This ranks resemblance, not translator identity. A small score difference means the
+        groups are close; it is not a probability. Repeated passages and genre formulas can
+        drive the result. No translator is assigned here.
+      </p>
+      <div className="ev-next">
+      <h3>Does the result depend on another text?</h3>
+      <p>Exclude a suspected source of repeated wording from the comparison groups. Your target text stays unchanged.</p>
+      <p className="hint small">Use the exact ID shown in the text picker. For a work split into chapters, enter each chapter ID; a whole-work ID does not exclude its chapters.</p>
+      <form
+        className="ev-withhold"
+        onSubmit={(e) => { e.preventDefault(); onWithhold(withholdDraft.trim()) }}
+      >
+        <label>
+          <span className="hint small">Exclude additional texts (exact corpus unit IDs, separated by commas)</span>
+          <input
+            className="corpus-input"
+            value={withholdDraft}
+            placeholder="e.g. T1694"
+            onChange={(e) => setWithholdDraft(e.target.value)}
+          />
+        </label>
+        <button className="btn tiny" type="submit">Repeat comparison</button>
+        {withhold && <button className="btn tiny" type="button" onClick={() => onWithhold('')}>Restore these texts</button>}
+        {withholdDraft.trim() && <p className="ev-exclusion-names">
+          {withholdDraft.split(',').map((id) => textName(id.trim())).join('; ')}
+        </p>}
+      </form>
+      <p className="hint small">This changes this calculation only; it does not delete a source or change the evidence graph.</p>
+      </div>
+      <details className="ev-options">
+      <summary>Choose the two groups used for text highlighting</summary>
+      <p>This fixes the colour comparison. It does not change which groups lead the overall ranking.</p>
+
+      <form
+        className="ev-withhold"
+        onSubmit={(e) => { e.preventDefault(); onPair(pairDraft.replace(/\s+/g, '')) }}
+      >
+        <label>
+          <span className="hint small">Group codes for colours A and B (comma-separated; leave empty for automatic selection)</span>
+          <input
+            className="corpus-input"
+            value={pairDraft}
+            placeholder="e.g. Dhr,ZFn"
+            onChange={(e) => setPairDraft(e.target.value)}
+          />
+        </label>
+        <button className="btn tiny" type="submit">Update highlighting</button>
+        {pinnedPair && <button className="btn tiny" type="button" onClick={() => onPair('')}>clear</button>}
+      </form>
+      </details>
 
       {data.verdict !== 'no evidence' && (
         <details className="ev-ranking">
@@ -357,7 +383,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
                 const p = data.profiles[r.label] || {}
                 return (
                   <tr key={r.label} className={p.thin ? 'thin' : ''}>
-                    <td className="g">{r.label}{p.thin && <span className="warn small"> thin</span>}</td>
+                    <td className="g">{profileName(r.label)}{p.thin && <span className="warn small"> thin</span>}</td>
                     <td className="num">{r.delta.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
                     <td className="num">{p.units} of {p.units_before_withholding}</td>
                     <td className="num">{(p.feature_tokens ?? 0).toLocaleString()}</td>
@@ -366,7 +392,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
                 )
               })}
               {data.no_profile.map((n) => (
-                <tr key={n.label}><td className="g">{n.label}</td><td colSpan="4" className="hint small">not judged: {n.reason}</td></tr>
+                <tr key={n.label}><td className="g">{profileName(n.label)}</td><td colSpan="4" className="hint small">not judged: {n.reason}</td></tr>
               ))}
             </tbody>
           </table>
@@ -375,7 +401,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
 
       {pair && (
         <p className="hint small">
-          Painted pair: <b className="ev-a">{a}</b> (A) vs <b className="ev-b">{b}</b> (B)
+          Text highlighting: <b className="ev-a">{profileName(a)}</b> (A) vs <b className="ev-b">{profileName(b)}</b> (B)
           {pair.pinned ? ', pinned' : a === data.label ? ', the catalogue label vs its strongest rival' : ', the leader vs its strongest rival'}.
           Profiles hold {data.profiles[a].feature_tokens.toLocaleString()} and {data.profiles[b].feature_tokens.toLocaleString()} feature tokens.
         </p>
@@ -409,10 +435,12 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
           : <span key={i}>{s}</span>)}
       </div>
 
+      <details className="ev-options">
+      <summary>Inspect string counts, rates and weights</summary>
       {pair && (
         <div className="ev-cols">
-          <EvidenceTable title={`for ${a}`} rows={data.for} a={a} b={b} />
-          <EvidenceTable title={`for ${b}`} rows={data.against} a={a} b={b} />
+          <EvidenceTable title={`Toward ${profileName(a)}`} rows={data.for} a={profileName(a)} b={profileName(b)} />
+          <EvidenceTable title={`Toward ${profileName(b)}`} rows={data.against} a={profileName(a)} b={profileName(b)} />
         </div>
       )}
       <p className="hint small">
@@ -423,6 +451,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
         counted separately and are not independent, so weights overstate certainty;
         read them as a ranking. Strings absent from both profiles are not shown.
       </p>
+      </details>
     </div>
   )
 }
