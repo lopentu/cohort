@@ -37,9 +37,9 @@ const INTROS = {
   run: {
     title: 'Ask a question and start agent work',
     body: [
-      ['Next step', 'Record a question and what would count as an answer. Inspect the agent tasks and models, then choose a budget before starting. Opening this tab does not spend money.'],
+      ['Next step', 'Record a question and what would count as an answer. Inspect the agent tasks and models, then start the run when ready. Opening this tab does not spend money.'],
       ['Review', 'Workers retrieve and propose; a different agent from a different model family reviews citations. A citation check does not settle an interpretation.'],
-      ['Continue in Findings', 'Read the resulting proposals in Findings, then follow records into Graph for researcher decisions. The spending threshold stops later calls; an in-flight call can exceed it.'],
+      ['Continue in Findings', 'Read the resulting proposals in Findings, then follow records into Graph for researcher decisions. Opening a saved question does not restart its earlier runs.'],
     ],
   },
 }

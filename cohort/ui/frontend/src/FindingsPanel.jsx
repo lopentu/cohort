@@ -48,8 +48,13 @@ export default function FindingsPanel({ onSelect }) {
 
       <Hypotheses findings={findings} onSelect={onSelect} />
 
-      <IntegrityStrip />
+      <details className="inquiry-details">
+        <summary>Record integrity checks</summary>
+        <IntegrityStrip />
+      </details>
 
+      <details className="inquiry-details">
+      <summary>Researcher decisions: accepted and rejected records</summary>
       <div className="findings-cols">
         <div>
           <h2>Citable</h2>
@@ -78,6 +83,7 @@ export default function FindingsPanel({ onSelect }) {
           />
         </div>
       </div>
+      </details>
     </section>
   )
 }

@@ -2138,3 +2138,14 @@ a.cbeta-link.block:hover { color: var(--text); }
   .hyp-text { flex-basis: 100%; }
   .legend { display: flex; }
 }
+
+/* Keep the next action visible while retaining settings and session history. */
+.inquiry-details { margin: 1rem 0; border-top: 1px solid var(--line); padding-top: .8rem; }
+.inquiry-details > summary { cursor: pointer; font-weight: 600; padding: .3rem 0; }
+.demo-examples { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0 1.5rem; }
+.demo-examples > p { flex-basis: 100%; margin: 0 0 .25rem; }
+
+.runs { max-width: 960px; margin: 24px auto; }
+.runs .questions-head h3, .runs .run-form > h3 { font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--text); }
+.runs .questions-head > button { flex: 0 0 auto; }
+@media (max-width: 1000px) { .runs { margin: 12px; } }

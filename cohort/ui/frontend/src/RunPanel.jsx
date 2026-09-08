@@ -33,14 +33,8 @@ export function saveHiddenQuestions(ids) {
 // This is the only part of the UI that spends money, and the design follows
 // from that. Three things are deliberate:
 //
-//   * The budget is shown as a hard cap, with the server's ceiling stated next
-//     to it. The browser proposes; `RunManager` bounds. A field that let
-//     someone type any number, with the rejection arriving only after they
-//     pressed the button, would be worse than no field.
-//
-//   * Spend is displayed while the run is going, not summarised at the end.
-//     A cap you cannot watch approaching is a cap you only learn about by
-//     hitting it.
+//   * A configured spending threshold is visible. An operator can disable
+//     monetary stopping; accounting remains visible for every run.
 //
 //   * Refusals are shown as results, not as errors. A run whose agent was
 //     refused five times did not fail; that is the write boundary working, and
@@ -52,6 +46,24 @@ export function saveHiddenQuestions(ids) {
 // The agents cannot see each other: there is no channel and no shared
 // transcript (docs/design.md §5 principle 3), and the panel says so rather than
 // letting a viewer assume they collaborate.
+
+const DEMO_EXAMPLES = [
+  {
+    label: 'T0603: test dependence on a commentary',
+    question: 'Does the wording comparison for the Yin chi ru jing (陰持入經, T0603), traditionally associated with An Shigao (安世高), change when its commentary T1694 is excluded?',
+    criteria: 'Report the comparison before and after excluding T1694 (陰持入經註), naming both leading groups and their score difference. Inspect overlap with the commentary and cite source passages. Explain whether the comparison depends on repeated material. Do not infer a translator attribution.',
+  },
+  {
+    label: 'T0453: find a parallel passage',
+    question: 'Which texts in this corpus contain passages closely matching the Maitreya descent text (彌勒下生經, T0453)?',
+    criteria: 'Find a matching text without being given its identifier. Return source references, matching passages and computed overlap. Explain whether shared wording is independent evidence for translator identity. Report no match if retrieval finds nothing; do not attribute the text.',
+  },
+  {
+    label: 'Shared wording: formula or distinctive evidence?',
+    question: 'Are the strongest matching strings for T0603 distinctive to a translator group, or could they be recurring Buddhist formulae?',
+    criteria: 'List the strings actually returned by the evidence tools, inspect their occurrences in context and report which corpus groups contain them. Separate observed distribution from an interpretation about genre. State what cannot be established from these observations.',
+  },
+]
 
 const ACTIVE = new Set(['starting', 'running'])
 
@@ -83,7 +95,7 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
 
   useEffect(() => {
     getRunConfig()
-      .then((c) => { setConfig(c); setBudget(String(c.default_budget_usd)) })
+      .then((c) => { setConfig(c); setBudget(c.default_budget_usd == null ? '' : String(c.default_budget_usd)) })
       .catch((e) => setError(e.message))
   }, [])
 
@@ -151,11 +163,11 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
     setError(null)
     try {
       await startRun(mode === 'auto' ? {
-        budget_usd: Number(budget),
+        budget_usd: config.max_budget_usd == null ? null : Number(budget),
         auto: true,
         question_id: questionId,
       } : {
-        budget_usd: Number(budget),
+        budget_usd: config.max_budget_usd == null ? null : Number(budget),
         question_id: questionId,
         agents: agents.map((a) => ({
           agent_id: a.agent_id,
@@ -183,6 +195,7 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
   return (
     <section className="runs">
       <h2>Inquiry</h2>
+      <p className="hint">Choose an example or write a question to begin.</p>
 
       {blocked && (
         <p className="warn">
@@ -200,13 +213,19 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
       />
 
       <form className="run-form" onSubmit={submit}>
+        <h3>2. Start a new agent run</h3>
+        <details className="inquiry-details" open={mode === 'custom' ? true : undefined}>
+        <summary>Agent roles and settings</summary>
+        <p className="hint small">Workers search the corpus and propose statements with evidence.
+          Reviewers check proposed claims against their citations using a different model family.
+          Neither role can accept a finding for you. These cards configure new work; they are not search history.</p>
         {mode === 'auto' ? (
           <AutoPlan config={config} question={questionId} />
         ) : agents.map((a, i) => (
           <div className="agent-card" key={a.key}>
             <div className="agent-head">
               <span className="agent-n">
-                {a.role === 'reviewer' ? `Reviewer ${i + 1}` : `Agent ${i + 1}`}
+                {a.role === 'reviewer' ? `Reviewer ${i + 1}` : `Worker ${i + 1}`}
               </span>
               <input
                 className="agent-id"
@@ -305,7 +324,7 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
           </button>
           <span className="hint small">
             {agents.length} of {config.max_agents} · they run concurrently
-            against one graph and share the budget below. They cannot see each
+            against one graph. They cannot see each
             other&apos;s work. Each needs its own model family: two agents on
             one model share priors, so their agreement would be one observation
             reported twice. No agent may attest a claim it wrote, so without a
@@ -323,7 +342,8 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
         </div>
         )}
 
-        <div className="field-row">
+        </details>
+        {config.max_budget_usd != null && <div className="field-row">
           <label className="field">
             <span>Budget (USD)</span>
             <input
@@ -332,10 +352,10 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
               onChange={(e) => setBudget(e.target.value)}
             />
             <small>
-              hard cap for the whole run; server ceiling ${config.max_budget_usd.toFixed(2)}
+              stopping threshold for later calls; server ceiling ${config.max_budget_usd.toFixed(2)}
             </small>
           </label>
-        </div>
+        </div>}
 
         <div className="run-actions">
           <button
@@ -368,7 +388,9 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
 
       {error && <p className="error">{error}</p>}
 
-      {shown && <RunReport run={shown} active={active} />}
+      {shown && (active ? <RunReport run={shown} active={active} /> :
+        <details className="inquiry-details"><summary>Latest completed run</summary>
+          <RunReport run={shown} active={false} /></details>)}
 
       <RunHistory runs={runs?.recorded} />
     </section>
@@ -384,11 +406,11 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
 function RunHistory({ runs }) {
   if (!runs?.length) return null
   return (
-    <div className="run-history">
-      <h3>Recorded runs</h3>
+    <details className="run-history inquiry-details">
+      <summary>Previous agent runs ({runs.length})</summary>
       <p className="hint small">
-        From the event log, so they outlive this server. Each one&apos;s writes
-        carry its id &mdash; <code>cohort refusals --run &lt;id&gt;</code>.
+        Saved records of earlier agent work, including calls, graph writes and refusals.
+        These are not searches running now. They remain after a server restart.
       </p>
       <ul className="run-history-list">
         {runs.map((r) => (
@@ -419,7 +441,7 @@ function RunHistory({ runs }) {
           </li>
         ))}
       </ul>
-    </div>
+    </details>
   )
 }
 
@@ -464,20 +486,28 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
   return (
     <div className="questions">
       <div className="questions-head">
-        <h3>What is being asked</h3>
+        <h3>1. Choose or record a research question</h3>
         <button className="btn" type="button" onClick={() => setAsking(!asking)}>
           {asking ? 'Cancel' : 'Ask a question'}
         </button>
       </div>
 
+      <div className="demo-examples">
+        <p className="hint small">Demo examples: click to fill a draft. Edit it, then record it. No agent starts automatically.</p>
+        {DEMO_EXAMPLES.map((example) => <button type="button" className="btn" key={example.label}
+          onClick={() => { setText(example.question); setAnswerable(example.criteria); setAsking(true) }}>
+          {example.label}
+        </button>)}
+      </div>
+
       {asking && (
         <form className="ask-form" onSubmit={submit}>
           <label>
-            The question
+            Research question — what do you want to investigate?
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={2} required />
           </label>
           <label>
-            What would count as an answer
+            Answer criteria — what evidence should the agents return?
             <textarea
               value={answerable}
               onChange={(e) => setAnswerable(e.target.value)}
@@ -486,12 +516,12 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
             />
           </label>
           <p className="hint small">
-            Stated before looking, so the question cannot be quietly reshaped
-            afterwards to fit whatever turned up. It is also the fence the
-            agents are given: what you say retrieval cannot settle here, they
-            are told not to answer anyway.
+            Describe an observable result, not the conclusion you hope for.
+            For example: return matching passages with source references, compare
+            their wording, and state what those matches cannot establish.
+            These criteria are saved with the question and passed to the agents.
           </p>
-          <button className="btn accept" type="submit">Record it</button>
+          <button className="btn accept" type="submit">Record question</button>
         </form>
       )}
 
@@ -505,6 +535,9 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
         </p>
       )}
 
+      <details className="inquiry-details" open={selected ? true : undefined}>
+      <summary>Saved questions{data ? ` (${data.count})` : ''}{selected ? ' · one selected' : ''}</summary>
+      <p className="hint small">These are saved in the loaded session. Select one to investigate it again.</p>
       <ul className="question-list">
         {data?.questions?.filter((q) => !hidden?.has(q.id)).map((q) => (
           <li
@@ -526,7 +559,7 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
               >Hide</button>
             </div>
             <p className="question-answerable">
-              <span>Answerable by</span> {q.answerable_by}
+              <span>Answer criteria</span> {q.answerable_by}
             </p>
             <p className="hint small">
               {q.addressed_by === 0
@@ -537,6 +570,7 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
         ))}
       </ul>
 
+      </details>
       {!!hidden?.size && (
         <div className="questions-hidden">
           <button
@@ -637,7 +671,7 @@ function blankAgent(i, role = 'worker') {
 
 function RunReport({ run, active }) {
   const s = run.spend
-  const pct = Math.min(100, (s.spent_usd / s.budget_usd) * 100)
+  const pct = s.budget_usd == null ? null : Math.min(100, (s.spent_usd / s.budget_usd) * 100)
   return (
     <div className={`run-report ${active ? 'active' : ''}`}>
       <div className="run-head">
@@ -648,10 +682,11 @@ function RunReport({ run, active }) {
       </div>
 
       <div className="spend">
-        <div className="spend-bar"><i style={{ width: `${pct}%` }} /></div>
+        {pct != null && <div className="spend-bar"><i style={{ width: `${pct}%` }} /></div>}
         <div className="spend-row">
           <span>
-            <strong>${s.spent_usd.toFixed(5)}</strong> of ${s.budget_usd.toFixed(2)}
+            <strong>${s.spent_usd.toFixed(5)}</strong> recorded cost
+            {s.budget_usd != null && <> of ${s.budget_usd.toFixed(2)}</>}
           </span>
           <span>{s.calls} model call{s.calls === 1 ? '' : 's'}</span>
         </div>
@@ -659,7 +694,7 @@ function RunReport({ run, active }) {
           <p className="warn small">
             {s.unpriced_calls} call{s.unpriced_calls === 1 ? '' : 's'} reported no
             cost and {s.unpriced_calls === 1 ? 'was' : 'were'} charged at an
-            estimate, so the figure above is a lower bound.
+            estimate; the total includes those estimates.
           </p>
         )}
       </div>
