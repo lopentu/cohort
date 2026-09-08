@@ -149,6 +149,24 @@ export function legendFor(nodes, edges, { showAudit }) {
 // witness whose one passage was just hidden).
 const PRUNABLE_SUPPORT_TYPES = new Set(['witness', 'passage', 'query', 'verification', 'decision'])
 
+// Two edge types carry no vote in a node's own liveness, because they only
+// ever comment on a node rather than being the reason it exists: `part_of`
+// says where a passage sits (not why it matters — every passage has exactly
+// one, so counting it would make a passage un-hideable), and `verifies`
+// points from an audit record at the thing it checked (every passage this
+// demo seeds gets one, so counting it is the same bug by a different edge —
+// a verification about a passage does not make the passage relevant; the
+// passage being relevant is what would make the verification worth keeping).
+// Both still count normally from the *other* side: a witness's visibility is
+// decided by its incoming `part_of` edges once its passages have resolved,
+// and a verification's own visibility is decided by whether its subject
+// (the `dst` of its `verifies` edge) is still visible — that direction is
+// exactly what the generic rule below already does for it.
+function ignoredForOwnLiveness(node, edge) {
+  return (edge.type === 'part_of' && edge.src === node.id)
+    || (edge.type === 'verifies' && edge.dst === node.id)
+}
+
 export function hiddenIdsForQuestions(nodes, edges, hiddenQuestionIds) {
   const hidden = new Set(hiddenQuestionIds)
   if (!hidden.size) return hidden
@@ -171,22 +189,9 @@ export function hiddenIdsForQuestions(nodes, edges, hiddenQuestionIds) {
     changed = false
     for (const n of nodes) {
       if (hidden.has(n.id) || !PRUNABLE_SUPPORT_TYPES.has(n.type)) continue
-      let touching = edges.filter((e) => e.src === n.id || e.dst === n.id)
-      // A passage's `part_of` (now labelled "contains") edge to its witness
-      // says where it sits, not why it matters — every passage has exactly
-      // one, so counting it here would make a passage un-hideable, and worse,
-      // deadlocks against its witness: the passage stays visible because its
-      // witness isn't hidden yet, and the witness stays visible because this
-      // passage isn't hidden yet, and neither pass ever breaks the tie. Only
-      // a passage's *evidentiary* edges (attests, verifies, tests) decide
-      // whether hiding the question left it with nothing to be shown for; a
-      // witness's own visibility is still decided by its `part_of` edges
-      // below, once its passages have already been resolved.
-      if (n.type === 'passage') {
-        // Checks follow their passage; they cannot keep each other visible
-        // after all of the passage's research connections are hidden.
-        touching = touching.filter((e) => !['part_of', 'verifies'].includes(e.type))
-      }
+      const touching = edges
+        .filter((e) => e.src === n.id || e.dst === n.id)
+        .filter((e) => !ignoredForOwnLiveness(n, e))
       if (!touching.length) continue   // nothing links it either way — leave it
       const stillLinked = touching.some((e) => !hidden.has(e.src === n.id ? e.dst : e.src))
       if (!stillLinked) {
