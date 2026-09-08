@@ -83,8 +83,7 @@ export default function StatsBar({ health, open, onToggle }) {
             <span>edges</span><span className="stats-n">{health.edges}</span>
           </div>
           <p className="hint small">
-            Verifications and decisions are audit records, not evidence — they
-            are hidden in the graph unless you turn them on in settings.
+            Counts include audit records. Repeated passage checks are grouped in the inspector.
           </p>
         </div>
       )}

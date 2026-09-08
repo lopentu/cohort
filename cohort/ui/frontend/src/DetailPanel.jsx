@@ -51,8 +51,8 @@ export default function DetailPanel({ nodeId, onSelect, onClose, canWrite, onCha
           already `pointer-events: none`, so an invisible one is never in the
           way of the graph. */}
       <aside className={`panel empty ${nodeId ? 'gone' : ''}`} aria-hidden={!!nodeId}>
-        <p className="hint">Select a node to see its provenance — who wrote it, what
-        attests it, how it was verified, and whether its support is independent.</p>
+        <p className="hint">Select a record to inspect its sources, checks and decisions.
+      </p>
       </aside>
 
       {card.mounted && (
@@ -144,10 +144,8 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
           </div>
           {!support.independent && (
             <p className="note">
-              Agreement here is evidence of shared transmission, not independent
-              confirmation — the count above is unchanged, but these witnesses are
-              related:
-            </p>
+              These source texts are related; their support is not independent.
+          </p>
           )}
           {support.non_independent_pairs.map(([a, b]) => (
             <div className="pair" key={`${a}|${b}`}>
@@ -247,7 +245,7 @@ function PassageContext({ passageId }) {
       <mark>{ctx.excerpt}</mark>
       {ctx.after}
       {ctx.has_more_after && <span className="ctx-ellipsis">…</span>}
-    </p>
+                </p>
   )
 }
 
@@ -404,9 +402,8 @@ function EdgeRow({ edge: e, field, onSelect, canWrite, onChanged }) {
             {e.retracted ? 'Restore edge' : 'Retract edge'}
           </button>
           <p className="hint small">
-            Nothing is deleted. The edge stays in the log and in the graph,
-            marked withdrawn, and stops counting toward independence.
-          </p>
+            Withdrawn edges remain in the audit history and no longer affect independence checks.
+        </p>
           <Reveal open={!!refusal}>
             <div className="refusal">
               {refusal?.rule && <strong>{refusal.rule}</strong>}
@@ -461,14 +458,11 @@ function Verdict({ node, onDone }) {
       {!isRejected && (
         <p className="hint small">
           {canAccept
-            ? 'Accepting makes this citable and usable as a premise by other agents.'
+            ? 'Accept to mark this record as researcher-approved.'
             : canAttest
-              ? 'The ladder runs proposed → attested → accepted, and no rung may be '
-                + 'skipped. Attesting is the mechanical check — do this node\u2019s '
-                + 'citations resolve? — not a judgement about whether it is right. '
-                + 'The graph refuses it if nothing attests this node.'
-              : `Only an attested node can be accepted — this one is ${node.status}.`}
-        </p>
+              ? 'Attest to record the required checks. Acceptance is a separate decision.'
+              : `Review required before acceptance. Current status: ${node.status}.`}
+              </p>
       )}
       <textarea
         className="reason-input"
@@ -538,9 +532,9 @@ function PassageSpan({ checks = [] }) {
   return <Section title="Source verification">
     <p className={`verification r-${verified ? 'pass' : 'indeterminate'}`}>
       <strong>{verified ? 'Verified with an exact span' : 'Not verified with an exact span'}</strong>
-    </p>
+            </p>
     {latest && !verified && <p>{latest.payload.detail}</p>}
-    {verified && <p className="hint small">The recorded quotation was located in its source. This checks the quotation, not its interpretation.</p>}
+    {verified && <p className="hint small">Quotation located in source. Interpretation still requires review.</p>}
     {checks.length > 0 && <details>
       <summary>Verification history</summary>
       {checks.map((v) => <div className={`verification r-${v.payload.result}`} key={v.id}>

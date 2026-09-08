@@ -202,7 +202,7 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
           {!config.corpus_available
             ? 'No corpus is configured on this server, so an agent would have nothing to search.'
             : config.config_error}
-        </p>
+      </p>
       )}
 
       <Questions
@@ -216,9 +216,8 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
         <h3>2. Start a new agent run</h3>
         <details className="inquiry-details" open={mode === 'custom' ? true : undefined}>
         <summary>Agent roles and settings</summary>
-        <p className="hint small">Workers search the corpus and propose statements with evidence.
-          Reviewers check proposed claims against their citations using a different model family.
-          Neither role can accept a finding for you. These cards configure new work; they are not search history.</p>
+        <p className="hint small">Workers retrieve evidence and propose findings. Reviewers check citations using a different model family. Only you can accept findings.
+      </p>
         {mode === 'auto' ? (
           <AutoPlan config={config} question={questionId} />
         ) : agents.map((a, i) => (
@@ -282,19 +281,11 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
             <p className="hint small">
               {a.role === 'reviewer' ? (
                 <>
-                  Runs after the workers, because there is nothing to review
-                  before. It cannot propose anything, and it cannot promote a
-                  claim whose citations fail to re-fetch &mdash; its verdict
-                  can withhold attestation but never supply it. What there is
-                  to review is added to its task by the server.
+                  Reviews worker proposals after retrieval. Failed citation checks block attestation.
                 </>
               ) : (
                 <>
-                  Scope and method are recorded on the agent&apos;s profile and
-                  prepended to its instructions. Give two agents different ones
-                  and their disagreement means something &mdash; which is only
-                  true if they also read on different models, so a run whose
-                  agents share a model family is refused.
+                  Scope and method are saved and included in the task. Each agent needs a different model family.
                 </>
               )}
             </p>
@@ -323,14 +314,8 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
             + Add reviewer
           </button>
           <span className="hint small">
-            {agents.length} of {config.max_agents} · they run concurrently
-            against one graph. They cannot see each
-            other&apos;s work. Each needs its own model family: two agents on
-            one model share priors, so their agreement would be one observation
-            reported twice. No agent may attest a claim it wrote, so without a
-            reviewer a run&apos;s claims stop at <em>proposed</em> &mdash;
-            waiting for a reviewer on another provider, or for you to check
-            them yourself.
+            {agents.length} of {config.max_agents} agents. Each uses a different model family.
+            Agents cannot review their own claims.
             {agents.length > 1 && (config.models || []).length < agents.length && (
               <> Set <code>OPENROUTER_MODELS</code> to add more.</>
             )}
@@ -409,8 +394,7 @@ function RunHistory({ runs }) {
     <details className="run-history inquiry-details">
       <summary>Previous agent runs ({runs.length})</summary>
       <p className="hint small">
-        Saved records of earlier agent work, including calls, graph writes and refusals.
-        These are not searches running now. They remain after a server restart.
+        Earlier runs saved in this session.
       </p>
       <ul className="run-history-list">
         {runs.map((r) => (
@@ -493,7 +477,7 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
       </div>
 
       <div className="demo-examples">
-        <p className="hint small">Demo examples: click to fill a draft. Edit it, then record it. No agent starts automatically.</p>
+        <p className="hint small">Choose an example, then edit and record it.</p>
         {DEMO_EXAMPLES.map((example) => <button type="button" className="btn" key={example.label}
           onClick={() => { setText(example.question); setAnswerable(example.criteria); setAsking(true) }}>
           {example.label}
@@ -503,11 +487,11 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
       {asking && (
         <form className="ask-form" onSubmit={submit}>
           <label>
-            Research question — what do you want to investigate?
+            Research question
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={2} required />
           </label>
           <label>
-            Research instructions — how should the agents investigate?
+            Research instructions
             <textarea
               value={answerable}
               onChange={(e) => setAnswerable(e.target.value)}
@@ -516,11 +500,8 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
             />
           </label>
           <p className="hint small">
-            Describe an observable result, not the conclusion you hope for.
-            For example: return matching passages with source references, compare
-            their wording, and state what those matches cannot establish.
-            These criteria are saved with the question and passed to the agents.
-          </p>
+            Specify the approach, evidence to return and limits. These instructions are saved and sent to the agents.
+        </p>
           <button className="btn accept" type="submit">Record question</button>
         </form>
       )}
@@ -529,15 +510,13 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
 
       {data && data.count === 0 && !asking && (
         <p className="hint small">
-          None yet. An inquiry runs against a question, so ask one first &mdash;
-          or use <em>Customize</em> below to run agents on free-text tasks, which
-          leaves nothing in the graph saying what was being asked.
+          Record a question to begin, or choose Customize to enter agent tasks directly.
         </p>
       )}
 
       <details className="inquiry-details" open={selected ? true : undefined}>
       <summary>Saved questions{data ? ` (${data.count})` : ''}{selected ? ' · one selected' : ''}</summary>
-      <p className="hint small">These are saved in the loaded session. Select one to investigate it again.</p>
+      <p className="hint small">Select a question to investigate again.</p>
       <ul className="question-list">
         {data?.questions?.filter((q) => !hidden?.has(q.id)).map((q) => (
           <li
@@ -560,11 +539,11 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
             </div>
             <p className="question-answerable">
               <span>Research instructions</span> {q.answerable_by}
-            </p>
+              </p>
             <p className="hint small">
               {q.addressed_by === 0
-                ? 'Nothing has been put forward as an answer yet.'
-                : `${q.addressed_by} hypothes${q.addressed_by === 1 ? 'is' : 'es'} address it — a tally, not a verdict.`}
+                ? 'No proposals yet.'
+                : `${q.addressed_by} hypothes${q.addressed_by === 1 ? 'is' : 'es'} address this question.`}
             </p>
           </li>
         ))}
@@ -614,10 +593,8 @@ function AutoPlan({ config, question }) {
     <div className="auto-plan">
       {!question && (
         <p className="hint small">
-          Pick a question above, or ask one. Nothing here invents a question:
-          the agenda is the researcher's, so auto mode decides the machinery
-          and never the subject.
-        </p>
+          Select a saved question or record a new one.
+                    </p>
       )}
 
       <ul className="plan-list">
@@ -631,26 +608,15 @@ function AutoPlan({ config, question }) {
       </ul>
 
       <p className="hint small">
-        Each agent gets your question verbatim, and what you said would answer
-        it. They differ in <em>stance</em>, not in subject: the second one's
-        job is to look for what would make an answer wrong, because two agents
-        told the same thing run the same searches and return the same passages
-        &mdash; and two identical answers read as corroboration while being one
-        result counted twice.
+        Each agent receives your question and research instructions.
       </p>
       {reviewing ? (
         <p className="hint small">
-          The last seat is a reviewer rather than a third worker. No agent may
-          attest a claim it wrote, so without one on another provider every
-          claim this run proposes stops at <em>proposed</em> &mdash; a pile of
-          assertions with nothing having checked them.
+          The reviewer checks worker proposals after retrieval finishes.
         </p>
       ) : (
         <p className="warn small">
-          One model family is configured, so there is no reviewer to be had and
-          this run's claims will stop at <em>proposed</em>. Set
-          <code>OPENROUTER_MODELS</code> to a second provider, or check them
-          yourself afterwards.
+          No separate reviewer is configured. Claims remain proposed until reviewed.
         </p>
       )}
     </div>
@@ -734,7 +700,7 @@ function RunReport({ run, active }) {
           <h3>Refusals this run ({run.refusals.length})</h3>
           <p className="hint small">
             Writes the graph declined. Not failures — the boundary holding.
-          </p>
+                </p>
           <ul className="tool-calls">
             {run.refusals.map((r) => (
               <li key={r.seq} className="refused">

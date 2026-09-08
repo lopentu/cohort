@@ -3,43 +3,43 @@ import { usePresence } from './motion'
 
 const INTROS = {
   graph: {
-    title: 'Inspect evidence and researcher decisions',
+    title: 'Graph',
     body: [
-      ['Next step', 'Select a record to open its sources, authorship and checks. Researcher decision controls are in that inspector. Drag and zoom to explore the graph.'],
-      ['Status', 'Proposed means submitted for consideration; attested means the required checks passed; accepted means the researcher endorsed it. Colour alone does not mean accepted.'],
-      ['Relationships', 'Use the legend to distinguish support from relationships that reduce independence. Two records can repeat the same evidence. Refused writes show operations the graph declined and why.'],
+      ['Inspect', 'Select a record to see its sources, checks and researcher decisions.'],
+      ['Status', 'Proposed: submitted. Attested: required checks passed. Accepted: researcher-approved.'],
+      ['Links', 'The legend distinguishes support from relationships that reduce independence.'],
     ],
   },
   findings: {
-    title: 'Read proposals before deciding',
+    title: 'Findings',
     body: [
-      ['Next step', 'Expand a hypothesis to read its argument, alternatives, cited passages and review outcomes. Follow a citation into Graph to inspect the record.'],
-      ['Decisions', 'Citable contains researcher-accepted records. Rejected retains the reasons for rejection. Hypotheses are listed newest first, not ranked by confidence.'],
-      ['Integrity', 'The checks compare stored hashes and replay the event log. They check record consistency, not historical truth. They run when this tab opens and can be repeated.'],
+      ['Read', 'Open a claim or conjecture to inspect its evidence, alternatives and reviews.'],
+      ['Decide', 'Follow a citation into Graph. Acceptance and rejection are researcher decisions.'],
+      ['Checks', 'Integrity checks compare the database with its hashes and event log. They do not establish historical truth.'],
     ],
   },
   corpus: {
-    title: 'Find exact wording in the source texts',
+    title: 'Corpus',
     body: [
-      ['Next step', 'Search a phrase, then open a matching record to read its context. Results are in corpus order, not ranked by relevance.'],
-      ['Continue in Inquiry', 'Send to agent prepares a task in Inquiry. It does not launch a run or attach a citation; inspect the task before starting.'],
-      ['Reading', 'Removing TEI markup changes displayed character positions. Use that view for reading, not for locating a citation.'],
+      ['Search', 'Exact-phrase search. Results appear in corpus order.'],
+      ['Read', 'Open a result for context. Hiding markup changes displayed positions.'],
+      ['Continue', 'Send to agent fills a task in Inquiry. It does not start a run.'],
     ],
   },
   evidence: {
-    title: 'Compare wording; investigate what explains it',
+    title: 'Evidence',
     body: [
-      ['Next step', 'Choose a text, read the comparison, and try excluding material that might repeat it. A profile is a table of short-string counts for a translator or corpus group.'],
-      ['Colours', 'Teal and rust compare two named groups. Choose a fixed pair before comparing vocabularies; automatic selection can change the pair.'],
-      ['Limits', 'Resemblance can reflect genre or reused passages. This tab assigns no translator and does not change the graph. Exclusions affect this calculation only.'],
+      ['Compare', 'Select a text to compare short-string counts across corpus groups.'],
+      ['Repeat', 'Exclude a related text to test whether repeated material affects the result.'],
+      ['Limits', 'Scores do not establish translator identity. Calculations leave the graph unchanged.'],
     ],
   },
   run: {
-    title: 'Ask a question and start agent work',
+    title: 'Inquiry',
     body: [
-      ['Next step', 'Record a question and what would count as an answer. Inspect the agent tasks and models, then start the run when ready. Opening this tab does not spend money.'],
-      ['Review', 'Workers retrieve and propose; a different agent from a different model family reviews citations. A citation check does not settle an interpretation.'],
-      ['Continue in Findings', 'Read the resulting proposals in Findings, then follow records into Graph for researcher decisions. Opening a saved question does not restart its earlier runs.'],
+      ['Start', 'Record a question and research instructions, then click Inquire.'],
+      ['Roles', 'Workers retrieve and propose. A reviewer checks citations. Only you accept findings.'],
+      ['Save', 'Results save automatically. Runs continue when you switch tabs.'],
     ],
   },
 }

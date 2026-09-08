@@ -22,18 +22,18 @@ const CATEGORY_NOTE = {
 }
 
 const RULE_NOTE = {
-  UnattestableClaim: 'A claim needs an attested passage behind it. Citation is the requirement, not a formality.',
-  UnattestableConjecture: 'A conjecture needs a query that would refute it — the falsifiability gate.',
+  UnattestableClaim: 'The claim needs an attested supporting passage.',
+  UnattestableConjecture: 'The conjecture needs a test query.',
   PersistentRejection: 'A rejected node cannot be re-proposed. Reopening is a researcher action.',
   NotResearcher: 'Only the researcher may accept, reject or reopen.',
   MissingRejectionReason: 'Rejection requires a stated reason.',
-  RungSkipped: 'The promotion ladder does not allow skipping a rung.',
-  NodeNotFound: 'The write named a node that does not exist — usually an agent inventing an id.',
+  RungSkipped: 'The required prior status has not been reached.',
+  NodeNotFound: 'The referenced record does not exist.',
   EdgeDomainViolation: 'That edge type is not valid between those two node types.',
   EdgeEndpointMissing: 'An edge pointed at a node that does not exist.',
   EdgeSelfLoop: 'A node cannot be linked to itself.',
   SingleWriterViolation: 'Another process held the write lock.',
-  PassageNotLocated: 'A passage must sit inside a witness.',
+  PassageNotLocated: 'The passage needs a source-text link.',
 }
 
 export default function RefusalsPanel({ refusals, closing }) {
@@ -47,8 +47,7 @@ export default function RefusalsPanel({ refusals, closing }) {
       <section className={cls}>
         <h2>Refused writes</h2>
         <p className="hint">
-          No event log beside this projection, so refusals cannot be read. This
-          is not the same as none having happened.
+          Event log unavailable. Refusal history cannot be loaded.
         </p>
       </section>
     )
@@ -68,13 +67,12 @@ export default function RefusalsPanel({ refusals, closing }) {
         Refused writes <span className="refusal-total">{refusals.total}</span>
       </h2>
       <p className="hint">
-        Writes this graph declined, and the rule that declined each one. These
-        are part of the record, not errors that were worked around.
+        Blocked changes and the rules they violated.
       </p>
 
       {rows.length === 0 ? (
         <p className="hint">
-          Nothing has been refused. That is a real result, not a missing one.
+          No refused writes recorded.
         </p>
       ) : (
         <>
@@ -109,12 +107,7 @@ export default function RefusalsPanel({ refusals, closing }) {
                 </span>
               </h3>
               <p className="hint small">
-                One agent refused repeatedly by one rule, with nothing else of
-                its own in between. A single refusal is usually a model slip; a
-                run of them is the shape of a gap in the tool layer &mdash; an
-                agent adapting, retrying, and being refused again because there
-                was no sanctioned way to say what it meant. Every run in this
-                project&apos;s history so far turned out to be exactly that.
+                Consecutive refusals for the same agent and rule. Inspect the attempts to identify a recurring problem.
               </p>
               <ul className="streak-list">
                 {streaks.map((s) => (

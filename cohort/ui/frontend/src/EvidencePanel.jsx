@@ -102,7 +102,7 @@ export default function EvidencePanel() {
     <section className="evidence">
       <h2>Compare a text's wording</h2>
       <p className="ev-introduction">
-        Compare wording, inspect the source text, and test whether repeated material drives the result.
+        Compare short-string counts across corpus groups.
       </p>
 
       <div className="suggested-inputs" aria-label="Suggested evidence texts">
@@ -212,43 +212,22 @@ function HowToRead() {
   return (
     <div className="ev-how">
       <p>
-        <b>What is counted.</b> Every 2-, 3- and 4-character string in the text that
-        is in the chosen vocabulary. Each carries a weight: the log of how many times
-        more likely that string is in translator A's securely ascribed work than in
-        B's. A weight of +3 means about 20 times more likely; +7 about 1,000 times.
-        A string at 33 per 100,000 in one profile and 0 in the other carries a
-        large weight; one at 12 and 11 carries almost none.
+        <b>Counts.</b> Matching 2-, 3- and 4-character strings are counted. Their weights compare frequencies in the two selected corpus groups.
+        </p>
+      <p>
+        <b>Colours.</b> Teal and rust show which group a string favours. Stronger colour means greater weight. Fix the group pair before switching string sets.
       </p>
       <p>
-        <b>What the colours mean.</b> <span className="ev-swatch a" /> spans pull toward
-        translator A, <span className="ev-swatch b" /> spans toward translator B.
-        A is the text's own catalogue label when it has one, otherwise the leading
-        candidate; B is the strongest rival. Choose a fixed pair below before switching vocabularies; otherwise the
-        comparison groups may change. Saturation is
-        the weight of evidence on that character.
+        <b>Text overview.</b> Click a cell to read that section. Colour changes may reflect subject, genre or textual history.
       </p>
       <p>
-        <b>The strip</b> is the whole text, one cell per few hundred characters. Click a
-        cell to read that part of the text. A text that changes colour part-way changes
-        <em> something</em>: most often subject or genre, sometimes the hand.
+        <b>Exclusions.</b> All profiled chapters of the target work are excluded automatically. You can exclude additional texts to test dependence on repeated material.
       </p>
       <p>
-        <b>What is withheld.</b> If the text is a chapter of a labelled work, every
-        chapter of that work is removed from the profiles first. Otherwise the method
-        recognises the book, not the translator; that mistake once read as 82%
-        accuracy where the honest figure was 52%. You can withhold further units by
-        id (a commentary you suspect of quoting the text, say) and watch what survives.
+        <b>String sets.</b> The curated list was developed for a Dharmarakṣa dictionary and covers An Shigao poorly. The alternative uses frequent strings from uncertain texts without consulting translator labels.
       </p>
       <p>
-        <b>Why two vocabularies.</b> Radich's list was harvested for a Dharmarakṣa
-        dictionary; it barely sees An Shigao. The label-free strings are the commonest
-        in the grey texts, chosen without reading a label. Switch and compare.
-      </p>
-      <p>
-        <b>What it is not.</b> "No evidence" means not one string of the vocabulary occurs
-        in the text; nothing is ranked. A margin near zero means the two scores are close. There is no calibrated
-        threshold here for deciding an ascription. A text composed in Chinese has no translator to find. The
-        researcher reads; the panel only points.
+        <b>Limits.</b> No matching strings means no ranking. Similar scores do not establish an attribution. Texts composed in Chinese may have no translator.
       </p>
     </div>
   )
@@ -334,14 +313,12 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
         <p className="hint small">“Other material before Dharmarakṣa” is a mixed corpus group, not a single translator.</p>
       )}
       <p className="ev-limits">
-        This ranks resemblance, not translator identity. A small score difference means the
-        groups are close; it is not a probability. Repeated passages and genre formulas can
-        drive the result. No translator is assigned here.
-      </p>
+        Similarity does not establish translator identity. Scores are not probabilities; repeated passages and genre formulae can affect them.
+        </p>
       <div className="ev-next">
       <h3>Does the result depend on another text?</h3>
       <p>Exclude a suspected source of repeated wording from the comparison groups. Your target text stays unchanged.</p>
-      <p className="hint small">Use the exact ID shown in the text picker. For a work split into chapters, enter each chapter ID; a whole-work ID does not exclude its chapters.</p>
+      <p className="hint small">Use exact IDs from the picker. For chaptered works, list each chapter ID separately.</p>
       <form
         className="ev-withhold"
         onSubmit={(e) => { e.preventDefault(); onWithhold(withholdDraft.trim()) }}
@@ -359,13 +336,13 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
         {withhold && <button className="btn tiny" type="button" onClick={() => onWithhold('')}>Restore these texts</button>}
         {withholdDraft.trim() && <p className="ev-exclusion-names">
           {withholdDraft.split(',').map((id) => textName(id.trim())).join('; ')}
-        </p>}
+      </p>}
       </form>
-      <p className="hint small">This changes this calculation only; it does not delete a source or change the evidence graph.</p>
+      <p className="hint small">Applies to this calculation only. Sources and graph records are unchanged.</p>
       </div>
       <details className="ev-options">
-      <summary>Choose the two groups used for text highlighting</summary>
-      <p>This fixes the colour comparison. It does not change which groups lead the overall ranking.</p>
+      <summary>Highlighting groups</summary>
+      <p>Sets the highlight colours; the overall ranking is unchanged.</p>
 
       <form
         className="ev-withhold"
@@ -387,7 +364,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
 
       {data.verdict !== 'no evidence' && (
         <details className="ev-ranking">
-          <summary className="hint small">all {data.ranking.length} candidates, and what is left of each profile</summary>
+          <summary className="hint small">All {data.ranking.length} groups and remaining material</summary>
           <table className="ev-table">
             <thead><tr><th className="g">class</th><th>Δ log-likelihood</th><th>units left</th><th>feature tokens</th><th>order</th></tr></thead>
             <tbody>
@@ -416,7 +393,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
           Text highlighting: <b className="ev-a">{profileName(a)}</b> (A) vs <b className="ev-b">{profileName(b)}</b> (B)
           {pair.pinned ? ', pinned' : a === data.label ? ', the catalogue label vs its strongest rival' : ', the leader vs its strongest rival'}.
           Profiles hold {data.profiles[a].feature_tokens.toLocaleString()} and {data.profiles[b].feature_tokens.toLocaleString()} feature tokens.
-        </p>
+      </p>
       )}
 
       <p className="hint small">
@@ -448,7 +425,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
       </div>
 
       <details className="ev-options">
-      <summary>Inspect string counts, rates and weights</summary>
+      <summary>String counts and weights</summary>
       {pair && (
         <div className="ev-cols">
           <EvidenceTable title={`Toward ${profileName(a)}`} rows={data.for} a={profileName(a)} b={profileName(b)} />
@@ -456,12 +433,9 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
         </div>
       )}
       <p className="hint small">
-        Weight = hits × log-odds of the string in A's profile versus B's, add-half
-        smoothing. "n" is the raw count in that profile; the rate is per 100,000
-        <em> feature tokens</em> in that profile (hits of any vocabulary string), not
-        per 100,000 characters. Overlapping 2-, 3- and 4-character strings are
-        counted separately and are not independent, so weights overstate certainty;
-        read them as a ranking. Strings absent from both profiles are not shown.
+        Weight = hits × log-odds, with add-half smoothing. Rates are per 100,000
+        string hits, not characters. Overlapping strings are counted separately;
+        weights are not confidence estimates. Strings absent from both profiles are omitted.
       </p>
       </details>
     </div>
@@ -490,7 +464,7 @@ function EvidenceTable({ title, rows, a, b }) {
               <td className="num">{r.weight > 0 ? '+' : ''}{r.weight.toFixed(1)}</td>
             </tr>
           ))}
-          {!rows.length && <tr><td colSpan="5" className="hint small">nothing pulls this way</td></tr>}
+          {!rows.length && <tr><td colSpan="5" className="hint small">No matching strings</td></tr>}
         </tbody>
       </table>
     </div>

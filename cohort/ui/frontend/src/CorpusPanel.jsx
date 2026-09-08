@@ -125,16 +125,13 @@ export default function CorpusPanel({ onCite }) {
           </div>
           {results.truncated && (
             <p className="warn small">
-              At least {results.count} matches — the list is cut at that point,
-              so these are an arbitrary slice of the matching witnesses, not the
-              most relevant ones. Narrow the phrase to see a meaningful set.
+              Showing the first {results.count} matches in corpus order.
+              Narrow your search to see fewer results.
             </p>
           )}
           {results.count === 0 && (
             <p className="hint">
-              No witness contains this phrase. That is a finding, not an
-              error — it belongs in a conjecture, since only a retrieval can
-              settle an absence.
+              No exact matches in this corpus.
             </p>
           )}
           <ul className="corpus-list">
@@ -186,10 +183,8 @@ export default function CorpusPanel({ onCite }) {
                         </div>
                         {record.markup_stripped && (
                           <p className="hint small">
-                            Markup stripped for reading. Character offsets no
-                            longer match the witness, so this view is for
-                            reading only — never for locating a span.
-                          </p>
+                            Markup hidden. Displayed positions differ from source positions.
+                      </p>
                         )}
                         {/* The corpus is licensed; its terms travel with every
                             derived artifact, including this view. */}
@@ -199,8 +194,7 @@ export default function CorpusPanel({ onCite }) {
                         <pre className="record-text">{record.text}</pre>
                         {record.truncated && (
                           <p className="warn small">
-                            Truncated — this is a fragment of the witness, not
-                            the whole text.
+                            Partial text shown.
                           </p>
                         )}
                       </>

@@ -57,23 +57,21 @@ export default function FindingsPanel({ onSelect }) {
       <summary>Researcher decisions: accepted and rejected records</summary>
       <div className="findings-cols">
         <div>
-          <h2>Citable</h2>
+          <h2>Researcher-approved</h2>
           <p className="hint small">
-            Accepted nodes. The only ones output may cite, and the only ones
-            another agent may build on.
+            Records approved by the researcher.
           </p>
           <NodeList
             nodes={citable}
             onSelect={onSelect}
-            empty="Nothing is citable yet — only accepted nodes are, and none are accepted."
+            empty="No researcher-approved records yet."
           />
         </div>
 
         <div>
           <h2>Rejected</h2>
           <p className="hint small">
-            Thrown out, with the reason. Part of the record, not a failure list —
-            and a rejected node cannot be re-proposed.
+            Researcher rejections and their reasons.
           </p>
           <NodeList
             nodes={rejected}
@@ -126,9 +124,7 @@ function Hypotheses({ findings, onSelect }) {
         Hypotheses <span className="refusal-total">{findings.count}</span>
       </h2>
       <p className="hint small">
-        Every claim and conjecture, newest first and <strong>not ranked</strong>.
-        Sorting these by how much attests them would be a confidence score under
-        another name.
+        Claims and conjectures, newest first. Not ranked by confidence.
       </p>
 
       {findings.findings.length === 0 ? (
@@ -174,21 +170,13 @@ function Hypotheses({ findings, onSelect }) {
 
               {f.support.vacuous && (
                 <p className="hint small discount-note">
-                  No passage cites this yet, so &ldquo;independent&rdquo; would be
-                  true only because there is nothing that could make it false. A
-                  conjecture is <em>allowed</em> to exceed its evidence &mdash;
-                  that is what separates it from a claim &mdash; but a dossier
-                  asserting measurements with nothing attesting them is the shape
-                  to distrust first.
-                </p>
+                  No supporting passage is recorded.
+        </p>
               )}
 
               {!f.support.vacuous && !f.support.independent && (
                 <p className="hint small discount-note">
-                  A <code>parallel_of</code> or <code>descends_from</code> edge
-                  links witnesses behind this, so their agreement is evidence of
-                  shared descent rather than independent confirmation. The
-                  attesting count is unchanged; what it <em>means</em> is not.
+                  Related source texts support this proposal; their support is not independent.
                 </p>
               )}
 
@@ -220,7 +208,7 @@ function Dossier({ d, onSelect }) {
 
       {d.prior_art?.length > 0 && (
         <p className="hint small">
-          Prior art actually searched before proposing: {d.prior_art.map((q) => q.text).join('; ')}
+          Searches before proposal: {d.prior_art.map((q) => q.text).join('; ')}
         </p>
       )}
 
@@ -233,7 +221,7 @@ function Dossier({ d, onSelect }) {
               Predicted <strong>{q.expectation === 'at_most' ? 'at most' : 'at least'}{' '}
               {q.expected_hits}</strong> — recorded when this was proposed, before the
               query was ever run.
-            </p>
+          </p>
           ) : (
             <p className="hint small">No prediction was recorded for this query.</p>
           )}
@@ -266,11 +254,8 @@ function Dossier({ d, onSelect }) {
         <div className="dossier-verifications">
           <h4>Verifications</h4>
           <p className="hint small">
-            Latest per method, so a stale pass cannot outrank a later failure.
-            The machine&apos;s finding and a reviewer&apos;s reading are separate
-            fields on purpose &mdash; that is what stops a confident sentence
-            from reading later as a mechanical result.
-          </p>
+            Latest check for each method. Mechanical results and reviewer comments are shown separately.
+                </p>
           {d.latest_verifications.map((v) => (
             <div key={v.id} className="verification">
               <div className="verification-head">
@@ -366,8 +351,7 @@ function IntegrityStrip() {
       )}
 
       <p className="hint small">
-        The event log is ground truth and this database is a projection of it, so
-        a mismatch means the database is wrong — not the log.
+        Checks whether the database matches the event log.
       </p>
     </div>
   )

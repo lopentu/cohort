@@ -108,7 +108,7 @@ export default function Settings({
             ))}
           </div>
           <p className="hint small">
-            System follows your OS setting and keeps following it.
+            System uses your device’s appearance setting.
           </p>
 
           <h3>Graph</h3>
