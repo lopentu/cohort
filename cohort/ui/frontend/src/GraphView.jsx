@@ -309,7 +309,7 @@ function buildEdges(edges, visibleIds, p) {
     })
 }
 
-export default function GraphView({ data, selectedId, onSelect, showAudit }) {
+export default function GraphView({ data, selectedId, onSelect, showAudit, exploration }) {
   const containerRef = useRef(null)
   const networkRef = useRef(null)
   const nodesRef = useRef(null)
@@ -375,8 +375,20 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
     const p = palette()
     const contradicted = contradictedIds(data.edges)
     const visNodes = buildNodes(data.nodes, showAudit, p, contradicted)
+    for (const item of exploration?.nodes || []) visNodes.push({
+      id:item.id, label:item.label, shape:'box',
+      color:{background:p.surface,border:p.textDim}, font:{color:p.text,size:13},
+      shapeProperties:{borderDashes:[3,5]}, margin:9,
+      title:'Exploration activity — click for actions and worker',
+    })
     idsRef.current = new Set(visNodes.map((n) => n.id))
     const visEdges = buildEdges(data.edges, idsRef.current, p)
+    for (const edge of exploration?.edges || []) {
+      if (idsRef.current.has(edge.from) && idsRef.current.has(edge.to)) visEdges.push({
+        ...edge, dashes:[3,5], arrows:'', color:{color:p.textDim}, width:1,
+        title:'Exploration activity, not evidential support',
+      })
+    }
     const net = networkRef.current
     Object.assign(positionsRef.current, net.getPositions())
     const positions = positionsRef.current
@@ -402,7 +414,7 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
     if (selectedRef.current && idsRef.current.has(selectedRef.current)) {
       networkRef.current.selectNodes([selectedRef.current])
     }
-  }, [data, showAudit])
+  }, [data, showAudit, exploration])
 
   // reflect a selection made elsewhere (e.g. the Findings tab) onto the canvas
   useEffect(() => {

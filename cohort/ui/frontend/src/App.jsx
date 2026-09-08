@@ -1,6 +1,8 @@
+import { explorationFor } from './exploration'
+import ExplorationDetail from './ExplorationDetail'
 import { passageCheckIds } from './span-verification'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getGraph, getHealth, getRefusals } from './api'
+import { getGraph, getHealth, getRefusals, getRuns } from './api'
 import DetailPanel from './DetailPanel'
 import GraphView, { nodeLegendFor, TYPE_SHAPE } from './GraphView'
 import CorpusPanel from './CorpusPanel'
@@ -20,6 +22,9 @@ export default function App() {
   const [refusals, setRefusals] = useState(null)
   const [error, setError] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
+  const [showExploration, setShowExploration] = useState(false)
+  const [runActivity, setRunActivity] = useState(null)
+  const [activityError, setActivityError] = useState(null)
   const [showAudit, setShowAudit] = useState(false)
   const [showRefusals, setShowRefusals] = useState(false)
   const [tab, setTab] = useState('graph')
@@ -146,6 +151,21 @@ export default function App() {
     }
   }, [data, hiddenQuestions])
 
+  useEffect(() => {
+    if (!showExploration || tab !== 'graph') return
+    let live = true
+    const refresh = () => getRuns().then(r => {
+      if (live) { setRunActivity(prev => JSON.stringify(prev) === JSON.stringify(r) ? prev : r); setActivityError(null) }
+    }).catch(() => { if (live) { setActivityError('Exploration history is unavailable.'); setRunActivity(null) } })
+    refresh()
+    const timer = setInterval(refresh, 4000)
+    return () => { live = false; clearInterval(timer) }
+  }, [showExploration, tab])
+  const exploration = useMemo(() => explorationFor(showExploration ? runActivity : null,
+    new Set((graphData?.nodes || []).filter(n => n.type === 'question').map(n => n.id))),
+    [showExploration, runActivity, graphData])
+  const selectedActivity = exploration.nodes.find(n => n.id === selectedId)
+
   const goTab = (key) => {
     if (key === tab) return
     const from = tabs.findIndex(([k]) => k === tab)
@@ -268,9 +288,15 @@ export default function App() {
               <>
                 <QuestionFilter nodes={data.nodes} hidden={hiddenQuestions}
                   onToggle={toggleHiddenQuestion} onShow={showQuestions} />
+                <div className="exploration-control">
+                  <label><input type="checkbox" checked={showExploration} onChange={e => { setShowExploration(e.target.checked); setSelectedId(null) }} /> Show exploration</label>
+                  {showExploration && <span className="hint small">Dashed outlines and links show activity, not support. Select a work for details.</span>}
+                </div>
+                {showExploration && <p className="hint small exploration-note">{activityError || (!runActivity ? 'Loading exploration…' : !exploration.nodes.length ? 'No detailed activity available for the selected questions.' : 'Showing available run activity. Detailed history from before a server restart is unavailable.')}</p>}
                 <Legend data={graphData} showAudit={showAudit} />
                 <GraphView
                   data={graphData}
+                  exploration={exploration}
                   selectedId={selectedId}
                   onSelect={setSelectedId}
                   showAudit={showAudit}
@@ -306,9 +332,10 @@ export default function App() {
         {/* Floating inspector, and only over the graph: it is the graph's
             detail view, so overlaying the corpus or run panels with it would
             cover unrelated content. */}
-        {tab === 'graph' && (
+        {tab === 'graph' && selectedActivity && <ExplorationDetail item={selectedActivity} onClose={() => setSelectedId(null)} />}
+        {tab === 'graph' && !selectedActivity && (
           <DetailPanel
-            nodeId={selectedId}
+            nodeId={selectedId?.startsWith('exploration:') ? null : selectedId}
             onSelect={setSelectedId}
             onClose={() => setSelectedId(null)}
             canWrite={!!health?.writes_enabled}
