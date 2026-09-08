@@ -1,4 +1,7 @@
-"""A hard spending cap, enforced in code rather than estimated.
+"""Cost accounting with an optional spending threshold.
+
+`None` disables monetary stopping while retaining the call and cost ledger.
+A finite threshold stops later calls; in-flight requests can exceed it.
 
 Extracted from `scripts/run_conjecture_demo.py`, where it was written for one
 manual run, because a UI that starts agent runs on a button press needs the
@@ -26,7 +29,7 @@ from __future__ import annotations
 import json
 import threading
 
-from .openrouter import default_transport
+from cohort.agents.openrouter import default_transport
 
 
 class BudgetExceeded(RuntimeError):
@@ -39,8 +42,7 @@ class BudgetExceeded(RuntimeError):
 
 
 class BudgetedTransport:
-    """Totals OpenRouter's reported cost and stops before the request that
-    would cross `budget_usd`.
+    """Totals reported costs and stops later calls at a configured threshold.
 
     Thread-safe: the UI runs an agent in a background thread while the request
     thread reads `spent` to report progress, so both the accumulate and the
@@ -50,10 +52,10 @@ class BudgetedTransport:
     """
 
     def __init__(
-        self, budget_usd: float, unknown_call_cost: float = 0.01,
+        self, budget_usd: float | None, unknown_call_cost: float = 0.01,
         on_call=None,
     ) -> None:
-        if budget_usd <= 0:
+        if budget_usd is not None and budget_usd <= 0:
             raise ValueError(f"budget must be positive, got {budget_usd}")
         self.budget_usd = budget_usd
         self.unknown_call_cost = unknown_call_cost
@@ -64,9 +66,9 @@ class BudgetedTransport:
         self._on_call = on_call
 
     @property
-    def remaining(self) -> float:
+    def remaining(self) -> float | None:
         with self._lock:
-            return max(0.0, self.budget_usd - self.spent)
+            return None if self.budget_usd is None else max(0.0, self.budget_usd - self.spent)
 
     def snapshot(self) -> dict:
         """A consistent view of all counters at once — reading them one at a
@@ -76,14 +78,14 @@ class BudgetedTransport:
             return {
                 "budget_usd": self.budget_usd,
                 "spent_usd": self.spent,
-                "remaining_usd": max(0.0, self.budget_usd - self.spent),
+                "remaining_usd": None if self.budget_usd is None else max(0.0, self.budget_usd - self.spent),
                 "calls": self.calls,
                 "unpriced_calls": self.unpriced_calls,
             }
 
     def __call__(self, url, headers, body, timeout):
         with self._lock:
-            if self.spent >= self.budget_usd:
+            if self.budget_usd is not None and self.spent >= self.budget_usd:
                 raise BudgetExceeded(
                     f"stopping before request {self.calls + 1}: ${self.spent:.4f} of "
                     f"${self.budget_usd:.2f} budget already spent"

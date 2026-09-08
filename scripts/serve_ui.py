@@ -86,9 +86,13 @@ def main() -> None:
     parser.add_argument(
         "--max-budget", type=float, default=DEFAULT_MAX_BUDGET_USD,
         help=(
-            f"hard per-run USD ceiling the browser cannot raise "
+            f"per-run USD stopping threshold the browser cannot raise "
             f"(default {DEFAULT_MAX_BUDGET_USD:.2f})"
         ),
+    )
+    parser.add_argument(
+        "--no-budget", action="store_true",
+        help="disable the monetary stopping threshold; retain cost accounting",
     )
     args = parser.parse_args()
 
@@ -125,7 +129,7 @@ def main() -> None:
     if args.allow_runs:
         log_path = Path(args.log) if args.log else db_path.with_suffix(".jsonl")
         run_manager = RunManager(
-            db_path, log_path, source, max_budget_usd=args.max_budget,
+            db_path, log_path, source, max_budget_usd=None if args.no_budget else args.max_budget,
         )
 
     attribution = None
@@ -176,7 +180,8 @@ def main() -> None:
     if source is not None:
         modes.append("corpus")
     if run_manager is not None:
-        modes.append(f"agent runs (max ${args.max_budget:.2f}/run)")
+        modes.append("agent runs (no monetary limit)" if args.no_budget
+                     else f"agent runs (max ${args.max_budget:.2f}/run)")
     if attribution is not None:
         modes.append("evidence")
     mode = " + ".join(modes)
@@ -191,8 +196,10 @@ def main() -> None:
         if not cfg["model_configured"]:
             print(f"  warning: {cfg['config_error']} — runs will be refused", file=sys.stderr)
         else:
-            print(f"  agent runs enabled: model {cfg['model']}, ceiling ${args.max_budget:.2f} per run")
-            print("  every run is capped in code and stops before the call that would exceed it")
+            limit = "no monetary limit" if args.no_budget else f"ceiling ${args.max_budget:.2f} per run"
+            print(f"  agent runs enabled: model {cfg['model']}, {limit}")
+            if not args.no_budget:
+                print("  the threshold stops later calls; in-flight requests may exceed it")
 
     uvicorn.run(
         create_app(

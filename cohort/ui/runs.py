@@ -26,11 +26,11 @@ active, `POST /api/accept` answers 409, exactly as it would while
 limitation introduced here; it is docs/design.md §5 principle 7 behaving normally,
 and the UI's job is to *say so* rather than to work around it.
 
-**2. Spend is capped in code, per run, with a ceiling the client cannot
-raise.** `cohort/agents/budget.py` refuses the request that would cross the
-cap. The browser chooses a budget, but `max_budget_usd` — set by whoever
-started the server — bounds what it may choose. A client-supplied number that
-nothing checks is not a budget, it is a suggestion.
+**2. Cost accounting with an optional monetary stopping threshold.** A finite
+server ceiling bounds the browser's choice. Only an operator-configured
+`None` ceiling permits an uncapped run. Cost accounting continues in either
+mode. Thresholds stop later calls after recorded spend reaches them; requests
+already in flight can exceed the threshold.
 
 **3. The run happens in a background thread, not in the request.** A model
 loop takes minutes; an HTTP request that blocked for that long would time out
@@ -267,7 +267,7 @@ class Run:
     """One run's observable state — one agent or several. Written by the worker
     thread, read by request threads, so every mutation happens under `_lock`."""
 
-    def __init__(self, run_id: str, specs: list[AgentSpec], budget_usd: float,
+    def __init__(self, run_id: str, specs: list[AgentSpec], budget_usd: float | None,
                  max_turns: int, model: str, question_id: str | None = None) -> None:
         self.id = run_id
         self.specs = specs
@@ -346,7 +346,7 @@ class RunManager:
 
     def __init__(
         self, db_path: Path, log_path: Path, source: Source | None,
-        *, max_budget_usd: float = DEFAULT_MAX_BUDGET_USD,
+        *, max_budget_usd: float | None = DEFAULT_MAX_BUDGET_USD,
         max_turns: int = DEFAULT_MAX_TURNS,
         max_agents: int = DEFAULT_MAX_AGENTS,
         transport_factory=None,
@@ -390,7 +390,7 @@ class RunManager:
             "models": load_model_pool(),
             "config_error": None if configured else detail,
             "max_budget_usd": self.max_budget_usd,
-            "default_budget_usd": min(0.25, self.max_budget_usd),
+            "default_budget_usd": None if self.max_budget_usd is None else min(0.25, self.max_budget_usd),
             "max_turns": self.max_turns,
             "max_agents": self.max_agents,
             # The roster auto mode would build, minus the instructions, which
@@ -448,7 +448,7 @@ class RunManager:
     # --- starting -------------------------------------------------------
 
     def start(
-        self, agents: list[AgentSpec], *, budget_usd: float,
+        self, agents: list[AgentSpec], *, budget_usd: float | None,
         max_turns: int | None = None, question_id: str | None = None,
     ) -> dict[str, Any]:
         """Start one run of one or more agents. Every refusal raises
@@ -483,11 +483,13 @@ class RunManager:
                 "two agents share an id. Ids are how contributions are "
                 "attributed, so distinct agents need distinct ids."
             )
-        if budget_usd <= 0:
+        if budget_usd is not None and budget_usd <= 0:
             raise RunRejected("budget must be positive")
-        if budget_usd > self.max_budget_usd:
+        if self.max_budget_usd is not None and (
+            budget_usd is None or budget_usd > self.max_budget_usd
+        ):
             raise RunRejected(
-                f"budget ${budget_usd:.2f} exceeds this server's ceiling of "
+                f"requested budget {budget_usd} exceeds this server's ceiling of "
                 f"${self.max_budget_usd:.2f}. The ceiling is set when the server "
                 "starts, not by the browser."
             )
@@ -572,7 +574,8 @@ class RunManager:
                 with run._lock:
                     run.spend = {
                         "budget_usd": call["budget"], "spent_usd": call["spent"],
-                        "remaining_usd": max(0.0, call["budget"] - call["spent"]),
+                        "remaining_usd": None if call["budget"] is None
+                        else max(0.0, call["budget"] - call["spent"]),
                         "calls": call["call"],
                         "unpriced_calls": run.spend["unpriced_calls"]
                         + (0 if call["cost_reported"] else 1),

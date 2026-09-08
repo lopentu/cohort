@@ -863,3 +863,43 @@ def test_the_role_travels_in_the_run_snapshot(manager):
     run = _await_finish(manager)
     roles = {a["agent_id"]: a["role"] for a in run["agents"]}
     assert roles == {"agent:w": ROLE_WORKER, "agent:r": ROLE_REVIEWER}
+
+
+def test_uncapped_transport_keeps_accounting(monkeypatch):
+    monkeypatch.setattr(
+        "cohort.agents.budget.default_transport",
+        lambda *args: (200, b'{"usage":{"cost":1.25}}'),
+    )
+    transport = BudgetedTransport(None)
+    for _ in range(3):
+        transport("url", {}, b"{}", 10)
+    assert transport.snapshot() == {
+        "budget_usd": None, "spent_usd": 3.75, "remaining_usd": None,
+        "calls": 3, "unpriced_calls": 0,
+    }
+    assert transport.remaining is None
+
+
+def test_uncapped_run_requires_server_opt_in(manager):
+    with pytest.raises(RunRejected, match="ceiling"):
+        manager.start([spec()], budget_usd=None)
+    manager.max_budget_usd = None
+    assert manager.config()["default_budget_usd"] is None
+    manager.start([spec()], budget_usd=None)
+    result = _await_finish(manager)
+    assert result["spend"]["budget_usd"] is None
+
+
+def test_uncapped_api_run_keeps_null_budget(manager, graph_files, source):
+    manager.max_budget_usd = None
+    db_path, log_path = graph_files
+    client = TestClient(create_app(
+        db_path, log_path, source=source, run_manager=manager,
+    ))
+    response = client.post("/api/run", json={
+        "instructions": "find the moon", "budget_usd": None, "max_turns": 1,
+    })
+    assert response.status_code == 200
+    result = _await_finish(manager)
+    assert result["spend"]["budget_usd"] is None
+    assert result["error"] is None

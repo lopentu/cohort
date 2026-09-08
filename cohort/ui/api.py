@@ -941,7 +941,8 @@ def create_app(
             try:
                 return run_manager.start(
                     specs,
-                    budget_usd=float(body.get("budget_usd") or 0.0),
+                    budget_usd=(float(body["budget_usd"])
+                                if body.get("budget_usd") is not None else None),
                     max_turns=int(body["max_turns"]) if body.get("max_turns") else None,
                     question_id=question_id,
                 )
