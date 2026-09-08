@@ -146,6 +146,60 @@ export function legendFor(nodes, edges, { showAudit }) {
   }
 }
 
+// Hiding a question is a browser-only preference (App.jsx holds the set,
+// RunPanel.jsx persists it) — never a graph write. docs/design.md principle 1
+// makes the event log the one place a question could be un-asked, and there
+// is no such event, so "remove it and its relevant nodes/edges" can only mean
+// *stop drawing* them, recomputed fresh from the current graph on every
+// render rather than a flag stored on any node.
+//
+// A hypothesis is pulled in with a hidden question only if it has nothing
+// else to be shown for: every `addresses` edge it has names a hidden
+// question. One that also addresses a question that stays visible is left
+// alone — it is still live evidence for that question.
+//
+// A witness/passage/query/verification/decision is pulled in only once every
+// edge it has left points into the already-hidden set — an attesting passage
+// that also supports a still-visible hypothesis stays, because it is real
+// evidence for that hypothesis regardless of what else it once supported.
+// Iterated to a fixed point because hiding one node can orphan another (a
+// witness whose one passage was just hidden).
+const PRUNABLE_SUPPORT_TYPES = new Set(['witness', 'passage', 'query', 'verification', 'decision'])
+
+export function hiddenIdsForQuestions(nodes, edges, hiddenQuestionIds) {
+  const hidden = new Set(hiddenQuestionIds)
+  if (!hidden.size) return hidden
+
+  const addressesOf = new Map()   // hypothesis id -> Set(question id)
+  for (const e of edges) {
+    if (e.type !== 'addresses') continue
+    const qs = addressesOf.get(e.src) || new Set()
+    qs.add(e.dst)
+    addressesOf.set(e.src, qs)
+  }
+  for (const [hypId, qs] of addressesOf) {
+    if ([...qs].every((q) => hidden.has(q))) hidden.add(hypId)
+  }
+
+  // Sweep support nodes to a fixed point: each pass can hide a node the
+  // previous pass could not yet justify hiding.
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const n of nodes) {
+      if (hidden.has(n.id) || !PRUNABLE_SUPPORT_TYPES.has(n.type)) continue
+      const touching = edges.filter((e) => e.src === n.id || e.dst === n.id)
+      if (!touching.length) continue   // nothing links it either way — leave it
+      const stillLinked = touching.some((e) => !hidden.has(e.src === n.id ? e.dst : e.src))
+      if (!stillLinked) {
+        hidden.add(n.id)
+        changed = true
+      }
+    }
+  }
+  return hidden
+}
+
 // A `tests` edge is the only edge whose meaning changes after it is drawn.
 // Every other relation states something that is either true or retracted; this
 // one states a prediction, and a prediction that has been run either held or
