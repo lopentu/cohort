@@ -49,17 +49,17 @@ export function saveHiddenQuestions(ids) {
 
 const DEMO_EXAMPLES = [
   {
-    label: 'T0603: test dependence on a commentary',
+    label: 'T0603: exclude commentary',
     question: 'Does the wording comparison for the Yin chi ru jing (陰持入經, T0603), traditionally associated with An Shigao (安世高), change when its commentary T1694 is excluded?',
     criteria: 'Report the comparison before and after excluding T1694 (陰持入經註), naming both leading groups and their score difference. Inspect overlap with the commentary and cite source passages. Explain whether the comparison depends on repeated material. Do not infer a translator attribution.',
   },
   {
-    label: 'T0453: find a parallel passage',
+    label: 'T0453: find a parallel',
     question: 'Which texts in this corpus contain passages closely matching the Maitreya descent text (彌勒下生經, T0453)?',
     criteria: 'Find a matching text without being given its identifier. Return source references, matching passages and computed overlap. Explain whether shared wording is independent evidence for translator identity. Report no match if retrieval finds nothing; do not attribute the text.',
   },
   {
-    label: 'Shared wording: formula or distinctive evidence?',
+    label: 'Test recurring formulae',
     question: 'Are the strongest matching strings for T0603 distinctive to a translator group, or could they be recurring Buddhist formulae?',
     criteria: 'List the strings actually returned by the evidence tools, inspect their occurrences in context and report which corpus groups contain them. Separate observed distribution from an interpretation about genre. State what cannot be established from these observations.',
   },

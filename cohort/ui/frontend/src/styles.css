@@ -2149,3 +2149,7 @@ a.cbeta-link.block:hover { color: var(--text); }
 .runs .questions-head h3, .runs .run-form > h3 { font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--text); }
 .runs .questions-head > button { flex: 0 0 auto; }
 @media (max-width: 1000px) { .runs { margin: 12px; } }
+.runs .demo-examples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.runs .demo-examples > p { grid-column: 1 / -1; }
+.runs .demo-examples > button { white-space: normal; height: auto; min-height: 44px; padding: 10px; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .runs .demo-examples { grid-template-columns: 1fr; } }
