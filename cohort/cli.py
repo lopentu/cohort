@@ -154,7 +154,7 @@ def cmd_graph(args) -> None:
 def cmd_node(args) -> None:
     graph = _read(args)
     try:
-        payload = node_detail_json(graph, args.id)
+        payload = node_detail_json(graph, args.id, log_path=_log_path(args))
     except NodeNotFound as e:
         raise SystemExit(str(e)) from e
     finally:

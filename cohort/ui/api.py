@@ -194,7 +194,7 @@ def create_app(
             except NodeNotFound as e:
                 raise HTTPException(status_code=404, detail=str(e)) from e
 
-            return node_detail_json(graph, node_id)
+            return node_detail_json(graph, node_id, log_path=log_path)
         finally:
             graph.close()
 

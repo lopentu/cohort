@@ -5,7 +5,7 @@ import {
   acceptNode, attestNode, getAgent, getNode, getPassageContext, rejectNode,
   reopenNode, restoreEdge, retractEdge,
 } from './api'
-import { EDGE_STYLE, nodeTitle } from './graph-model'
+import { EDGE_STYLE, nodeTitle, nodeStatusLabel } from './graph-model'
 import { usePresence } from './motion'
 import Reveal from './Reveal'
 
@@ -89,7 +89,7 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
     <div className="panel-body">
       <header className="panel-head">
         <div className={`badge t-${node.type}`}>{node.type}</div>
-        <div className={`badge s-${node.status}`}>{node.status}</div>
+        <div className={`badge s-${node.status}`}>{nodeStatusLabel(node)}</div>
         {/* the level travels as a class too, so CSS can single out A0 —
             "nothing has been verified" is the one value not to skim past */}
         <div className={`badge assurance lvl-${node.assurance}`}>{node.assurance}</div>
@@ -97,6 +97,11 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
 
       <h2>{['claim', 'conjecture'].includes(node.type) && node.payload?.text
         ? explainProfileCodes(node.payload.text) : nodeTitle(node)}</h2>
+      {node.created_by && <p className="hint small">
+        {node.created_by.role === 'worker' ? 'Worker' : node.created_by.role === 'reviewer' ? 'Reviewer' : 'Author'}: {node.created_by.author}
+        {' · '}{node.created_by.model || 'Model not recorded'}
+      </p>}
+      {node.type === 'query' && <p className="hint small">Search record. Matches do not establish a claim.</p>}
       <code className="node-id">{node.id}</code>
 
       {/* Where this text is published, for a reader who wants to see the

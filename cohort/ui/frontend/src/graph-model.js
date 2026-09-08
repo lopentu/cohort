@@ -327,9 +327,17 @@ export function fitText(text, maxPx = TITLE_MAX_PX, fontPx = 13) {
 
 export function nodeTitle(node) {
   const p = node.payload || {}
+  if (node.type === 'query') {
+    const grounding = /^grounding: (['"])(.*)\1 \((\d+) hits\)$/s.exec(p.text || '')
+    if (grounding) return `Search: ${grounding[2]} · ${grounding[3]} ${grounding[3] === '1' ? 'match' : 'matches'}`
+  }
   if (node.type === 'witness') return p.label || p.canonical_ref || node.id
   if (node.type === 'passage') return p.excerpt || p.canonical_ref || node.id
   if (node.type === 'verification') return `${p.method || 'verification'} · ${p.result || ''}`
   if (node.type === 'decision') return p.action || 'decision'
   return p.text || node.id
+}
+
+export function nodeStatusLabel(node) {
+  return node.type === 'query' && node.status === 'proposed' ? 'recorded' : node.status
 }

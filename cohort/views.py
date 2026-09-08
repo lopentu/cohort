@@ -10,11 +10,13 @@ terminal front end does not drag in the optional `ui` extra to describe a node.
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
-from .graph import Graph
-from .schemas import EdgeType, NodeType, VerificationMethod
-from .sources.cbeta_refs import reader_url
+from cohort.eventlog import read_events
+from cohort.graph import Graph
+from cohort.schemas import EdgeType, NodeType, VerificationMethod
+from cohort.sources.cbeta_refs import reader_url
 
 #: The two edge types that *discount* support rather than adding it: witnesses
 #: linked by either are evidence of shared descent, not independent
@@ -61,7 +63,9 @@ def edge_json(edge) -> dict[str, Any]:
     }
 
 
-def node_detail_json(graph: Graph, node_id: str) -> dict[str, Any]:
+def node_detail_json(
+    graph: Graph, node_id: str, *, log_path: Path | None = None,
+) -> dict[str, Any]:
     """Everything provenance-on-click needs: the node, its verifications, its
     edges both ways, and — for a claim or conjecture — whether its support is
     independent.
@@ -72,6 +76,7 @@ def node_detail_json(graph: Graph, node_id: str) -> dict[str, Any]:
     """
     node = graph.get_node(node_id)
     detail = node_json(graph, node)
+    detail["created_by"] = creation_provenance(node.created_seq, log_path)
     detail["verifications"] = [node_json(graph, v) for v in graph.verifications(node_id)]
     # Include retracted edges here — the inspector is where the record is read,
     # and a withdrawal with its reason is part of the provenance.
@@ -82,6 +87,31 @@ def node_detail_json(graph: Graph, node_id: str) -> dict[str, Any]:
             mode="json"
         )
     return detail
+
+
+def creation_provenance(created_seq: int, log_path: Path | None) -> dict[str, Any] | None:
+    """Read the causal model call, not an agent's mutable current profile."""
+    if log_path is None or not log_path.is_file():
+        return None
+    calls = {}
+    rosters = {}
+    for event in read_events(log_path):
+        if event.event == "model_call":
+            calls[event.seq] = event
+        elif event.event == "run_started":
+            rosters[event.run_id] = event.detail.get("agents", [])
+        if event.seq == created_seq:
+            call = calls.get(event.model_call_id)
+            spec = next((a for a in rosters.get(event.run_id, [])
+                         if a.get("agent_id") == event.authored_by), {})
+            return {
+                "author": event.authored_by,
+                "role": spec.get("role"),
+                "model": call.model if call is not None else None,
+            }
+        if event.seq > created_seq:
+            break
+    return None
 
 
 def verified_span_for(graph: Graph, passage_id: str) -> tuple[int, int] | None:

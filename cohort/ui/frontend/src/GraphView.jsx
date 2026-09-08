@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { DataSet, Network } from 'vis-network/standalone'
-import { EDGE_STYLE, isVisible, nodeTitle } from './graph-model'
+import { EDGE_STYLE, isVisible, nodeTitle, nodeStatusLabel } from './graph-model'
 
 // A draggable force-directed rendering of the evidence graph. It replaces the
 // fixed witness→passage→claim column layout with a physics graph whose nodes can
@@ -270,7 +270,7 @@ function buildNodes(nodes, showAudit, p, contradicted) {
       // The assessment's own sentence rather than its state
       // word, because "unplaced" and "discarded" are easy to read as the
       // same kind of negative and are not.
-      title: `${n.type} · ${n.status}${n.assurance ? ' · ' + n.assurance : ''}`
+      title: `${n.type} · ${nodeStatusLabel(n)}${n.assurance ? ' · ' + n.assurance : ''}`
         + (n.assessment ? `\n${n.assessment.detail}` : ''),
     }
   })
