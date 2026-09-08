@@ -318,6 +318,7 @@ export default function GraphView({ data, selectedId, onSelect, showAudit, explo
   const layoutReady = useRef(false)
   const positionsRef = useRef({})
   const clickedSelection = useRef(false)
+  const explorationShown = useRef(false)
   // latest onSelect / selectedId, so the click handler (bound once) never goes stale
   const onSelectRef = useRef(onSelect)
   const selectedRef = useRef(selectedId)
@@ -404,6 +405,31 @@ export default function GraphView({ data, selectedId, onSelect, showAudit, explo
         }
       })
     }
+    // Activity needs room of its own. Placing every new candidate around the
+    // same 150px anchor piled them on top of one another and the evidence.
+    const activity = exploration?.nodes || []
+    const activityIds = new Set(activity.map(n => n.id))
+    const evidencePositions = visNodes.filter(n => !activityIds.has(n.id))
+      .map(n => positions[n.id]).filter(Boolean)
+    const right = Math.max(0, ...evidencePositions.map(p => p.x)) + 300
+    let top = Math.min(0, ...evidencePositions.map(p => p.y))
+    const groups = new Map()
+    for (const item of activity) {
+      const group = `${item.runId}:${item.author}`
+      if (!groups.has(group)) groups.set(group, [])
+      groups.get(group).push(item)
+    }
+    for (const items of groups.values()) {
+      items.forEach((item, i) => {
+        const node = visNodes.find(n => n.id === item.id)
+        const column = i === 0 ? 0 : 1 + (i - 1) % 3
+        const row = i === 0 ? 0 : Math.floor((i - 1) / 3)
+        const location = explorationShown.current && positions[item.id]
+          ? positions[item.id] : {x:right + column * 230, y:top + row * 110}
+        Object.assign(node, {physics:false, ...location})
+      })
+      top += Math.max(1, Math.ceil((items.length - 1) / 3)) * 110 + 160
+    }
     // Update existing records in place; clearing the datasets discards layout.
     const edgeIds = new Set(visEdges.map((e) => e.id))
     edgesRef.current.remove(edgesRef.current.getIds().filter((id) => !edgeIds.has(id)))
@@ -411,6 +437,8 @@ export default function GraphView({ data, selectedId, onSelect, showAudit, explo
     nodesRef.current.update(visNodes)
     edgesRef.current.update(visEdges)
     if (!layoutReady.current && visNodes.length) net.stabilize(180)
+    if (activity.length && !explorationShown.current) net.fit({animation:false})
+    explorationShown.current = activity.length > 0
     if (selectedRef.current && idsRef.current.has(selectedRef.current)) {
       networkRef.current.selectNodes([selectedRef.current])
     }
