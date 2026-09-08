@@ -1,3 +1,4 @@
+import { passageCheckIds } from './span-verification'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getGraph, getHealth, getRefusals } from './api'
 import DetailPanel from './DetailPanel'
@@ -99,6 +100,7 @@ export default function App() {
   const graphData = useMemo(() => {
     if (!data) return data
     const hiddenIds = hiddenIdsForQuestions(data.nodes, data.edges, hiddenQuestions)
+    for (const id of passageCheckIds(data.nodes, data.edges)) hiddenIds.add(id)
     if (!hiddenIds.size) return data
     return {
       ...data,

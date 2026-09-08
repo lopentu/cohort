@@ -1,3 +1,4 @@
+import { spanVerification } from './span-verification'
 import { explainProfileCodes } from './evidence-labels'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
@@ -169,7 +170,9 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
         </dl>
       </Section>
 
-      {node.verifications?.length > 0 && (
+      {node.type === 'passage' && <PassageSpan checks={node.verifications} />}
+
+      {node.type !== 'passage' && node.verifications?.length > 0 && (
         <Section title={`Verifications (${node.verifications.length})`}>
           {node.verifications.map((v) => (
             <div className={`verification r-${v.payload.result}`} key={v.id}>
@@ -191,7 +194,9 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
 
       <EdgeList title="Outgoing" edges={node.edges_out} field="dst" onSelect={onSelect}
                 canWrite={canWrite} onChanged={reload} />
-      <EdgeList title="Incoming" edges={node.edges_in} field="src" onSelect={onSelect}
+      <EdgeList title="Incoming" edges={node.type === 'passage'
+        ? node.edges_in.filter((e) => !node.verifications?.some((v) => v.id === e.src && v.payload?.method === 'exact_span'))
+        : node.edges_in} field="src" onSelect={onSelect}
                 canWrite={canWrite} onChanged={reload} />
 
       <Section title="Authorship">
@@ -526,4 +531,23 @@ function Section({ title, children }) {
 const short = (id) => {
   const s = String(id)
   return s.length > 34 ? `${s.slice(0, 33)}…` : s
+}
+
+function PassageSpan({ checks = [] }) {
+  const { verified, latest } = spanVerification(checks)
+  return <Section title="Source verification">
+    <p className={`verification r-${verified ? 'pass' : 'indeterminate'}`}>
+      <strong>{verified ? 'Verified with an exact span' : 'Not verified with an exact span'}</strong>
+    </p>
+    {latest && !verified && <p>{latest.payload.detail}</p>}
+    {verified && <p className="hint small">The recorded quotation was located in its source. This checks the quotation, not its interpretation.</p>}
+    {checks.length > 0 && <details>
+      <summary>Verification history</summary>
+      {checks.map((v) => <div className={`verification r-${v.payload.result}`} key={v.id}>
+        <strong>{v.payload.method} · {v.payload.result}</strong>
+        <p>{v.payload.detail}</p>
+        {v.payload.limitations && <p>{v.payload.limitations}</p>}
+      </div>)}
+    </details>}
+  </Section>
 }
