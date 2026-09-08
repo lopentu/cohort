@@ -2153,3 +2153,6 @@ a.cbeta-link.block:hover { color: var(--text); }
 .runs .demo-examples > p { grid-column: 1 / -1; }
 .runs .demo-examples > button { white-space: normal; height: auto; min-height: 44px; padding: 10px; overflow-wrap: anywhere; }
 @media (max-width: 600px) { .runs .demo-examples { grid-template-columns: 1fr; } }
+
+.suggested-inputs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 6px; }
+.suggested-inputs > button { flex: 0 1 auto; white-space: normal; height: auto; min-height: 32px; overflow-wrap: anywhere; }

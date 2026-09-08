@@ -104,10 +104,16 @@ export default function CorpusPanel({ onCite }) {
           {busy ? 'Searching…' : 'Search'}
         </button>
       </form>
-      <p className="hint small">
-        Exact substring match over every citable span. No wildcards, no
-        stemming — what you type is what is found.
-      </p>
+      <div className="suggested-inputs" aria-label="Suggested corpus searches">
+        <span className="hint small">Try a search:</span>
+        {[
+          ['如是我聞', 'Opening formula · 如是我聞'],
+          ['彌勒', 'Maitreya · 彌勒'],
+          ['多熱如是名遍', 'Phrase from T0603 · 多熱如是名遍'],
+        ].map(([phrase, label]) => <button className="btn tiny" type="button"
+          key={phrase} onClick={() => setQuery(phrase)}>{label}</button>)}
+      </div>
+      <p className="hint small">Searches exact wording in the corpus, not a research question.</p>
 
       {error && <p className="error">{error}</p>}
 

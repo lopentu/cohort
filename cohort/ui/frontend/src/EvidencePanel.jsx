@@ -105,6 +105,18 @@ export default function EvidencePanel() {
         Compare wording, inspect the source text, and test whether repeated material drives the result.
       </p>
 
+      <div className="suggested-inputs" aria-label="Suggested evidence texts">
+        <span className="hint small">Try a text:</span>
+        {[
+          ['T0603', 'Yin chi ru jing 陰持入經 · T0603'],
+          ['T0453', 'Maitreya’s descent 彌勒下生經 · T0453'],
+        ].map(([id, label]) => <button type="button" className="btn tiny" key={id}
+          onClick={() => { choose(id); setQuery(id); setFeatures('radich'); setWithhold(''); setPair('') }}>
+          {label}
+        </button>)}
+      </div>
+      <p className="hint small">Examples start with the curated strings and no additional exclusions.</p>
+
       <details className="ev-options ev-chooser" open={!uid}>
         <summary>{uid ? 'Change the selected text' : 'Choose a text to examine'}</summary>
       <div className="ev-controls">

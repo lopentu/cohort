@@ -49,9 +49,9 @@ export function saveHiddenQuestions(ids) {
 
 const DEMO_EXAMPLES = [
   {
-    label: 'T0603: exclude commentary',
-    question: 'Does the wording comparison for the Yin chi ru jing (陰持入經, T0603), traditionally associated with An Shigao (安世高), change when its commentary T1694 is excluded?',
-    criteria: 'Report the comparison before and after excluding T1694 (陰持入經註), naming both leading groups and their score difference. Inspect overlap with the commentary and cite source passages. Explain whether the comparison depends on repeated material. Do not infer a translator attribution.',
+    label: 'Find related passages: T0603',
+    question: 'Which passages elsewhere in the corpus are closely related to the Yin chi ru jing (陰持入經, T0603), and what might explain those relationships?',
+    criteria: 'Find related passages and provide source references so I can inspect them. Consider quotation, commentary and recurring expressions as possible explanations. If you compare corpus groups, check whether repeated material drives the result by excluding the relevant comparison text and repeating the calculation. Report the computed results and their limitations. Do not infer a translator attribution.',
   },
   {
     label: 'T0453: find a parallel',
@@ -60,7 +60,7 @@ const DEMO_EXAMPLES = [
   },
   {
     label: 'Test recurring formulae',
-    question: 'Are the strongest matching strings for T0603 distinctive to a translator group, or could they be recurring Buddhist formulae?',
+    question: 'Which expressions in the Yin chi ru jing (陰持入經, T0603) are widespread in other texts, and which have a more restricted distribution?',
     criteria: 'List the strings actually returned by the evidence tools, inspect their occurrences in context and report which corpus groups contain them. Separate observed distribution from an interpretation about genre. State what cannot be established from these observations.',
   },
 ]
@@ -507,7 +507,7 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={2} required />
           </label>
           <label>
-            Answer criteria — what evidence should the agents return?
+            Research instructions — how should the agents investigate?
             <textarea
               value={answerable}
               onChange={(e) => setAnswerable(e.target.value)}
@@ -559,7 +559,7 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
               >Hide</button>
             </div>
             <p className="question-answerable">
-              <span>Answer criteria</span> {q.answerable_by}
+              <span>Research instructions</span> {q.answerable_by}
             </p>
             <p className="hint small">
               {q.addressed_by === 0
