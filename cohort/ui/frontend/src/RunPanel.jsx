@@ -1,3 +1,4 @@
+import { inquiryReports } from './run-report'
 import { corpusInquiryDraft } from './corpus-inquiry'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { askQuestion, getQuestions, getRunConfig, getRuns, startRun, stopRun } from './api'
@@ -79,6 +80,7 @@ const REVIEWER_TASK =
 export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChanged, onQuestionRecorded, hiddenQuestions, onToggleHiddenQuestion }) {
   const [config, setConfig] = useState(null)
   const [runs, setRuns] = useState(null)
+  const [reportId, setReportId] = useState(null)
   const [agents, setAgents] = useState([blankAgent(0)])
   // Auto by default. A launcher whose first screen is an empty task box asks
   // the researcher to write agent instructions before they have written the
@@ -138,8 +140,8 @@ export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChang
 
   const current = runs?.current
   const active = ACTIVE.has(current?.state)
-  const last = runs?.history?.[0]
-  const shown = current || last
+  const reports = inquiryReports(runs)
+  const shown = reports.find(r=>r.id===reportId) || reports.find(r=>r.id===current?.id) || reports[0]
 
   const update = (i, patch) =>
     setAgents((prev) => prev.map((a, j) => (j === i ? { ...a, ...patch } : a)))
@@ -149,7 +151,7 @@ export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChang
     setBusy(true)
     setError(null)
     try {
-      await startRun(mode === 'auto' ? {
+      const launched = await startRun(mode === 'auto' ? {
         budget_usd: config.max_budget_usd == null ? null : Number(budget),
         auto: true,
         question_id: questionId,
@@ -165,6 +167,7 @@ export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChang
           role: a.role,
         })),
       })
+      setReportId(launched.id)
       settledRef.current = null
       await poll()
     } catch (err) {
@@ -191,6 +194,14 @@ export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChang
             : config.config_error}
       </p>
       )}
+
+      {shown && <div className="inquiry-results">
+        <h3>{ACTIVE.has(shown.state) ? 'Current run' : 'Run results'}</h3>
+        <label>View run <select value={shown.id} onChange={e=>setReportId(e.target.value)}>
+          {reports.map(r=><option key={r.id} value={r.id}>{r.id} · {r.state || 'Open'}</option>)}
+        </select></label>
+        <RunReport run={shown} active={ACTIVE.has(shown.state)} />
+      </div>}
 
       <Questions
         draft={draftSeed}
@@ -362,10 +373,6 @@ export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChang
 
       {error && <p className="error">{error}</p>}
 
-      {shown && (active ? <RunReport run={shown} active={active} /> :
-        <details className="inquiry-details"><summary>Latest completed run</summary>
-          <RunReport run={shown} active={false} /></details>)}
-
       <RunHistory runs={runs?.recorded} />
     </section>
   )
@@ -419,6 +426,7 @@ function RunHistory({ runs }) {
                   <small>{c.pending ? 'Outcome not recorded' : c.is_error ? 'Failed' : 'Completed'}</small>
                 </li>))}</ul>
             </details>}
+            {r.agents.filter(a => a.analysis).map(a => <details key={`analysis:${a.agent_id}`}><summary>AI interpretation · {a.model}</summary><div className="analysis-text">{a.analysis}</div></details>)}
             {r.error && <p className="error small">{r.error}</p>}
           </li>
         ))}
@@ -637,7 +645,7 @@ function blankAgent(i, role = 'worker') {
 
 function RunReport({ run, active }) {
   const s = run.spend
-  const pct = s.budget_usd == null ? null : Math.min(100, (s.spent_usd / s.budget_usd) * 100)
+  const pct = s.budget_usd == null || s.spent_usd == null ? null : Math.min(100, (s.spent_usd / s.budget_usd) * 100)
   return (
     <div className={`run-report ${active ? 'active' : ''}`}>
       <div className="run-head">
@@ -651,7 +659,7 @@ function RunReport({ run, active }) {
         {pct != null && <div className="spend-bar"><i style={{ width: `${pct}%` }} /></div>}
         <div className="spend-row">
           <span>
-            <strong>${s.spent_usd.toFixed(5)}</strong> recorded cost
+            <strong>{s.spent_usd == null ? 'Not reported' : `$${s.spent_usd.toFixed(5)}`}</strong> recorded cost
             {s.budget_usd != null && <> of ${s.budget_usd.toFixed(2)}</>}
           </span>
           <span>{s.calls} model call{s.calls === 1 ? '' : 's'}</span>
@@ -685,17 +693,18 @@ function RunReport({ run, active }) {
                 <div className="tc-head">
                   <code>{c.tool}</code>
                   <span className={`badge ${c.is_error ? 'tc-refused' : 'tc-ok'}`}>
-                    {c.is_error ? 'refused' : 'ok'}
+                    {c.pending ? 'outcome not recorded' : c.is_error ? 'refused' : 'ok'}
                   </span>
                 </div>
                 {c.reason && <p>{c.reason}</p>}
-                <p className="tc-result">{String(c.result)}</p>
+                <details><summary>Inputs and result</summary><pre className="tc-result">{JSON.stringify({inputs:c.args,result:c.result},null,2)}</pre></details>
               </li>
             ))}
           </ul>
         </div>
       ))}
 
+      {run.archived && run.refusal_total > 0 && <p className="hint">{run.refusal_total} refused writes recorded. Open Refused writes on Graph for details.</p>}
       {run.refusals.length > 0 && (
         <>
           <h3>Refusals this run ({run.refusals.length})</h3>

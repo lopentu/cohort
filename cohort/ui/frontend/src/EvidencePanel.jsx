@@ -47,7 +47,7 @@ function writeHash(state) {
   if (window.location.hash !== next) window.history.replaceState(null, '', next)
 }
 
-export default function EvidencePanel() {
+export default function EvidencePanel({ onSelection }) {
   const initial = useMemo(readHash, [])
   const [units, setUnits] = useState(null)
   const [query, setQuery] = useState(initial.uid || '')
@@ -82,6 +82,10 @@ export default function EvidencePanel() {
       .catch((e) => { if (live) { setError(e.message); setData(null); setBusy(false) } })
     return () => { live = false }
   }, [uid, features, withhold, offset, pair])
+
+  useEffect(() => {
+    onSelection?.(data && !busy ? {view:'evidence',uid:data.uid,features:data.features,withhold:data.withheld_extra,pair:data.pair ? [data.pair.a,data.pair.b] : null} : null)
+  }, [data,busy,onSelection])
 
   const choose = (u) => { setUid(u); setOffset(0) }
 

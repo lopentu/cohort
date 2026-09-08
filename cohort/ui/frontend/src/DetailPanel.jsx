@@ -1,3 +1,4 @@
+import ProposalFieldHelp, { proposalFieldLabel } from './ProposalFieldHelp'
 import { spanVerification } from './span-verification'
 import { explainProfileCodes } from './evidence-labels'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -163,12 +164,12 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
         </Section>
       )}
 
-      <Section title="Payload">
+      <Section title="Recorded details">
         <dl className="kv">
           {Object.entries(node.payload || {}).map(([k, v]) => (
             <div key={k}>
-              <dt>{k}</dt>
-              <dd>{typeof v === 'object' ? JSON.stringify(v) : String(v)}</dd>
+              <dt>{proposalFieldLabel(k)}</dt>
+              <dd><ProposalFieldHelp field={k} />{typeof v === 'object' ? JSON.stringify(v) : String(v)}</dd>
             </div>
           ))}
         </dl>

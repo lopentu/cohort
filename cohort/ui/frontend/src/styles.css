@@ -2184,3 +2184,18 @@ a.cbeta-link.block:hover { color: var(--text); }
 
 .ev-comparison-scroll { overflow-x:auto; }
 .ev-comparison { margin-top:18px; }
+
+.analysis-control { padding:8px 18px; }
+.analysis-control:empty { display:none; }
+.analysis-panel { padding:16px 0; border-bottom:1px solid var(--border); max-width:950px; }
+.analysis-inputs { display:flex; align-items:end; flex-wrap:wrap; gap:12px; margin:12px 0; }
+.analysis-inputs label { flex:1; min-width:200px; }
+.analysis-text { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.65; margin:18px 0; }
+.analysis-panel pre { overflow:auto; max-height:260px; }
+.analysis-panel select { margin:8px; max-width:100%; }
+
+.proposal-field-help { margin:4px 0 9px; font-size:0.875rem; }
+.proposal-field-help summary { cursor:pointer; color:var(--text-dim); }
+.proposal-field-help p { margin:8px 0; }
+.inquiry-results { margin-bottom:24px; }
+.inquiry-results select { max-width:100%; }

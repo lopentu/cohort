@@ -1,3 +1,4 @@
+import ProposalFieldHelp, { proposalFieldLabel } from './ProposalFieldHelp'
 import { explainProfileCodes } from './evidence-labels'
 import { useCallback, useEffect, useState } from 'react'
 import {
@@ -199,8 +200,8 @@ function Dossier({ d, onSelect }) {
         <dl className="dossier-fields">
           {fields.map(([k, v]) => (
             <div key={k}>
-              <dt>{k.replace(/_/g, ' ')}</dt>
-              <dd>{typeof v === 'string' ? explainProfileCodes(v) : v}</dd>
+              <dt>{proposalFieldLabel(k)}</dt>
+              <dd><ProposalFieldHelp field={k} />{typeof v === 'string' ? explainProfileCodes(v) : v}</dd>
             </div>
           ))}
         </dl>
@@ -219,8 +220,7 @@ function Dossier({ d, onSelect }) {
           {q.expectation ? (
             <p className="prospective-pred">
               Predicted <strong>{q.expectation === 'at_most' ? 'at most' : 'at least'}{' '}
-              {q.expected_hits}</strong> — recorded when this was proposed, before the
-              query was ever run.
+              {q.expected_hits}</strong> — saved with the proposal. This may reuse an earlier search.
           </p>
           ) : (
             <p className="hint small">No prediction was recorded for this query.</p>

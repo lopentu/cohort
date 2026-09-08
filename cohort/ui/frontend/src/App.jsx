@@ -1,3 +1,4 @@
+import AnalysisPanel from './AnalysisPanel'
 import { explorationFor } from './exploration'
 import ExplorationDetail from './ExplorationDetail'
 import { passageCheckIds } from './span-verification'
@@ -25,6 +26,7 @@ export default function App() {
   const [showExploration, setShowExploration] = useState(false)
   const [runActivity, setRunActivity] = useState(null)
   const [activityError, setActivityError] = useState(null)
+  const [evidenceSelection, setEvidenceSelection] = useState(null)
   const [showAudit, setShowAudit] = useState(false)
   const [showRefusals, setShowRefusals] = useState(false)
   const [tab, setTab] = useState('graph')
@@ -277,6 +279,13 @@ export default function App() {
 
       <div className="body">
         <main>
+          <AnalysisPanel view={tab} scope={tab === 'graph' ? {
+            view:'graph', question_id:graphData.nodes.filter(n=>n.type==='question').length === 1 ? graphData.nodes.find(n=>n.type==='question').id : null,
+            nodes:graphData.nodes.map(n=>({id:n.id,type:n.type,status:n.status,text:n.payload?.text,reference:n.payload?.canonical_ref})),
+            edges:graphData.edges.map(e=>({type:e.type,src:e.src,dst:e.dst})),
+            truncated:data.truncated,
+            exploration:exploration.nodes.map(n=>({work:n.uid,worker:n.author,model:n.model,actions:n.actions})),
+          } : tab === 'evidence' ? evidenceSelection : null} />
           {/* One keyed panel per tab. The key is what restarts the entrance
               animation on every change, and `data-dir` sends the panel in from
               the side the reader came from, so the movement agrees with the
@@ -316,7 +325,7 @@ export default function App() {
                 onCite={(source) => { setAgentSeed(source); goTab('run') }}
               />
             )}
-            {tab === 'evidence' && <EvidencePanel />}
+            {tab === 'evidence' && <EvidencePanel onSelection={setEvidenceSelection} />}
             {tab === 'run' && (
               <RunPanel
                 instructionSeed={agentSeed}
