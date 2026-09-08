@@ -196,7 +196,18 @@ export function hiddenIdsForQuestions(nodes, edges, hiddenQuestionIds) {
     changed = false
     for (const n of nodes) {
       if (hidden.has(n.id) || !PRUNABLE_SUPPORT_TYPES.has(n.type)) continue
-      const touching = edges.filter((e) => e.src === n.id || e.dst === n.id)
+      let touching = edges.filter((e) => e.src === n.id || e.dst === n.id)
+      // A passage's `part_of` (now labelled "contains") edge to its witness
+      // says where it sits, not why it matters — every passage has exactly
+      // one, so counting it here would make a passage un-hideable, and worse,
+      // deadlocks against its witness: the passage stays visible because its
+      // witness isn't hidden yet, and the witness stays visible because this
+      // passage isn't hidden yet, and neither pass ever breaks the tie. Only
+      // a passage's *evidentiary* edges (attests, verifies, tests) decide
+      // whether hiding the question left it with nothing to be shown for; a
+      // witness's own visibility is still decided by its `part_of` edges
+      // below, once its passages have already been resolved.
+      if (n.type === 'passage') touching = touching.filter((e) => e.type !== 'part_of')
       if (!touching.length) continue   // nothing links it either way — leave it
       const stillLinked = touching.some((e) => !hidden.has(e.src === n.id ? e.dst : e.src))
       if (!stillLinked) {
