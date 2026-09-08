@@ -174,20 +174,33 @@ export function legendFor(nodes, edges, { showAudit }) {
 // witness whose one passage was just hidden).
 const PRUNABLE_SUPPORT_TYPES = new Set(['witness', 'passage', 'query', 'verification', 'decision'])
 
-// Two edge types carry no vote in a node's own liveness, because they only
-// ever comment on a node rather than being the reason it exists: `part_of`
-// says where a passage sits (not why it matters — every passage has exactly
-// one, so counting it would make a passage un-hideable), and `verifies`
-// points from an audit record at the thing it checked (every passage this
-// demo seeds gets one, so counting it is the same bug by a different edge —
-// a verification about a passage does not make the passage relevant; the
-// passage being relevant is what would make the verification worth keeping).
-// Both still count normally from the *other* side: a witness's visibility is
-// decided by its incoming `part_of` edges once its passages have resolved,
-// and a verification's own visibility is decided by whether its subject
-// (the `dst` of its `verifies` edge) is still visible — that direction is
-// exactly what the generic rule below already does for it.
+// Three kinds of edge carry no vote in a node's own liveness, because they
+// only ever comment on a node rather than being the reason it exists:
+//
+//   * `part_of` says where a passage sits, not why it matters — every
+//     passage has exactly one, so counting it would make a passage
+//     un-hideable;
+//   * `verifies` points from an audit record at the thing it checked (every
+//     passage this demo seeds gets one) — a verification about a passage
+//     does not make the passage relevant; the passage being relevant is
+//     what would make the verification worth keeping;
+//   * `parallel_of` / `descends_from` annotate a relationship *between two
+//     witnesses* — that one's transmission isn't independent of the
+//     other's — never a claim that either witness matters. A cluster of
+//     witnesses connected only by these (real in this demo: six witnesses
+//     linked in a ring of `parallel_of` edges) would otherwise deadlock
+//     exactly like the other two: each stays visible solely because its
+//     neighbour hasn't been hidden yet, and no pass ever breaks the tie.
+//
+// All three still count normally from the side whose relevance they
+// legitimately carry: a witness's visibility is decided by its incoming
+// `part_of` edges once its passages have resolved, and a verification's own
+// visibility is decided by whether its subject (the `dst` of its `verifies`
+// edge) is still visible — that direction is exactly what the generic rule
+// below already does for both. `parallel_of`/`descends_from` never carry
+// either side's relevance, so they are excluded unconditionally.
 function ignoredForOwnLiveness(node, edge) {
+  if (edge.type === 'parallel_of' || edge.type === 'descends_from') return true
   return (edge.type === 'part_of' && edge.src === node.id)
     || (edge.type === 'verifies' && edge.dst === node.id)
 }
