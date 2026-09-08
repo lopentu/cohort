@@ -50,10 +50,12 @@ from .views import (
     dossier_json,
     edge_json,
     findings_json,
+    locate_passage_span,
     node_detail_json,
     node_json,
     question_json,
     questions_json,
+    verified_span_for,
 )
 
 DEFAULT_DB = "demo_graph.sqlite"
@@ -814,6 +816,58 @@ def cmd_fetch(args) -> None:
     _emit(args, payload, render)
 
 
+def cmd_context(args) -> None:
+    """A passage in context — the terminal side of `/api/passage/context`,
+    sharing `verified_span_for`/`locate_passage_span` (cohort/views.py) so the
+    two cannot locate the same excerpt two different ways."""
+    graph = _read(args)
+    try:
+        try:
+            node = graph.get_node(args.id)
+        except NodeNotFound as e:
+            raise SystemExit(str(e)) from e
+        if node.type != NodeType.PASSAGE:
+            raise SystemExit(f"{args.id} is a {node.type}, not a passage")
+        source_ref = node.payload.get("source_ref")
+        excerpt = node.payload.get("excerpt")
+        if not source_ref or not excerpt:
+            raise SystemExit(
+                f"{args.id} has no source_ref or no excerpt recorded, "
+                "so there is nothing to re-fetch context from"
+            )
+        verified_span = verified_span_for(graph, args.id)
+    finally:
+        graph.close()
+
+    source = _corpus(args)
+    record = source.fetch(source_ref)
+    try:
+        start, end, location = locate_passage_span(record.text, excerpt, verified_span)
+    except ValueError as e:
+        raise SystemExit(str(e)) from e
+
+    window = args.window
+    payload = {
+        "id": args.id,
+        "before": record.text[max(0, start - window):start],
+        "excerpt": record.text[start:end],
+        "after": record.text[end:end + window],
+        "has_more_before": start - window > 0,
+        "has_more_after": end + window < len(record.text),
+        "location": location,
+        "window": window,
+        "source_ref": source_ref,
+        "witness_ref": record.witness_ref,
+    }
+
+    def render(p):
+        more_before = "… " if p["has_more_before"] else ""
+        more_after = " …" if p["has_more_after"] else ""
+        print(f"{more_before}{p['before']}[{p['excerpt']}]{p['after']}{more_after}")
+        print(f"\n{p['witness_ref']} · located by {p['location']}")
+    _emit(args, payload, render)
+
+
 # --- attribution evidence ---------------------------------------------------
 
 def _attribution(args):
@@ -1199,6 +1253,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-chars", type=int, default=8000)
     p.add_argument("--strip-markup", action="store_true",
                    help="display only — this breaks offsets, so never store the result")
+
+    p = add("context", cmd_context,
+            "a passage in context: chars of source text on each side of its recorded excerpt")
+    p.add_argument("id", help="a passage node id")
+    p.add_argument("--window", type=int, default=10,
+                   help="characters of context on each side (default 10)")
 
     p = add("evidence", cmd_evidence,
             "where one text leans between translator profiles, and the strings that make it lean")

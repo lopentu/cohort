@@ -177,6 +177,47 @@ def node_detail_json(graph: Graph, node_id: str) -> dict[str, Any]:
     return detail
 
 
+def verified_span_for(graph: Graph, passage_id: str) -> tuple[int, int] | None:
+    """The span recorded by `passage_id`'s last `EXACT_SPAN` verification, if
+    it has one — the same "last recorded baseline" `verify_exact_span` itself
+    trusts over a fresh search, and the reason `passage_context` (CLI and web
+    alike) prefers it too: a short excerpt can occur more than once in a
+    witness, and an unverified first match is a guess about which one was
+    meant."""
+    span = None
+    for v in graph.verifications(passage_id):
+        p = v.payload
+        if p.get("method") == VerificationMethod.EXACT_SPAN and p.get("span_start") is not None:
+            span = (p["span_start"], p["span_end"])
+    return span
+
+
+def locate_passage_span(
+    source_text: str, excerpt: str, verified_span: tuple[int, int] | None,
+) -> tuple[int, int, str]:
+    """Where `excerpt` sits in `source_text`, and how it was found — `"verified_span"`
+    (the recorded baseline still matches), `"stale_verified_span"` (it no
+    longer does, and this fell back to a fresh search), or `"first_match"`
+    (there was no recorded baseline to try).
+
+    One function rather than one per front end, so the CLI's `context`
+    command and the web API's `/api/passage/context` cannot quietly locate the
+    same passage two different ways.
+
+    Raises `ValueError` if the excerpt is not in the text at all — the caller
+    decides how to report that (an HTTP 409, a CLI `SystemExit`)."""
+    stale = False
+    if verified_span is not None:
+        start, end = verified_span
+        if source_text[start:end] == excerpt:
+            return start, end, "verified_span"
+        stale = True
+    idx = source_text.find(excerpt)
+    if idx == -1:
+        raise ValueError("excerpt not found in the freshly-fetched source; it may have moved")
+    return idx, idx + len(excerpt), "stale_verified_span" if stale else "first_match"
+
+
 #: The dossier fields `ConjecturePayload` requires, in the order a reader needs
 #: them: what is claimed, how it was reached, what was searched, and then the
 #: two that make it a hypothesis rather than an assertion — what could have
