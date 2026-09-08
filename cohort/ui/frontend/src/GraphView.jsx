@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { DataSet, Network } from 'vis-network/standalone'
 import { EDGE_STYLE, isVisible, nodeTitle } from './graph-model'
 
@@ -35,20 +35,25 @@ function palette() {
   }
 }
 
+// `claim` and `conjecture` are one shape now: the UI has always called the
+// pair "hypothesis" (see the legend comment below) and drawing them
+// differently — a box for one, a diamond for the other — read as two kinds of
+// thing where the vocabulary says there is one.
 const TYPE_SHAPE = {
-  witness: 'ellipse', passage: 'box', claim: 'box', conjecture: 'diamond',
+  witness: 'ellipse', passage: 'box', claim: 'diamond', conjecture: 'diamond',
   query: 'dot', question: 'star', verification: 'square', decision: 'square',
 }
 
-// Node colour carries MEANING, not just status, so the types stop reading alike:
-//   * a claim/conjecture is GREEN only when >=2 independent witnesses corroborate
-//     it, YELLOW when nothing attests it / it is single-sourced / its witnesses
-//     collapse to one via shared descent, RED when it is contradicted or
-//     rejected — computed here from the edges;
+// A hypothesis's fill is its STATUS, not a computed verdict: grey while
+// PROPOSED (nothing has checked it), blue once ATTESTED, green once ACCEPTED
+// — the one citable state — red once REJECTED, and yellow whenever a live
+// `contradicts` edge touches it (CONTRADICTED), independent of status, because
+// a contradiction discovered after acceptance is exactly the case a reader
+// must not have hidden from them.
 //   * a source text (CBETA witness) is BLACK, an agent query BLUE;
 //   * passages, research questions and audit nodes get their own steady colours.
-// Type shape stays a second channel; status rides the border (dashed = proposed
-// / unchecked, heavier = accepted).
+// Type shape stays a second channel; status also rides the border (dashed =
+// proposed / unchecked, heavier = accepted) so it survives greyscale too.
 const NODE_BORDER = '#8a8a8f'
 const INK_LIGHT = '#f7f7fa'
 const INK_DARK = '#0b0b0c'
@@ -58,70 +63,117 @@ const NODE_COLORS = {
   query:        { fill: '#0a84ff', text: INK_LIGHT },
   question:     { fill: '#5e5ce6', text: INK_LIGHT },
   audit:        { fill: '#8e8e93', text: INK_LIGHT },   // verification / decision
-  supported:    { fill: '#34c759', text: INK_DARK },
-  insufficient: { fill: '#ffd60a', text: INK_DARK },
-  against:      { fill: '#ff453a', text: INK_LIGHT },
+  proposed:     { fill: '#8e8e96', text: INK_LIGHT },
+  attested:     { fill: '#0a84ff', text: INK_LIGHT },
+  contradicted: { fill: '#ffd60a', text: INK_DARK },
+  accepted:     { fill: '#30d158', text: INK_DARK },
+  rejected:     { fill: '#ff453a', text: INK_LIGHT },
 }
 
-// The node-colour key, for the legend.
-export const NODE_LEGEND = [
-  { key: 'claim — supported', color: NODE_COLORS.supported.fill },
-  { key: 'claim — insufficient evidence', color: NODE_COLORS.insufficient.fill },
-  { key: 'claim — contradicted', color: NODE_COLORS.against.fill },
-  { key: 'source text', color: NODE_COLORS.witness.fill },
-  { key: 'passage', color: NODE_COLORS.passage.fill },
-  { key: 'query', color: NODE_COLORS.query.fill },
-  { key: 'question', color: NODE_COLORS.question.fill },
+// What a conjecture turned out to be, when the server says so — see
+// `views.assessments`. This channel exists because status is blind to an
+// ascription study: those conjectures are settled by measurement and carry no
+// attesting passages, so all twenty-two of them would render identically
+// under plain status whether their control had been survived, failed, or
+// never run.
+//
+// `unplaced` is deliberately the same yellow as `contradicted`: in both cases
+// the method could not see the thing, which is not a finding against it — a
+// separate literal, not an alias, because the two are not the same concept.
+// `alternate` gets violet — the `tests` hue — because it points somewhere
+// else rather than confirming or denying anything here.
+const ASSESSMENT_COLORS = {
+  survived:   NODE_COLORS.accepted,
+  discarded:  NODE_COLORS.rejected,
+  untested:   { fill: '#8e8e96', text: INK_LIGHT },
+  associates: NODE_COLORS.accepted,
+  weak:       { fill: '#ff9f0a', text: INK_DARK },
+  alternate:  { fill: '#bf5af2', text: INK_LIGHT },
+  unplaced:   { fill: '#ffd60a', text: INK_DARK },
+}
+
+//: The whole node-colour vocabulary. `types` is what has to be on screen for
+//: an entry to be worth showing, and `states` likewise — see `nodeLegendFor`.
+//:
+//: **`hypothesis`, not `claim`.** These three entries colour a `claim` *or* a
+//: `conjecture`, and calling the pair "claim" was wrong twice over: it is the
+//: name of one of the two, and Findings has always called them hypotheses.
+//: `claim` and `conjecture` stay the node types in the graph and in the
+//: vocabulary — they carry different rules, and a refusal still names which —
+//: but where the UI means "either of them" it now says hypothesis.
+//:
+//: `feature` and `work` name what a hypothesis is *about* rather than
+//: repeating `hypothesis` ten times down a horizontal key. They are
+//: hypotheses too; the subject is the informative half.
+const NODE_LEGEND_ALL = [
+  { key: 'hypothesis — proposed', color: NODE_COLORS.proposed.fill, types: ['claim', 'conjecture'] },
+  { key: 'hypothesis — attested', color: NODE_COLORS.attested.fill, types: ['claim', 'conjecture'] },
+  { key: 'hypothesis — contradicted', color: NODE_COLORS.contradicted.fill, types: ['claim', 'conjecture'] },
+  { key: 'hypothesis — accepted', color: NODE_COLORS.accepted.fill, types: ['claim', 'conjecture'] },
+  { key: 'hypothesis — rejected', color: NODE_COLORS.rejected.fill, types: ['claim', 'conjecture'] },
+  { key: 'feature — survived its control', color: ASSESSMENT_COLORS.survived.fill, states: ['survived'] },
+  { key: 'feature — discarded by its control', color: ASSESSMENT_COLORS.discarded.fill, states: ['discarded'] },
+  { key: 'feature — control not run', color: ASSESSMENT_COLORS.untested.fill, states: ['untested'] },
+  { key: 'work — associates with the benchmark', color: ASSESSMENT_COLORS.associates.fill, states: ['associates'] },
+  { key: 'work — weak association', color: ASSESSMENT_COLORS.weak.fill, states: ['weak'] },
+  { key: 'work — alternate reference point', color: ASSESSMENT_COLORS.alternate.fill, states: ['alternate'] },
+  { key: 'work — not placed', color: ASSESSMENT_COLORS.unplaced.fill, states: ['unplaced'] },
+  { key: 'source text', color: NODE_COLORS.witness.fill, types: ['witness'] },
+  { key: 'passage', color: NODE_COLORS.passage.fill, types: ['passage'] },
+  { key: 'query', color: NODE_COLORS.query.fill, types: ['query'] },
+  { key: 'question', color: NODE_COLORS.question.fill, types: ['question'] },
 ]
 
-// A claim/conjecture's verdict from the graph edges: contradicted or rejected ->
-// 'against'; nothing attests it (or only shared-descent witnesses do) ->
-// 'insufficient'; independently attested -> 'supported'.
-function claimVerdicts(nodes, edges) {
-  const attesters = new Map()
-  const witnessOf = new Map()
-  const discountPairs = []
-  const contradicted = new Set()
-  for (const e of edges) {
-    if (e.type === 'attests') {
-      const a = attesters.get(e.dst) || []
-      a.push(e.src)
-      attesters.set(e.dst, a)
-    } else if (e.type === 'part_of') {
-      witnessOf.set(e.src, e.dst)
-    } else if (e.type === 'parallel_of' || e.type === 'descends_from') {
-      discountPairs.push([e.src, e.dst])
-    } else if (e.type === 'contradicts') {
-      contradicted.add(e.src)
-      contradicted.add(e.dst)
+// The key for *this* graph, not the vocabulary — the same discipline
+// `legendFor` applies to edges. Ten node colours listed against a graph that
+// draws four is a legend a reader has to filter by hand, and one that offers
+// "survived its control" where no control was ever run is describing a
+// different study.
+export function nodeLegendFor(nodes, showAudit) {
+  const shown = nodes.filter((n) => isVisible(n, showAudit))
+  const types = new Set(shown.map((n) => n.type))
+  const states = new Set(shown.map((n) => n.assessment?.state).filter(Boolean))
+  return NODE_LEGEND_ALL.filter((entry) => {
+    // A conjecture the server has assessed is drawn by its assessment, so the
+    // three edge-derived entries must not claim it.
+    if (entry.types) {
+      const assessed = entry.types.some((t) => t === 'claim' || t === 'conjecture')
+      if (assessed && !shown.some((n) => entry.types.includes(n.type) && !n.assessment)) {
+        return false
+      }
+      return entry.types.some((t) => types.has(t))
     }
-  }
-  const verdict = new Map()
-  for (const n of nodes) {
-    if (n.type !== 'claim' && n.type !== 'conjecture') continue
-    if (n.status === 'rejected' || contradicted.has(n.id)) {
-      verdict.set(n.id, 'against')
-      continue
-    }
-    const passages = attesters.get(n.id) || []
-    const witnesses = new Set(passages.map((p) => witnessOf.get(p)).filter(Boolean))
-    // Green needs corroboration: at least two DISTINCT witnesses not themselves
-    // linked by a discounting edge. Nothing attesting, a single source, or
-    // witnesses that collapse to one via shared descent all read insufficient.
-    if (witnesses.size < 2) {
-      verdict.set(n.id, 'insufficient')
-      continue
-    }
-    const pset = new Set(passages)
-    const nonIndependent = discountPairs.some(
-      ([a, b]) => (witnesses.has(a) && witnesses.has(b)) || (pset.has(a) && pset.has(b)),
-    )
-    verdict.set(n.id, nonIndependent ? 'insufficient' : 'supported')
-  }
-  return verdict
+    return entry.states.some((st) => states.has(st))
+  })
 }
 
-function nodeColorKey(node, verdicts) {
+// Node ids touched by a live `contradicts` edge — symmetric, so either end
+// counts. Used to paint CONTRADICTED over whatever status the node itself
+// carries: the fact that something now contradicts it is the thing a reader
+// needs to see, whether the node was proposed, attested, or already accepted.
+function contradictedIds(edges) {
+  const ids = new Set()
+  for (const e of edges) {
+    if (e.type === 'contradicts') {
+      ids.add(e.src)
+      ids.add(e.dst)
+    }
+  }
+  return ids
+}
+
+// Which colour a node takes, and the precedence when two channels both have
+// something to say.
+//
+// `rejected` wins outright — a researcher's rejection is final. `contradicted`
+// wins over an assessment or a plain status, because a live contradiction is
+// new information a reader must not have hidden from them just because the
+// node was accepted, or because a control was run before the contradiction
+// was recorded. Failing both, a server-side `assessment` wins over plain
+// status: it is the result of a test that was actually run — a negative
+// control, or a measurement against the canon — which outranks "nothing has
+// checked this yet".
+function nodeColorKey(node, contradicted) {
   switch (node.type) {
     case 'witness': return 'witness'
     case 'passage': return 'passage'
@@ -130,9 +182,27 @@ function nodeColorKey(node, verdicts) {
     case 'verification':
     case 'decision': return 'audit'
     case 'claim':
-    case 'conjecture': return verdicts.get(node.id) || 'insufficient'
+    case 'conjecture': {
+      if (node.status === 'rejected') return 'rejected'
+      if (contradicted.has(node.id)) return 'contradicted'
+      if (node.assessment && ASSESSMENT_COLORS[node.assessment.state]) {
+        return `assessment:${node.assessment.state}`
+      }
+      return node.status === 'accepted' ? 'accepted'
+        : node.status === 'attested' ? 'attested'
+        : 'proposed'
+    }
     default: return 'audit'
   }
+}
+
+//: One lookup over both palettes, so `buildNodes` does not have to know which
+//: channel produced the key.
+function colorFor(key) {
+  if (key.startsWith('assessment:')) {
+    return ASSESSMENT_COLORS[key.slice('assessment:'.length)]
+  }
+  return NODE_COLORS[key]
 }
 
 // edge type -> colour / weight / dash, mirroring EDGE_STYLE + styles.css.
@@ -155,15 +225,25 @@ function truncate(s, n) {
   return chars.length > n ? chars.slice(0, n).join('') + '…' : chars.join('')
 }
 
-function buildNodes(nodes, showAudit, p, verdicts) {
+// vis-network draws a box/ellipse's label INSIDE the shape, tinted for
+// contrast against its fill — but a diamond or a star gets its label
+// OUTSIDE, underneath, sitting on the canvas background rather than on
+// `c.fill`. Using the fill-contrast colour there was picking white for
+// several hypothesis statuses (proposed/attested/rejected) whenever the
+// canvas itself reads light, which is illegible. These two shapes get a
+// fixed dark label regardless of status colour.
+const OUTSIDE_LABEL_SHAPES = new Set(['diamond', 'star'])
+
+function buildNodes(nodes, showAudit, p, contradicted) {
   return nodes.filter((n) => isVisible(n, showAudit)).map((n) => {
-    const c = NODE_COLORS[nodeColorKey(n, verdicts)]
+    const c = colorFor(nodeColorKey(n, contradicted))
     const dashes = n.status === 'proposed' ? [4, 3] : false   // unchecked cue
     const width = n.status === 'accepted' ? 3.5 : 1.5          // citable weight
+    const shape = TYPE_SHAPE[n.type] || 'box'
     return {
       id: n.id,
       label: truncate(nodeTitle(n), 16),
-      shape: TYPE_SHAPE[n.type] || 'box',
+      shape,
       color: {
         background: c.fill,
         border: NODE_BORDER,
@@ -173,11 +253,15 @@ function buildNodes(nodes, showAudit, p, verdicts) {
       borderWidth: width,
       borderWidthSelected: width + 2.5,
       shapeProperties: { borderDashes: dashes },
-      font: { color: c.text, size: 14, face: 'system-ui' },
+      font: { color: OUTSIDE_LABEL_SHAPES.has(shape) ? INK_DARK : c.text, size: 14, face: 'system-ui' },
       margin: 7,
       widthConstraint: { maximum: 150 },
-      // hover tooltip; the click opens the full DetailPanel inspector
-      title: `${n.type} · ${n.status}${n.assurance ? ' · ' + n.assurance : ''}`,
+      // hover tooltip; the click opens the full DetailPanel inspector.
+      // The assessment's own sentence rather than its state
+      // word, because "unplaced" and "discarded" are easy to read as the
+      // same kind of negative and are not.
+      title: `${n.type} · ${n.status}${n.assurance ? ' · ' + n.assurance : ''}`
+        + (n.assessment ? `\n${n.assessment.detail}` : ''),
     }
   })
 }
@@ -211,17 +295,6 @@ function buildEdges(edges, visibleIds, p) {
     })
 }
 
-// The force-simulation config, reused on every re-layout. Kept as one const so
-// re-enabling physics after a freeze restores the same solver, not vis defaults.
-const PHYSICS = {
-  barnesHut: {
-    gravitationalConstant: -12000, springLength: 135,
-    springConstant: 0.045, avoidOverlap: 0.35, damping: 0.28,
-  },
-  stabilization: { enabled: true, iterations: 400, updateInterval: 25, fit: true },
-}
-const SETTLE_CAP_MS = 10000   // freeze the layout after at most this long
-
 export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   const containerRef = useRef(null)
   const networkRef = useRef(null)
@@ -233,9 +306,6 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   const selectedRef = useRef(selectedId)
   onSelectRef.current = onSelect
   selectedRef.current = selectedId
-  const capRef = useRef(null)      // hard-cap timer -> freeze after SETTLE_CAP_MS
-  const settleRef = useRef(null)   // freeze physics + reveal the stationary graph
-  const [laying, setLaying] = useState(true)
 
   // create the network once
   useEffect(() => {
@@ -247,7 +317,13 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
       containerRef.current,
       { nodes, edges },
       {
-        physics: { enabled: true, ...PHYSICS },
+        physics: {
+          stabilization: { iterations: 180 },
+          barnesHut: {
+            gravitationalConstant: -12000, springLength: 135,
+            springConstant: 0.045, avoidOverlap: 0.35, damping: 0.28,
+          },
+        },
         interaction: { hover: true, tooltipDelay: 120, dragNodes: true, dragView: true, zoomView: true },
         nodes: { shadow: false, scaling: { min: 10, max: 30 } },
         edges: { smooth: { enabled: true, type: 'dynamic' } },
@@ -262,50 +338,29 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
         onSelectRef.current(id === selectedRef.current ? null : id)
       }
     })
-    // Simulate to a layout, then FREEZE physics so the graph is stationary when
-    // the reader sees it — they can still drag individual nodes, but nothing
-    // drifts on its own. The canvas is held invisible until then (see `laying`),
-    // so the stabilization jiggle is never shown.
-    const settle = () => {
-      const net = networkRef.current
-      if (!net) return
-      net.setOptions({ physics: false })
-      net.fit({ animation: false })
-      if (capRef.current) { clearTimeout(capRef.current); capRef.current = null }
-      setLaying(false)
-    }
-    settleRef.current = settle
-    network.on('stabilizationIterationsDone', settle)
+    // Fit the whole graph into view once physics settles, and again whenever the
+    // container resizes (the canvas height tracks the viewport), so the graph is
+    // never left zoomed into a corner.
+    network.on('stabilizationIterationsDone', () => network.fit({ animation: false }))
     const ro = new ResizeObserver(() => networkRef.current && networkRef.current.fit({ animation: false }))
     ro.observe(containerRef.current)
-    return () => {
-      if (capRef.current) clearTimeout(capRef.current)
-      ro.disconnect(); network.destroy(); networkRef.current = null
-    }
+    return () => { ro.disconnect(); network.destroy(); networkRef.current = null }
   }, [])
 
   // (re)load the data whenever it or the audit toggle changes
   useEffect(() => {
     if (!nodesRef.current) return
     const p = palette()
-    const verdicts = claimVerdicts(data.nodes, data.edges)
-    const visNodes = buildNodes(data.nodes, showAudit, p, verdicts)
+    const contradicted = contradictedIds(data.edges)
+    const visNodes = buildNodes(data.nodes, showAudit, p, contradicted)
     idsRef.current = new Set(visNodes.map((n) => n.id))
     const visEdges = buildEdges(data.edges, idsRef.current, p)
     nodesRef.current.clear()
     edgesRef.current.clear()
     nodesRef.current.add(visNodes)
     edgesRef.current.add(visEdges)
-    // re-run the simulation for the new data (hidden), then freeze it stationary
-    // via settle(); the cap guarantees it freezes even if it never fully settles.
-    setLaying(true)
-    const net = networkRef.current
-    net.setOptions({ physics: { enabled: true, ...PHYSICS } })
-    net.stabilize()
-    if (capRef.current) clearTimeout(capRef.current)
-    capRef.current = setTimeout(() => settleRef.current && settleRef.current(), SETTLE_CAP_MS)
     if (selectedRef.current && idsRef.current.has(selectedRef.current)) {
-      net.selectNodes([selectedRef.current])
+      networkRef.current.selectNodes([selectedRef.current])
     }
   }, [data, showAudit])
 
@@ -322,28 +377,14 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   }, [selectedId])
 
   return (
-    <div className="graph-scroll" style={{ position: 'relative' }}>
+    <div className="graph-scroll">
       <div
         ref={containerRef}
         className="graph-canvas"
         role="img"
         aria-label="Evidence graph (draggable)"
-        style={{
-          width: '100%', height: 'calc(100vh - 150px)', minHeight: '420px',
-          opacity: laying ? 0 : 1, transition: 'opacity 160ms ease',
-        }}
+        style={{ width: '100%', height: 'calc(100vh - 150px)', minHeight: '420px' }}
       />
-      {laying && (
-        <div
-          style={{
-            position: 'absolute', inset: 0, display: 'flex',
-            alignItems: 'center', justifyContent: 'center',
-            pointerEvents: 'none', color: 'var(--text-dim)', fontSize: 13,
-          }}
-        >
-          laying out the graph…
-        </div>
-      )}
     </div>
   )
 }
