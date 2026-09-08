@@ -304,7 +304,7 @@ class FakeRunTransport:
         if not made_a_call:
             message["tool_calls"] = [{
                 "id": "c1", "type": "function",
-                "function": {"name": self.tool, "arguments": json.dumps(self.args)},
+                "function": {"name": self.tool, "arguments": json.dumps({"action_reason": "Check the synthetic fixture.", **self.args})},
             }]
         return 200, json.dumps({
             "id": "gen", "model": "fake-model",

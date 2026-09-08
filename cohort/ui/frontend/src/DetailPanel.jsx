@@ -101,6 +101,7 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
         {node.created_by.role === 'worker' ? 'Worker' : node.created_by.role === 'reviewer' ? 'Reviewer' : 'Author'}: {node.created_by.author}
         {' · '}{node.created_by.model || 'Model not recorded'}
       </p>}
+      {node.created_by?.reason && <p><strong>Worker’s reason:</strong> {node.created_by.reason}</p>}
       {node.type === 'query' && <p className="hint small">Search record. Matches do not establish a claim.</p>}
       <code className="node-id">{node.id}</code>
 

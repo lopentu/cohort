@@ -190,3 +190,18 @@ Observed costs, for calibration:
 
 Set `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` in `.env`. **Never paste a real
 key into a chat session.**
+
+### Recorded action purposes
+
+Worker tool calls require `action_reason`: a brief, researcher-facing explanation
+of the chosen action and inputs. The runner refuses a missing or blank explanation
+before dispatch. This records the worker's stated purpose; it does not validate
+that purpose or expose private model reasoning. Direct Python tool calls retain
+their existing signatures.
+
+`tool_action` and `tool_result` are non-mutating audit events. The first records
+the purpose before execution; the second records the outcome and a bounded metadata
+summary without bulk excerpts. They replay without adding evidence nodes or edges.
+A missing result means the outcome was not recorded, not that the action succeeded.
+The shared run-history reader reconstructs these actions for both CLI and UI.
+Older events are unchanged and have no retroactively generated explanations.

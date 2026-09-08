@@ -15,8 +15,8 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-from .errors import RefusalCategory, UnknownEventType, refusal_category
-from .schemas import (
+from cohort.errors import RefusalCategory, UnknownEventType, refusal_category
+from cohort.schemas import (
     EVENT_TYPES,
     EdgeType,
     Event,
@@ -306,6 +306,7 @@ def read_runs(path: str | Path, *, limit: int | None = None) -> list[RunRecord]:
     runs: dict[str, RunRecord] = {}
     counts: Counter[str] = Counter()
     refused: Counter[str] = Counter()
+    actions: dict[int, dict] = {}
 
     for ev in read_events(path):
         if ev.run_id is not None:
@@ -320,6 +321,19 @@ def read_runs(path: str | Path, *, limit: int | None = None) -> list[RunRecord]:
                 budget_usd=ev.detail.get("budget_usd"),
                 question_id=ev.detail.get("question_id"),
             )
+        elif ev.event == "tool_action":
+            record = runs.get(ev.run_id)
+            if record is not None:
+                agent = next((a for a in record.agents if a.get("agent_id") == ev.authored_by), None)
+                if agent is not None:
+                    entry = {**ev.detail, "pending": True}
+                    agent.setdefault("tool_calls", []).append(entry)
+                    actions[ev.seq] = entry
+        elif ev.event == "tool_result":
+            entry = actions.get(ev.detail.get("action_seq"))
+            if entry is not None:
+                entry.update({"pending": False, "is_error": ev.detail.get("is_error"),
+                              "result": ev.detail.get("result")})
         elif ev.event == "run_finished":
             record = runs.get(ev.run_id or ev.detail.get("run_id", ""))
             if record is None:

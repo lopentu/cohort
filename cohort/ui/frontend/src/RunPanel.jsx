@@ -410,6 +410,15 @@ function RunHistory({ runs }) {
                 </span>
               ))}
             </div>
+            {r.agents.some(a => a.tool_calls?.length) && <details>
+              <summary>Actions and reasons</summary>
+              <ul className="tool-calls">{r.agents.flatMap(a => (a.tool_calls || []).map((c,i) =>
+                <li key={`${a.agent_id}:${i}`}>
+                  <div className="tc-head"><code>{c.tool}</code><span>{a.agent_id}</span></div>
+                  <p>{c.reason || 'Reason not recorded.'}</p>
+                  <small>{c.pending ? 'Outcome not recorded' : c.is_error ? 'Failed' : 'Completed'}</small>
+                </li>))}</ul>
+            </details>}
             {r.error && <p className="error small">{r.error}</p>}
           </li>
         ))}
@@ -679,6 +688,7 @@ function RunReport({ run, active }) {
                     {c.is_error ? 'refused' : 'ok'}
                   </span>
                 </div>
+                {c.reason && <p>{c.reason}</p>}
                 <p className="tc-result">{String(c.result)}</p>
               </li>
             ))}

@@ -39,7 +39,7 @@ def source():
 
 
 def _tool_call(name, args, id_="call_1"):
-    return {"id": id_, "type": "function", "function": {"name": name, "arguments": json.dumps(args)}}
+    return {"id": id_, "type": "function", "function": {"name": name, "arguments": json.dumps({"action_reason": "Check the synthetic fixture.", **args})}}
 
 
 def _response(*, content=None, tool_calls=None, finish_reason, input_tokens=10,
@@ -417,3 +417,31 @@ def test_turn_limit_is_distinct_from_model_finishing(graph, finish_reason, expec
     worker = _worker(graph, transport=transport)
     worker.run('investigate', max_turns=1)
     assert worker.turn_limit_reached is expected
+
+
+def test_action_reason_is_required_before_dispatch(graph, source):
+    call = _tool_call('propose_claim', {'text': 'A claim', 'grounding_query': '明月', 'action_reason': None})
+    transport = FakeTransport([_response(tool_calls=[call], finish_reason='tool_calls')])
+    worker = _worker(graph, source=source, transport=transport)
+    log = worker.run('investigate', max_turns=1)
+    assert log[0]['is_error']
+    assert 'reason' in log[0]['result'].lower()
+    assert not list(graph.nodes(node_type='claim'))
+
+
+def test_action_reason_is_saved_with_created_node(graph, source):
+    from cohort.views import node_detail_json
+
+    why = 'Locate the wording returned by the earlier comparison.'
+    call = _tool_call('propose_claim', {
+        'text': 'A claim', 'grounding_query': '明月', 'action_reason': why,
+    })
+    worker = _worker(graph, source=source, transport=FakeTransport([
+        _response(tool_calls=[call], finish_reason='tool_calls'),
+    ]))
+    log = worker.run('investigate', max_turns=1)
+    assert not log[0]['is_error']
+    assert log[0]['reason'] == why
+    detail = node_detail_json(graph, log[0]['result'], log_path=graph.event_log.path)
+    assert detail['created_by']['reason'] == why
+    assert graph.rebuild().ok

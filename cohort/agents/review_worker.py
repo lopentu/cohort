@@ -108,6 +108,8 @@ class ReviewWorker(AttestationWorker):
     PROMPT_VERSION = REVIEW_PROMPT_VERSION
     #: A reviewer checks citations; it does not gather evidence of its own.
     EVIDENCE_TOOLS_ALLOWED = False
+    # Review already requires a stated verdict justification in `detail`.
+    REQUIRE_ACTION_REASON = False
 
     def _dispatch(self, name: str, args: dict, model_call_id: int | None = None) -> tuple[bool, object]:
         try:

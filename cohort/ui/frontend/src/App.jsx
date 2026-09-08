@@ -292,7 +292,7 @@ export default function App() {
                   <label><input type="checkbox" checked={showExploration} onChange={e => { setShowExploration(e.target.checked); setSelectedId(null) }} /> Show exploration</label>
                   {showExploration && <span className="hint small">Dashed outlines and links show activity, not support. Select a work for details.</span>}
                 </div>
-                {showExploration && <p className="hint small exploration-note">{activityError || (!runActivity ? 'Loading exploration…' : !exploration.nodes.length ? 'No detailed activity available for the selected questions.' : 'Showing available run activity. Detailed history from before a server restart is unavailable.')}</p>}
+                {showExploration && <p className="hint small exploration-note">{activityError || (!runActivity ? 'Loading exploration…' : !exploration.nodes.length ? 'No detailed activity available for the selected questions.' : 'Showing recorded activity. Older runs may lack action history.')}</p>}
                 <Legend data={graphData} showAudit={showAudit} />
                 <GraphView
                   data={graphData}

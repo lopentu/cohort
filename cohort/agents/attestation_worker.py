@@ -26,6 +26,14 @@ import json
 import time
 from typing import Any
 
+from cohort.agents.action_history import activity_result, explained_tools
+from cohort.agents.openrouter import (
+    DEFAULT_MAX_OUTPUT_TOKENS,
+    complete,
+    default_transport,
+    load_openrouter_config,
+    output_limits_from_env,
+)
 from cohort.graph import Graph
 from cohort.schemas import AgentProfile, EdgeType, NodeType
 from cohort.sources.base import Source
@@ -57,17 +65,9 @@ from cohort.tools.semantic_neighbors import DESCRIPTION as SEMANTIC_NEIGHBORS_DE
 from cohort.tools.semantic_neighbors import NAME as SEMANTIC_NEIGHBORS_NAME
 from cohort.tools.semantic_neighbors import SemanticNeighborsInput, semantic_neighbors
 
-from .openrouter import (
-    DEFAULT_MAX_OUTPUT_TOKENS,
-    complete,
-    default_transport,
-    load_openrouter_config,
-    output_limits_from_env,
-)
-
 #: bump whenever SYSTEM_PROMPT or TOOLS changes shape, so logged model_call
 #: events can be grouped by which prompt/tool contract actually produced them.
-PROMPT_VERSION = "attestation_worker/v6-evidence-tools"
+PROMPT_VERSION = "attestation_worker/v7-action-reasons"
 
 SYSTEM_PROMPT = (
     "You are an attestation worker in COHORT, an evidence graph for textual "
@@ -264,6 +264,7 @@ class AttestationWorker:
     TOOLS = TOOLS
     PROMPT_VERSION = PROMPT_VERSION
     EVIDENCE_TOOLS_ALLOWED = True
+    REQUIRE_ACTION_REASON = True
 
     def __init__(
         self,
@@ -293,6 +294,14 @@ class AttestationWorker:
             if embeddings is not None:
                 self.tools.append(EVIDENCE_TOOLS[SEMANTIC_NEIGHBORS_NAME])
             self.system_prompt = self.SYSTEM_PROMPT + EVIDENCE_CONTRACT
+        if self.REQUIRE_ACTION_REASON:
+            self.tools = explained_tools(self.tools)
+            self.system_prompt += (
+                "\n\nEvery action requires a brief reason explaining why you chose these "
+                "inputs and what the action will check. For a proposal with several "
+                "searches, explain each search's purpose. Do not report private "
+                "reasoning; give a concise explanation for the researcher."
+            )
         if model is None or api_key is None:
             config_key, config_model = load_openrouter_config()
             api_key = api_key if api_key is not None else config_key
@@ -409,8 +418,27 @@ class AttestationWorker:
 
             for tc in choice.message.tool_calls or []:
                 args = json.loads(tc.function.arguments)
-                is_error, result = self._dispatch(tc.function.name, args, call_event.seq)
-                entry = {
+                reason = args.pop("action_reason", None)
+                action = self.graph.log_tool_activity(
+                    authored_by=self.authored_by, model_call_id=call_event.seq,
+                    detail={"tool": tc.function.name, "args": args, "reason": reason},
+                )
+                if self.REQUIRE_ACTION_REASON and (
+                    not isinstance(reason, str) or not reason.strip()
+                ):
+                    is_error, result = True, "A nonempty reason is required; explain why these inputs were chosen and retry."
+                    self.graph.log_refusal(
+                        tc.function.name, self.authored_by, ValueError(result),
+                        model_call_id=call_event.seq,
+                    )
+                else:
+                    is_error, result = self._dispatch(tc.function.name, args, call_event.seq)
+                self.graph.log_tool_activity(
+                    authored_by=self.authored_by, model_call_id=call_event.seq, completed=True,
+                    detail={"action_seq": action.seq, "is_error": is_error,
+                            "result": activity_result(result)},
+                )
+                entry = {"reason": reason,
                     "tool": tc.function.name, "args": args,
                     "result": result, "is_error": is_error,
                 }

@@ -145,7 +145,7 @@ def test_reasoning_details_are_echoed_back_on_the_tool_turn(tmp_path):
                 "role": "assistant", "content": None, "reasoning_details": details,
                 "tool_calls": [{"id": "call_1", "type": "function", "function": {
                     "name": "find_attestations",
-                    "arguments": json.dumps({"claim_or_conjecture_id": "claim:none", "query": "x"}),
+                    "arguments": json.dumps({"action_reason": "Check the fixture.", "claim_or_conjecture_id": "claim:none", "query": "x"}),
                 }}],
             }
             fin = "tool_calls"

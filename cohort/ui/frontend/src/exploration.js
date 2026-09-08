@@ -2,7 +2,8 @@
 // candidates; a model's proposal text is not a record of what it searched.
 export function explorationFor(payload, visibleQuestions) {
   const nodes = [], edges = []
-  const runs = new Map((payload?.history || []).map(r => [r.id, r]))
+  const runs = new Map((payload?.recorded || []).map(r => [r.run_id, {...r,id:r.run_id}]))
+  for (const r of payload?.history || []) runs.set(r.id,r)
   if (payload?.current) runs.set(payload.current.id, payload.current)
   for (const run of runs.values()) {
     if (!visibleQuestions.has(run.question_id)) continue
@@ -16,6 +17,7 @@ export function explorationFor(payload, visibleQuestions) {
         units.get(uid).actions.push(action)
       }
       for (const [i, call] of (agent.tool_calls || []).entries()) {
+        if (call.pending) continue
         const a = call.args || {}, r = call.result || {}
         const base = {step:i+1,tool:call.tool,reason:call.reason || null}
         if (call.tool === 'semantic_neighbors') {

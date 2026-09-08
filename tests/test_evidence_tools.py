@@ -154,7 +154,7 @@ def _fake_transport(calls: list[dict]):
         turns["n"] += 1
         if turns["n"] == 1:
             msg = {"role": "assistant", "content": None, "tool_calls": [
-                {"id": f"c{i}", "type": "function", "function": {"name": c["name"], "arguments": json.dumps(c["args"])}}
+                {"id": f"c{i}", "type": "function", "function": {"name": c["name"], "arguments": json.dumps({"action_reason": "Compare the synthetic units.", **c["args"]})}}
                 for i, c in enumerate(calls)
             ]}
             fin = "tool_calls"

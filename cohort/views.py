@@ -95,7 +95,10 @@ def creation_provenance(created_seq: int, log_path: Path | None) -> dict[str, An
         return None
     calls = {}
     rosters = {}
+    actions = {}
     for event in read_events(log_path):
+        if event.event == "tool_action":
+            actions[event.model_call_id] = event.detail
         if event.event == "model_call":
             calls[event.seq] = event
         elif event.event == "run_started":
@@ -108,6 +111,8 @@ def creation_provenance(created_seq: int, log_path: Path | None) -> dict[str, An
                 "author": event.authored_by,
                 "role": spec.get("role"),
                 "model": call.model if call is not None else None,
+                "reason": actions.get(event.model_call_id, {}).get("reason"),
+                "tool": actions.get(event.model_call_id, {}).get("tool"),
             }
         if event.seq > created_seq:
             break

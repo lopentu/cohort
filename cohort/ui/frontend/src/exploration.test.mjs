@@ -17,5 +17,12 @@ test('exploration distinguishes returned candidates, completed comparisons and f
 })
 test('hidden questions and unavailable histories do not acquire invented activity',()=>{
  assert.equal(explorationFor({history:[run]},new Set(['other'])).nodes.length,0)
- assert.equal(explorationFor({recorded:[run]},new Set(['q'])).nodes.length,0)
+ assert.equal(explorationFor({recorded:[{run_id:'old',question_id:'q',agents:[]}]},new Set(['q'])).nodes.length,0)
+})
+
+test('saved action reasons survive restarting the server',()=>{
+ const saved = {...run,run_id:run.id}
+ saved.agents[0].tool_calls[0].reason='Find similar passages beyond this work.'
+ const overlay=explorationFor({recorded:[saved]},new Set(['q']))
+ assert.equal(overlay.nodes.find(n=>n.uid==='C').actions[0].reason,'Find similar passages beyond this work.')
 })

@@ -221,3 +221,26 @@ def test_a_run_survives_the_process_that_started_it(tmp_path):
     recorded = manager.recorded()
     assert [r["run_id"] for r in recorded] == ["r1"]
     assert recorded[0]["spent_usd"] == 0.002
+
+
+def test_action_history_survives_readback_without_changing_graph(graph):
+    before = graph._snapshot()
+    with graph.during_run('activity'):
+        graph.log_run_started('activity', authored_by='run:activity', agents=[
+            {'agent_id': AGENT, 'role': 'worker', 'model': 'synthetic/model'},
+        ], budget_usd=None)
+        action = graph.log_tool_activity(authored_by=AGENT, model_call_id=0, detail={
+            'tool': 'align_passages', 'args': {'uid_a': 'A', 'uid_b': 'B'},
+            'reason': 'Check whether the candidate shares wording.',
+        })
+        pending = read_runs(graph.event_log.path)[0].agents[0]['tool_calls'][0]
+        assert pending['pending']
+        graph.log_tool_activity(authored_by=AGENT, model_call_id=0, completed=True, detail={
+            'action_seq': action.seq, 'is_error': False, 'result': {'longest_shared_run': 12},
+        })
+    recorded = read_runs(graph.event_log.path)[0].agents[0]['tool_calls'][0]
+    assert recorded['reason'] == 'Check whether the candidate shares wording.'
+    assert recorded['result']['longest_shared_run'] == 12
+    assert not recorded['pending']
+    assert graph._snapshot() == before
+    assert graph.rebuild().ok
