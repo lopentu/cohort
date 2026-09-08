@@ -1,6 +1,33 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { askQuestion, getQuestions, getRunConfig, getRuns, startRun, stopRun } from './api'
 
+// Which questions the researcher has hidden from the Graph tab, so it stays a
+// working view rather than an ever-growing history. Hiding removes nothing —
+// docs/design.md principle 1 makes the event log the one place a question
+// could be un-asked, and there is no un-ask event — it only changes what this
+// browser draws (graph-model.js's `hiddenIdsForQuestions`), so it is a
+// localStorage preference (Settings.jsx's pattern, wrapped in try/catch for
+// the same reason: a private window must not white-screen the app) rather
+// than a graph write.
+const HIDDEN_KEY = 'cohort.hiddenQuestions'
+
+export function loadHiddenQuestions() {
+  try {
+    const v = JSON.parse(localStorage.getItem(HIDDEN_KEY) || '[]')
+    return new Set(Array.isArray(v) ? v : [])
+  } catch {
+    return new Set()
+  }
+}
+
+export function saveHiddenQuestions(ids) {
+  try {
+    localStorage.setItem(HIDDEN_KEY, JSON.stringify([...ids]))
+  } catch {
+    /* storage unavailable: hiding still applies for this session */
+  }
+}
+
 // Starting an agent run from the browser.
 //
 // This is the only part of the UI that spends money, and the design follows
@@ -36,7 +63,7 @@ const REVIEWER_TASK =
   'Review each pending claim: re-check that its cited passages say what it '
   + 'claims they say, and give a verdict.'
 
-export default function RunPanel({ instructionSeed, onGraphChanged }) {
+export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuestions, onToggleHiddenQuestion }) {
   const [config, setConfig] = useState(null)
   const [runs, setRuns] = useState(null)
   const [agents, setAgents] = useState([blankAgent(0)])
@@ -165,7 +192,12 @@ export default function RunPanel({ instructionSeed, onGraphChanged }) {
         </p>
       )}
 
-      <Questions selected={questionId} onSelect={setQuestionId} />
+      <Questions
+        selected={questionId}
+        onSelect={setQuestionId}
+        hidden={hiddenQuestions}
+        onToggleHidden={onToggleHiddenQuestion}
+      />
 
       <form className="run-form" onSubmit={submit}>
         {mode === 'auto' ? (
@@ -399,12 +431,13 @@ function RunHistory({ runs }) {
 // Only the researcher may ask — setting the agenda is the supervision, so the
 // form is absent rather than disabled on a read-only server (the route is not
 // mounted either).
-function Questions({ selected, onSelect }) {
+function Questions({ selected, onSelect, hidden, onToggleHidden }) {
   const [data, setData] = useState(null)
   const [asking, setAsking] = useState(false)
   const [text, setText] = useState('')
   const [answerable, setAnswerable] = useState('')
   const [error, setError] = useState(null)
+  const [showHidden, setShowHidden] = useState(false)
 
   const load = useCallback(() => {
     getQuestions().then(setData).catch((e) => setError(e.message))
@@ -473,13 +506,25 @@ function Questions({ selected, onSelect }) {
       )}
 
       <ul className="question-list">
-        {data?.questions?.map((q) => (
+        {data?.questions?.filter((q) => !hidden?.has(q.id)).map((q) => (
           <li
             key={q.id}
             className={`question pick${selected === q.id ? ' on' : ''}`}
             onClick={() => onSelect(selected === q.id ? null : q.id)}
           >
-            <p className="question-text">{q.question}</p>
+            <div className="question-row">
+              <p className="question-text">{q.question}</p>
+              {/* Hides the question and, in the Graph tab, whatever was only
+                  there to support it (graph-model.js `hiddenIdsForQuestions`).
+                  A view preference, not a graph write — nothing in the event
+                  log changes, so this never conflicts with a run holding the
+                  writer lock and needs no researcher permission. */}
+              <button
+                type="button" className="btn tiny"
+                title="Hide from the Graph tab, along with anything only there for it — a display filter, not a graph edit"
+                onClick={(e) => { e.stopPropagation(); onToggleHidden?.(q.id) }}
+              >Hide</button>
+            </div>
             <p className="question-answerable">
               <span>Answerable by</span> {q.answerable_by}
             </p>
@@ -491,6 +536,32 @@ function Questions({ selected, onSelect }) {
           </li>
         ))}
       </ul>
+
+      {!!hidden?.size && (
+        <div className="questions-hidden">
+          <button
+            type="button" className="btn tiny"
+            onClick={() => setShowHidden((v) => !v)}
+          >
+            {showHidden ? 'Hide' : 'Show'} hidden questions ({hidden.size})
+          </button>
+          {showHidden && (
+            <ul className="question-list dim">
+              {data?.questions?.filter((q) => hidden.has(q.id)).map((q) => (
+                <li key={q.id} className="question">
+                  <div className="question-row">
+                    <p className="question-text">{q.question}</p>
+                    <button
+                      type="button" className="btn tiny"
+                      onClick={() => onToggleHidden?.(q.id)}
+                    >Unhide</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   )
 }

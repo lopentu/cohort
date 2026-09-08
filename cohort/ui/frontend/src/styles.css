@@ -1948,6 +1948,18 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
                     background: color-mix(in srgb, var(--addresses) 10%, transparent); }
 .question.pick.on .question-text { font-weight: 600; }
 
+/* The Hide button sits beside the question text rather than below it, so
+   hiding reads as an action on this row and not as one more fact about the
+   question. min-width: 0 lets the text truncate-wrap instead of pushing the
+   button off the row (see the overflow-wrap block above for long text). */
+.question-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
+.question-row .question-text { min-width: 0; }
+.questions-hidden { margin-top: 0.6rem; }
+/* Dimmed, not removed from the tab order or given a different shape: a hidden
+   question is still real, just not drawn on the graph right now. */
+.question-list.dim { opacity: 0.6; }
+.question-list.dim .question { border-left-color: var(--text-faint); }
+
 .auto-plan { display: flex; flex-direction: column; gap: 10px; }
 .plan-list { list-style: none; margin: 0; padding: 0; display: flex;
              flex-direction: column; gap: 6px; }

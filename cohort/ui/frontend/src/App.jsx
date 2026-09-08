@@ -6,11 +6,11 @@ import CorpusPanel from './CorpusPanel'
 import EvidencePanel from './EvidencePanel'
 import FindingsPanel from './FindingsPanel'
 import RefusalsPanel from './RefusalsPanel'
-import RunPanel from './RunPanel'
+import RunPanel, { loadHiddenQuestions, saveHiddenQuestions } from './RunPanel'
 import Settings, { applyTheme, loadTheme } from './Settings'
 import StatsBar from './StatsBar'
 import TabIntro from './TabIntro'
-import { EDGE_STYLE, legendFor } from './graph-model'
+import { EDGE_STYLE, hiddenIdsForQuestions, legendFor } from './graph-model'
 import { usePresence, useSlidingIndicator } from './motion'
 
 export default function App() {
@@ -32,6 +32,9 @@ export default function App() {
   // hanging off adjacent controls would overlap each other.
   const [introOpen, setIntroOpen] = useState(false)
   const [agentSeed, setAgentSeed] = useState(null)
+  // Which questions are hidden from the Graph tab. A view preference, not a
+  // graph write — see RunPanel.jsx's `loadHiddenQuestions` for why.
+  const [hiddenQuestions, setHiddenQuestions] = useState(loadHiddenQuestions)
 
   const reload = useCallback(() => {
     Promise.all([getGraph(), getHealth()])
@@ -43,6 +46,16 @@ export default function App() {
   }, [])
 
   useEffect(() => { applyTheme(theme) }, [theme])
+  useEffect(() => { saveHiddenQuestions(hiddenQuestions) }, [hiddenQuestions])
+
+  const toggleHiddenQuestion = useCallback((id) => {
+    setHiddenQuestions((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
 
   // The stats popover hangs off a control that only the Graph tab shows, so
   // leaving it open while switching away would strand it.
@@ -103,6 +116,16 @@ export default function App() {
     )
   }
   if (!data) return <div className="boot"><h1>COHORT</h1><p className="hint">Loading…</p></div>
+
+  // What the Graph tab and its legend actually draw: `data` minus whatever a
+  // hidden question pulled down with it. Not a hook — a plain filter over the
+  // already-loaded graph, so it can sit after the early returns above.
+  const hiddenIds = hiddenIdsForQuestions(data.nodes, data.edges, hiddenQuestions)
+  const graphData = !hiddenIds.size ? data : {
+    ...data,
+    nodes: data.nodes.filter((n) => !hiddenIds.has(n.id)),
+    edges: data.edges.filter((e) => !hiddenIds.has(e.src) && !hiddenIds.has(e.dst)),
+  }
 
   return (
     <div className="app">
@@ -195,9 +218,9 @@ export default function App() {
           <div className="tab-panel" key={tab} data-dir={tabDir}>
             {tab === 'graph' && (
               <>
-                <Legend data={data} showAudit={showAudit} />
+                <Legend data={graphData} showAudit={showAudit} />
                 <GraphView
-                  data={data}
+                  data={graphData}
                   selectedId={selectedId}
                   onSelect={setSelectedId}
                   showAudit={showAudit}
@@ -219,7 +242,12 @@ export default function App() {
             )}
             {tab === 'evidence' && <EvidencePanel />}
             {tab === 'run' && (
-              <RunPanel instructionSeed={agentSeed} onGraphChanged={reload} />
+              <RunPanel
+                instructionSeed={agentSeed}
+                onGraphChanged={reload}
+                hiddenQuestions={hiddenQuestions}
+                onToggleHiddenQuestion={toggleHiddenQuestion}
+              />
             )}
           </div>
         </main>
