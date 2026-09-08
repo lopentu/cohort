@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react'
+import AnalysisMarkdown from './AnalysisMarkdown'
+import { useEffect, useRef, useState } from 'react'
 import { getRunConfig, getRuns, startRun, stopRun } from './api'
 
 export default function AnalysisPanel({ view, scope }) {
+  const trigger = useRef(null)
+  const closeButton = useRef(null)
+  const close = () => { setOpen(false); trigger.current?.focus() }
   const [config,setConfig] = useState(null)
   const [open,setOpen] = useState(false)
   const [model,setModel] = useState('google/gemini-3.8-flash')
@@ -17,6 +21,13 @@ export default function AnalysisPanel({ view, scope }) {
     load();const timer=setInterval(load,2000)
     return()=>{live=false;clearInterval(timer)}
   },[open,runId])
+  useEffect(()=>{
+    if (!open) return
+    closeButton.current?.focus()
+    const escape = e => { if(e.key==='Escape') { setOpen(false); trigger.current?.focus() } }
+    document.addEventListener('keydown',escape)
+    return()=>document.removeEventListener('keydown',escape)
+  },[open])
   const available = new Map((runs?.recorded || []).filter(r=>r.agents.some(a=>a.role==='analyst')).map(r=>[r.run_id,{...r,id:r.run_id}]))
   for(const r of runs?.history || []) if(r.agents.some(a=>a.role==='analyst')) available.set(r.id,r)
   if(runs?.current?.agents.some(a=>a.role==='analyst')) available.set(runs.current.id,runs.current)
@@ -34,9 +45,10 @@ export default function AnalysisPanel({ view, scope }) {
   }
   if (!config?.analysis_enabled) return null
   return <div className="analysis-control">
-    {['graph','evidence'].includes(view) && <button className="btn tiny" onClick={()=>setOpen(v=>!v)} aria-expanded={open}>Analyze this view</button>}
-    {open && <section className="analysis-panel" aria-label="AI analysis">
-      <div className="tc-head"><h3>AI analysis</h3><button className="link" onClick={()=>setOpen(false)}>Close</button></div>
+    {['graph','evidence'].includes(view) && <button ref={trigger} className="btn tiny" onClick={()=>setOpen(v=>!v)} aria-expanded={open} aria-controls="ai-analysis-panel">Analyze this view</button>}
+    {open && <section id="ai-analysis-panel" className="analysis-panel" aria-label="AI analysis">
+      <div className="tc-head analysis-header"><h3>AI analysis</h3><button ref={closeButton} className="link" onClick={close}>Close</button></div>
+      <div className="analysis-body">
       <p className="hint small">Can inspect records, search passages and repeat comparisons. Cannot change graph records. Runs only when you click Start analysis.</p>
       <div className="analysis-inputs">
         <label>Model<input className="corpus-input" value={model} onChange={e=>setModel(e.target.value)} /></label>
@@ -55,7 +67,7 @@ export default function AnalysisPanel({ view, scope }) {
         {run.error && <p className="error">{run.error}</p>}
         {run.agents.filter(a=>a.role==='analyst').map(a=><div key={a.agent_id}>
           {a.error && <p className="error">{a.error}</p>}
-          {a.analysis ? <div className="analysis-text">{a.analysis}</div> : <p className="hint">{active?'Investigating…':'No final explanation was recorded. Inspect the actions below.'}</p>}
+          {a.analysis ? <AnalysisMarkdown>{a.analysis}</AnalysisMarkdown> : <p className="hint">{active?'Investigating…':'No final explanation was recorded. Inspect the actions below.'}</p>}
           <details><summary>Actions and reasons ({a.tool_calls?.length || 0})</summary>
             <ol className="exploration-actions">{(a.tool_calls || []).map((c,i)=><li key={i}>
               <strong>{c.tool}</strong><p>{c.reason || 'Reason not recorded.'}</p>
@@ -66,6 +78,7 @@ export default function AnalysisPanel({ view, scope }) {
         </div>)}
         <p className="hint small">AI interpretation, not a verification or researcher acceptance.</p>
       </>}
+      </div>
     </section>}
   </div>
 }

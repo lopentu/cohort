@@ -2187,10 +2187,18 @@ a.cbeta-link.block:hover { color: var(--text); }
 
 .analysis-control { padding:8px 18px; }
 .analysis-control:empty { display:none; }
-.analysis-panel { padding:16px 0; border-bottom:1px solid var(--border); max-width:950px; }
+/* Anchor to .body, outside the tab's flow, so long answers cannot shrink it. */
+.analysis-panel { position:absolute; top:8px; right:8px; bottom:8px; z-index:15;
+  width:560px; max-width:calc(100% - 16px); display:flex; flex-direction:column;
+  background:var(--bg-raised); border:1px solid var(--hairline);
+  border-radius:var(--radius-lg); box-shadow:var(--shadow-panel); overflow:hidden; }
+.analysis-header { flex:none; padding:14px 18px; border-bottom:1px solid var(--hairline); }
+.analysis-header h3 { margin:0; }
+.analysis-body { min-height:0; overflow:auto; overscroll-behavior:contain; padding:0 18px 18px; }
+.analysis-body > p:first-child { margin-top:14px; }
 .analysis-inputs { display:flex; align-items:end; flex-wrap:wrap; gap:12px; margin:12px 0; }
 .analysis-inputs label { flex:1; min-width:200px; }
-.analysis-text { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.65; margin:18px 0; }
+.analysis-text { white-space:normal; overflow-wrap:anywhere; line-height:1.65; margin:18px 0; }
 .analysis-panel pre { overflow:auto; max-height:260px; }
 .analysis-panel select { margin:8px; max-width:100%; }
 
@@ -2199,3 +2207,14 @@ a.cbeta-link.block:hover { color: var(--text); }
 .proposal-field-help p { margin:8px 0; }
 .inquiry-results { margin-bottom:24px; }
 .inquiry-results select { max-width:100%; }
+
+.analysis-text h1, .analysis-text h2, .analysis-text h3 { font-size:1.1em; line-height:1.4; margin:1.3em 0 .5em; }
+.analysis-text p { margin:.7em 0; }
+.analysis-text ul, .analysis-text ol { padding-left:1.5em; }
+.analysis-text li { margin:.35em 0; }
+.analysis-text pre { white-space:pre; overflow:auto; padding:10px; background:var(--fill-2); }
+.analysis-text code { font-size:.9em; }
+.analysis-text blockquote { margin:1em 0; padding-left:12px; border-left:3px solid var(--hairline); }
+.analysis-table { max-width:100%; overflow-x:auto; }
+.analysis-text table { border-collapse:collapse; font-size:.9em; }
+.analysis-text th, .analysis-text td { padding:6px 10px; border:1px solid var(--hairline); text-align:left; }

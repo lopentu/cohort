@@ -1,3 +1,4 @@
+import AnalysisMarkdown from './AnalysisMarkdown'
 import { inquiryReports } from './run-report'
 import { corpusInquiryDraft } from './corpus-inquiry'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -426,7 +427,7 @@ function RunHistory({ runs }) {
                   <small>{c.pending ? 'Outcome not recorded' : c.is_error ? 'Failed' : 'Completed'}</small>
                 </li>))}</ul>
             </details>}
-            {r.agents.filter(a => a.analysis).map(a => <details key={`analysis:${a.agent_id}`}><summary>AI interpretation · {a.model}</summary><div className="analysis-text">{a.analysis}</div></details>)}
+            {r.agents.filter(a => a.analysis).map(a => <details key={`analysis:${a.agent_id}`}><summary>AI interpretation · {a.model}</summary><AnalysisMarkdown>{a.analysis}</AnalysisMarkdown></details>)}
             {r.error && <p className="error small">{r.error}</p>}
           </li>
         ))}
