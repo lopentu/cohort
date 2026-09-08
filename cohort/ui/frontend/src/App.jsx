@@ -39,7 +39,12 @@ export default function App() {
 
   const reload = useCallback(() => {
     Promise.all([getGraph(), getHealth()])
-      .then(([g, h]) => { setData(g); setHealth(h) })
+      .then(([g, h]) => {
+        // Preserve the data reference when polling finds no new records:
+        // GraphView otherwise rebuilds the network and loses its layout.
+        setData((previous) => JSON.stringify(previous) === JSON.stringify(g) ? previous : g)
+        setHealth(h)
+      })
       .catch((e) => setError(e.message))
     // A missing log is a legitimate state, not an error, so a failure here
     // must not blank the whole view.
@@ -67,7 +72,14 @@ export default function App() {
   // text under a reader's eyes is worse than making them ask again.
   useEffect(() => { setIntroOpen(false) }, [tab])
 
-  useEffect(reload, [reload])
+  useEffect(() => {
+    // Inquiry unmounts on tab changes, but its server-side run keeps writing.
+    // Refresh here rather than depending on Inquiry to announce completion.
+    reload()
+    if (tab !== 'graph') return undefined
+    const timer = setInterval(reload, 4000)
+    return () => clearInterval(timer)
+  }, [tab, reload])
 
   // The refused-writes panel is toggled, so it needs an exit as much as an
   // entrance; without one it disappears on a frame while everything else on
