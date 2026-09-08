@@ -1185,7 +1185,7 @@ def build_parser() -> argparse.ArgumentParser:
                         "the run was asked. Every claim or conjecture the run "
                         "proposes gets an `addresses` edge to it")
     p.add_argument("--budget", type=float, default=0.25, help="hard USD cap for the run")
-    p.add_argument("--max-turns", type=int, default=8)
+    p.add_argument("--max-turns", type=int, default=32)
     p.add_argument("--max-agents", type=int, default=4,
                    help="ceiling on a planned roster (--question). An explicit "
                         "roster is bounded by what you pass, not by this")

@@ -75,9 +75,9 @@ from cohort.sources.base import Source
 #: a default that cannot surprise anyone is worth more than a convenient one.
 DEFAULT_MAX_BUDGET_USD = 1.00
 
-#: Turn ceiling, same reasoning. A worker that has not finished in this many
-#: turns is usually looping, not thinking.
-DEFAULT_MAX_TURNS = 8
+#: Retrieval, comparison and citation can need several tool rounds per finding.
+#: Reaching this ceiling must be reported as a cutoff, not completed research.
+DEFAULT_MAX_TURNS = 32
 
 #: How many agents one run may fan out to. Bounded because every agent
 #: multiplies the spend against one shared cap, and because past a handful
@@ -662,7 +662,7 @@ class RunManager:
                     for spec in run.specs
                     for entry in run.per_agent.get(spec.agent_id, [])
                 ]
-                if run._cancel.is_set():
+                if run._cancel.is_set() or run.stopped_early:
                     run.state = "stopped"
                 elif run.agent_errors and len(run.agent_errors) == len(run.specs):
                     run.state = "failed"
@@ -733,13 +733,20 @@ class RunManager:
         loop = asyncio.new_event_loop()
         try:
             asyncio.set_event_loop(loop)
-            return loop.run_until_complete(
+            results = loop.run_until_complete(
                 run_swarm(
                     assignments, max_turns=run.max_turns,
                     on_tool_call=on_tool_call,
                     should_stop=run._cancel.is_set,
                 )
             )
+            with run._lock:
+                for worker, _ in assignments:
+                    if getattr(worker, "turn_limit_reached", False):
+                        note = f"Turn limit reached ({run.max_turns}); investigation incomplete."
+                        run.agent_notes[worker.authored_by] = note
+                        run.stopped_early = note
+            return results
         finally:
             asyncio.set_event_loop(None)
             loop.close()

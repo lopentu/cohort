@@ -374,6 +374,7 @@ class AttestationWorker:
         ]
         log: list[dict[str, Any]] = []
 
+        self.turn_limit_reached = False
         for _ in range(max_turns):
             if should_stop is not None and should_stop():
                 break
@@ -421,6 +422,9 @@ class AttestationWorker:
                     "tool_call_id": tc.id,
                     "content": json.dumps({"is_error": is_error, "result": result}, default=str),
                 })
+
+        else:
+            self.turn_limit_reached = True
 
         return log
 

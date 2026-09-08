@@ -409,3 +409,11 @@ def test_a_write_boundary_refusal_is_logged_once_not_twice(graph, source):
     after = read_refusals(graph.event_log.path)
     assert len(after) == before + 1, "a single refusal must produce a single event"
     assert after[-1].rule == "EdgeSelfLoop"
+
+
+@pytest.mark.parametrize(('finish_reason', 'expected'), [('tool_calls', True), ('stop', False)])
+def test_turn_limit_is_distinct_from_model_finishing(graph, finish_reason, expected):
+    transport = FakeTransport([_response(finish_reason=finish_reason)])
+    worker = _worker(graph, transport=transport)
+    worker.run('investigate', max_turns=1)
+    assert worker.turn_limit_reached is expected
