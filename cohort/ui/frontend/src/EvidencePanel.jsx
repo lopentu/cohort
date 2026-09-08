@@ -322,6 +322,34 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
         </div>
       )}
 
+      {data.verdict !== 'no evidence' && (
+        <section className="ev-ranking" aria-label="Full group ranking">
+          <h4>All {data.ranking.length} groups, ranked</h4>
+          <p className="hint small">The leader is 0. Negative scores fall below it; more negative means further behind. These are total score differences, not the per-string margin above or probabilities.</p>
+          <div className="ev-comparison-scroll">
+          <table className="ev-table">
+            <thead><tr><th>Rank</th><th className="g">Group</th><th>Score relative to leader</th><th>Corpus units remaining</th></tr></thead>
+            <tbody>
+              {data.ranking.map((r, index) => {
+                const p = data.profiles[r.label] || {}
+                return (
+                  <tr key={r.label} className={p.thin ? 'thin' : ''}>
+                    <td className="num">{index + 1}</td>
+                    <td className="g">{profileName(r.label)}{p.thin && <span className="warn small"> thin</span>}</td>
+                    <td className="num">{r.delta.toLocaleString(undefined, { maximumFractionDigits: 1 })}</td>
+                    <td className="num">{p.units} of {p.units_before_withholding}</td>
+                  </tr>
+                )
+              })}
+              {data.no_profile.map((n) => (
+                <tr key={n.label}><td>—</td><td className="g">{profileName(n.label)}</td><td colSpan="2" className="hint small">not judged: {n.reason}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        </section>
+      )}
+
       {(data.first === 'pre-Dhr-other' || data.second === 'pre-Dhr-other') && (
         <p className="hint small">“Other material before Dharmarakṣa 竺法護” is a mixed corpus group, not a single translator.</p>
       )}
@@ -376,31 +404,6 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
       </form>
       </details>
 
-      {data.verdict !== 'no evidence' && (
-        <details className="ev-ranking">
-          <summary className="hint small">All {data.ranking.length} groups and remaining material</summary>
-          <table className="ev-table">
-            <thead><tr><th className="g">class</th><th>Δ log-likelihood</th><th>units left</th><th>feature tokens</th><th>order</th></tr></thead>
-            <tbody>
-              {data.ranking.map((r) => {
-                const p = data.profiles[r.label] || {}
-                return (
-                  <tr key={r.label} className={p.thin ? 'thin' : ''}>
-                    <td className="g">{profileName(r.label)}{p.thin && <span className="warn small"> thin</span>}</td>
-                    <td className="num">{r.delta.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
-                    <td className="num">{p.units} of {p.units_before_withholding}</td>
-                    <td className="num">{(p.feature_tokens ?? 0).toLocaleString()}</td>
-                    <td className="num">{p.sequence != null ? p.sequence + 1 : ''}</td>
-                  </tr>
-                )
-              })}
-              {data.no_profile.map((n) => (
-                <tr key={n.label}><td className="g">{profileName(n.label)}</td><td colSpan="4" className="hint small">not judged: {n.reason}</td></tr>
-              ))}
-            </tbody>
-          </table>
-        </details>
-      )}
 
       {pair && (
         <p className="hint small">

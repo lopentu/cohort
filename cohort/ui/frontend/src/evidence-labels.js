@@ -1,6 +1,13 @@
 // Display names only: preserve the catalogue codes in API requests and URLs.
 // These example text titles are catalogue metadata, not inferred ascriptions.
 const PROFILES = {
+  Lkṣ: 'Lokakṣema 支婁迦讖',
+  Kj: 'Kumārajīva 鳩摩羅什',
+  'post-Lkṣ': 'Material after Lokakṣema 支婁迦讖',
+  'Saṅghadeva': 'Gautama Saṅghadeva 僧伽提婆',
+  'Guṇabhadra': 'Guṇabhadra 求那跋陀羅',
+  Buddhabhadra: 'Buddhabhadra 佛陀跋陀羅',
+  Baoyun: 'Baoyun 寶雲',
   ASg: 'An Shigao 安世高',
   Dhr: 'Dharmarakṣa 竺法護',
   'Dhkṣ': 'Dharmakṣema 曇無讖',
