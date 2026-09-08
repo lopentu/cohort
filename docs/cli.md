@@ -181,3 +181,12 @@ See [ui.md](ui.md) for the HTTP surface and for port forwarding over SSH.
     CBETA_FTS_PATH=          # optional; defaults to cbeta_fts.sqlite
 
 Copy `.env.example` to `.env` and fill it in by hand. `.env` is gitignored.
+
+
+### Related indexed passages
+
+`cohort related T0263-rest --start 4000 --radich PATH --json` uses
+`EVIDENCE_EMBEDDINGS_PATH` to retrieve passages in other works, with cosine
+scores, source positions and exact shared runs within the displayed windows.
+Omit the unit ID to inspect coverage. It does not accept arbitrary query text,
+run a language model or write graph records.

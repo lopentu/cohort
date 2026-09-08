@@ -94,3 +94,7 @@ export const getEvidence = (uid, features = 'radich', { withhold = '', offset = 
     `/api/evidence?uid=${encodeURIComponent(uid)}&features=${encodeURIComponent(features)}` +
     `&withhold=${encodeURIComponent(withhold)}&offset=${offset}&pair=${encodeURIComponent(pair)}`,
   )
+
+export const getRelated = (uid, start = 0) => json(uid
+  ? `/api/corpus/related?uid=${encodeURIComponent(uid)}&start=${start}`
+  : '/api/corpus/related')

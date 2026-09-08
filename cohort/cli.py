@@ -778,6 +778,24 @@ def _attribution(args):
         raise SystemExit(f"no Radich data at {root}: {e}\n(pass --radich PATH or set RADICH_ROOT)") from e
 
 
+def cmd_related(args) -> None:
+    from cohort.embeddings import EmbeddingIndex
+    from cohort.related import related_config, related_passages
+
+    embeddings = EmbeddingIndex.from_env()
+    if args.uid is None:
+        payload = related_config(embeddings)
+    else:
+        if embeddings is None:
+            raise SystemExit("Set EVIDENCE_EMBEDDINGS_PATH to the passage index.")
+        try:
+            payload = related_passages(embeddings, _attribution(args), args.uid,
+                                       start=args.start, limit=args.limit)
+        except (KeyError, ValueError) as e:
+            raise SystemExit(str(e.args[0])) from e
+    _emit(args, payload, lambda p: print(json.dumps(p, ensure_ascii=False, indent=2)))
+
+
 def cmd_evidence(args) -> None:
     index = _attribution(args)
     if args.list:
@@ -1149,6 +1167,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("id", help="a passage node id")
     p.add_argument("--window", type=int, default=10,
                    help="characters of context on each side (default 10)")
+
+    p = add("related", cmd_related, "retrieve related indexed passages in other works")
+    p.add_argument("uid", nargs="?", help="indexed text ID; omit to list index coverage")
+    p.add_argument("--start", type=int, default=0, help="indexed source character position")
+    p.add_argument("--limit", type=int, default=5)
+    p.add_argument("--radich", default=None)
 
     p = add("evidence", cmd_evidence,
             "where one text leans between translator profiles, and the strings that make it lean")

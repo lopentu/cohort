@@ -133,6 +133,7 @@ def main() -> None:
         )
 
     attribution = None
+    embeddings = None
     if args.radich:
         import time
 
@@ -146,15 +147,15 @@ def main() -> None:
         led = attribution.units()["ledger"]
         print(f"evidence: {led['kept for profiling']} units in {led['classes profiled']} classes "
               f"profiled ({time.time() - t0:.0f}s; cached beside the data for next time)")
-        if run_manager is not None:
-            # Agents get the evidence tools only when the data behind them is here.
-            from cohort.embeddings import EmbeddingIndex
+        from cohort.embeddings import EmbeddingIndex
 
+        try:
+            embeddings = EmbeddingIndex.from_env()
+        except (FileNotFoundError, ValueError, RuntimeError) as e:
+            print(f"note: semantic_neighbors disabled — {e}", file=sys.stderr)
+        if run_manager is not None:
             run_manager.attribution = attribution
-            try:
-                run_manager.embeddings = EmbeddingIndex.from_env()
-            except (FileNotFoundError, ValueError, RuntimeError) as e:
-                print(f"note: semantic_neighbors disabled — {e}", file=sys.stderr)
+            run_manager.embeddings = embeddings
             tools = ["attribution_evidence", "align_passages"] + (
                 ["semantic_neighbors"] if run_manager.embeddings is not None else []
             )
@@ -204,7 +205,7 @@ def main() -> None:
     uvicorn.run(
         create_app(
             db_path, args.log, allow_writes=args.allow_writes,
-            source=source, run_manager=run_manager, attribution=attribution,
+            source=source, run_manager=run_manager, attribution=attribution, embeddings=embeddings,
         ),
         host=args.host, port=args.port,
     )

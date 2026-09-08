@@ -125,7 +125,7 @@ export default function App() {
     ['graph', 'Graph'],
     ['findings', 'Findings'],
     health?.corpus_enabled && ['corpus', 'Corpus'],
-    health?.evidence_enabled && ['evidence', 'Evidence'],
+    health?.evidence_enabled && ['evidence', 'Vocabulary comparison'],
     health?.runs_enabled && ['run', 'Inquiry'],
   ].filter(Boolean)
 

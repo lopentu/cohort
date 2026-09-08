@@ -21,13 +21,14 @@ const INTROS = {
   corpus: {
     title: 'Corpus',
     body: [
-      ['Search', 'Exact-phrase search. Results appear in corpus order.'],
+      ['Exact phrase', 'Find matching wording. Results appear in corpus order.'],
+      ['Related passages', 'Use stored embeddings to find similar content in other works. Results are ranked by cosine similarity. Expand shared wording to check exact overlap.'],
       ['Read', 'Open a result for context. Hiding markup changes displayed positions.'],
       ['Continue', 'Investigate this passage opens an Inquiry draft with the selected source. Review and record it before starting.'],
     ],
   },
   evidence: {
-    title: 'Evidence',
+    title: 'Vocabulary comparison',
     body: [
       ['Compare', 'Select a text to compare short-string counts across corpus groups.'],
       ['Repeat', 'Exclude a related text to test whether repeated material affects the result.'],

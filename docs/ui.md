@@ -315,3 +315,27 @@ Theming has **three** states, not two: an explicit choice stamps
 `data-theme="light|dark"`, and "system" stamps nothing and follows
 `prefers-color-scheme`. Contrast is measured against WCAG AA (4.5:1 for small
 text), not eyeballed.
+
+
+## Related passages in Corpus
+
+Corpus offers **Exact phrase** (corpus-order matches) and **Related passages**
+(cosine-ranked windows from a configured embedding index). Related search takes
+an indexed unit ID and source position, not a free-text question. All units of
+the target's Taishō work are excluded. Results show both bounded passages and
+an expandable shared-wording comparison; this does not write graph records.
+
+The index filename supplies the displayed model name. Legacy indexes do not
+record a model revision, generation-time source hashes or training inputs;
+the interface discloses this. Source positions are zero-based local character
+offsets, with the end excluded, not CBETA page/line numbers.
+
+**Vocabulary comparison** is the former Evidence tab. It scores a target's
+short strings against pooled corpus groups and does not use embeddings.
+The internal tab key and evidence API paths remain compatible.
+
+Configure `EVIDENCE_EMBEDDINGS_PATH` and run the UI with `--corpus --radich PATH`.
+Related search also works without `--allow-runs`; no paid call is needed.
+`GET /api/corpus/related` reports coverage; add `uid`, `start` and optional
+`limit` for a search. CLI equivalent: `cohort related T0263-rest --start 4000
+--radich PATH --json` (omit the ID for coverage).

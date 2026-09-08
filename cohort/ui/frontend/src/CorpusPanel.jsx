@@ -2,6 +2,7 @@ import { explainProfileCodes } from './evidence-labels'
 import { useEffect, useRef, useState } from 'react'
 import { fetchCorpus, searchCorpus } from './api'
 import Reveal from './Reveal'
+import RelatedPanel from './RelatedPanel'
 
 // Browsing and searching the corpus, so the web UI can do what a script can.
 //
@@ -25,6 +26,7 @@ import Reveal from './Reveal'
 // showing results for a phrase the user has already moved on from.
 
 export default function CorpusPanel({ onCite }) {
+  const [mode, setMode] = useState('exact')
   const [query, setQuery] = useState('')
   const [results, setResults] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -93,6 +95,12 @@ export default function CorpusPanel({ onCite }) {
   return (
     <section className="corpus">
       <h2>Corpus</h2>
+      <div className="corpus-modes" role="group" aria-label="Search method">
+        <button className="btn" aria-pressed={mode === 'exact'} onClick={() => setMode('exact')}>Exact phrase</button>
+        <button className="btn" aria-pressed={mode === 'related'} onClick={() => setMode('related')}>Related passages</button>
+      </div>
+      {mode === 'related' ? <RelatedPanel /> : <>
+
       <form className="corpus-form" onSubmit={(e) => { e.preventDefault(); run() }}>
         <input
           className="corpus-input"
@@ -206,6 +214,7 @@ export default function CorpusPanel({ onCite }) {
           </ul>
         </>
       )}
+      </>}
     </section>
   )
 }

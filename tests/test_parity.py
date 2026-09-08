@@ -46,6 +46,7 @@ ROUTE_TO_COMMAND = {
     ("POST", "/api/reopen"): "reopen",
     ("GET", "/api/corpus/search"): "search",
     ("GET", "/api/corpus/fetch"): "fetch",
+    ("GET", "/api/corpus/related"): "related",
     ("GET", "/api/passage/context"): "context",
     # One command, two routes: `--list` is the units listing, a unit id is the
     # evidence for it. The browser needs the list first to offer a picker.

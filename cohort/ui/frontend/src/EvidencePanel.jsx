@@ -112,6 +112,7 @@ export default function EvidencePanel({ onSelection }) {
       <div className="suggested-inputs" aria-label="Suggested evidence texts">
         <span className="hint small">Try a text:</span>
         {[
+          ['T0263-rest', 'Lotus Sūtra · Dharmarakṣa'],
           ['T0603', 'Yin chi ru jing 陰持入經 · T0603'],
           ['T0453', 'Maitreya’s descent 彌勒下生經 · T0453'],
         ].map(([id, label]) => <button type="button" className="btn tiny" key={id}
@@ -328,7 +329,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
           <p className="hint small">The leader is 0. Negative scores fall below it; more negative means further behind. These are total score differences, not the per-string margin above or probabilities.</p>
           <div className="ev-comparison-scroll">
           <table className="ev-table">
-            <thead><tr><th>Rank</th><th className="g">Group</th><th>Score relative to leader</th><th>Corpus units remaining</th></tr></thead>
+            <thead><tr><th>Rank</th><th className="g">Group</th><th>Score relative to leader</th><th>Texts/chapters used</th></tr></thead>
             <tbody>
               {data.ranking.map((r, index) => {
                 const p = data.profiles[r.label] || {}

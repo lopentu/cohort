@@ -44,6 +44,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
 from cohort.attribution import FEATURE_SETS, AttributionIndex
+from cohort.embeddings import EmbeddingIndex
 from cohort.errors import (
     CohortError,
     EdgeNotFound,
@@ -83,6 +84,7 @@ def create_app(
     source: Source | None = None,
     run_manager: RunManager | None = None,
     attribution: AttributionIndex | None = None,
+    embeddings: EmbeddingIndex | None = None,
 ) -> FastAPI:
     """Build the app around one projection path.
 
@@ -761,6 +763,25 @@ def create_app(
                 "source_ref": source_ref,
                 "witness_ref": record.witness_ref,
             }
+
+    @app.get("/api/corpus/related")
+    def related(uid: str | None = None, start: int = Query(0, ge=0),
+                limit: int = Query(5, ge=1, le=10)) -> dict[str, Any]:
+        from cohort.related import related_config, related_passages
+
+        configured = embeddings if embeddings is not None else (
+            run_manager.embeddings if run_manager is not None else None
+        )
+        if uid is None:
+            return related_config(configured)
+        if configured is None or attribution is None:
+            raise HTTPException(status_code=503, detail="Passage embeddings and source texts must be configured.")
+        try:
+            return related_passages(configured, attribution, uid, start=start, limit=limit)
+        except KeyError as e:
+            raise HTTPException(status_code=404, detail=str(e.args[0])) from e
+        except ValueError as e:
+            raise HTTPException(status_code=422, detail=str(e)) from e
 
     # --- attribution evidence (read-only; parity with `cohort evidence`) ------
 

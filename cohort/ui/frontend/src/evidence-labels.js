@@ -17,6 +17,8 @@ const PROFILES = {
   grey: 'Translator uncertain in this catalogue',
 }
 const TEXTS = {
+  'T0263-rest': 'Lotus Sūtra 正法華經 · Dharmarakṣa · catalogue remainder',
+  'T0262-exDevadatta': 'Lotus Sūtra 妙法蓮華經 · Kumārajīva · without Devadatta chapter',
   T0603: 'Yin chi ru jing 陰持入經',
   T1694: 'Commentary on the Yin chi ru jing 陰持入經註',
   T0453: 'Maitreya’s descent 彌勒下生經',
