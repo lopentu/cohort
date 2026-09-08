@@ -48,7 +48,7 @@ export function saveHiddenQuestions(ids) {
 // transcript (docs/design.md §5 principle 3), and the panel says so rather than
 // letting a viewer assume they collaborate.
 
-const DEMO_EXAMPLES = [
+const INQUIRY_EXAMPLES = [
   {
     label: 'Find related passages: T0603',
     question: 'Which passages elsewhere in the corpus are closely related to the Yin chi ru jing (陰持入經, T0603), and what might explain those relationships?',
@@ -465,9 +465,9 @@ function Questions({ draft, selected, onSelect, hidden, onToggleHidden }) {
         </button>
       </div>
 
-      <div className="demo-examples">
+      <div className="inquiry-examples">
         <p className="hint small">Choose an example, then edit and record it.</p>
-        {DEMO_EXAMPLES.map((example) => <button type="button" className="btn" key={example.label}
+        {INQUIRY_EXAMPLES.map((example) => <button type="button" className="btn" key={example.label}
           onClick={() => { setText(example.question); setAnswerable(example.criteria); setSourceRef(''); setAsking(true) }}>
           {example.label}
         </button>)}

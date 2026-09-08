@@ -2142,17 +2142,17 @@ a.cbeta-link.block:hover { color: var(--text); }
 /* Keep the next action visible while retaining settings and session history. */
 .inquiry-details { margin: 1rem 0; border-top: 1px solid var(--line); padding-top: .8rem; }
 .inquiry-details > summary { cursor: pointer; font-weight: 600; padding: .3rem 0; }
-.demo-examples { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0 1.5rem; }
-.demo-examples > p { flex-basis: 100%; margin: 0 0 .25rem; }
+.inquiry-examples { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0 1.5rem; }
+.inquiry-examples > p { flex-basis: 100%; margin: 0 0 .25rem; }
 
 .runs { max-width: 960px; margin: 24px auto; }
 .runs .questions-head h3, .runs .run-form > h3 { font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--text); }
 .runs .questions-head > button { flex: 0 0 auto; }
 @media (max-width: 1000px) { .runs { margin: 12px; } }
-.runs .demo-examples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.runs .demo-examples > p { grid-column: 1 / -1; }
-.runs .demo-examples > button { white-space: normal; height: auto; min-height: 44px; padding: 10px; overflow-wrap: anywhere; }
-@media (max-width: 600px) { .runs .demo-examples { grid-template-columns: 1fr; } }
+.runs .inquiry-examples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.runs .inquiry-examples > p { grid-column: 1 / -1; }
+.runs .inquiry-examples > button { white-space: normal; height: auto; min-height: 44px; padding: 10px; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .runs .inquiry-examples { grid-template-columns: 1fr; } }
 
 .suggested-inputs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 6px; }
 .suggested-inputs > button { flex: 0 1 auto; white-space: normal; height: auto; min-height: 32px; overflow-wrap: anywhere; }

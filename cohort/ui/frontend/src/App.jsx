@@ -144,8 +144,7 @@ export default function App() {
         <h1>COHORT</h1>
         <p>{error}</p>
         <p className="hint">
-          Seed a graph with <code>scripts/seed_demo_graph.py</code>, then serve it
-          with <code>scripts/serve_ui.py</code>.
+          Check the server configuration and reload this page.
         </p>
       </div>
     )

@@ -1,5 +1,5 @@
 // Display names only: preserve the catalogue codes in API requests and URLs.
-// These demo text titles are catalogue metadata, not inferred ascriptions.
+// These example text titles are catalogue metadata, not inferred ascriptions.
 const PROFILES = {
   ASg: 'An Shigao 安世高',
   Dhr: 'Dharmarakṣa 竺法護',

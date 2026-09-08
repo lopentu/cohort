@@ -2,7 +2,7 @@
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cohort tab guide</title>
 <style>
-:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#faf9f6;color:#252525;font:17px/1.6 system-ui,sans-serif}main{max-width:980px;margin:36px auto;padding:0 24px 70px}h1{font-size:34px;line-height:1.15;margin:24px 0 12px}h2{font-size:29px;line-height:1.2}h3{font-size:19px;margin:24px 0 8px}a{color:#006778}p{max-width:780px}nav{display:flex;flex-wrap:wrap;gap:8px 24px;padding:12px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd}nav a{padding:4px 0}section{scroll-margin-top:24px;padding:25px 0 40px;border-bottom:1px solid #ccc}details{background:#fff;border:1px solid #ddd;border-radius:6px;margin:12px 0;padding:14px 18px}summary{font-weight:650;cursor:pointer}table{border-collapse:collapse;width:100%;margin:14px 0;font-size:16px}th,td{padding:10px;text-align:left;vertical-align:top;border-bottom:1px solid #e1e1db}th:first-child,td:first-child{width:25%}ol{padding-left:24px}li{padding:3px 0}.demo{border-left:3px solid #007582;padding:3px 0 3px 16px}.purpose{font-size:20px;line-height:1.45}.effects{font-size:15px;color:#4c4c4c}code{font-size:.9em}footer{font-size:14px;margin-top:28px;color:#555}@media(max-width:600px){main{padding:0 16px}h1{font-size:29px}h2{font-size:25px}table{font-size:14px}th,td{padding:8px}details{padding:12px}nav{gap:8px 18px}}
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#faf9f6;color:#252525;font:17px/1.6 system-ui,sans-serif}main{max-width:980px;margin:36px auto;padding:0 24px 70px}h1{font-size:34px;line-height:1.15;margin:24px 0 12px}h2{font-size:29px;line-height:1.2}h3{font-size:19px;margin:24px 0 8px}a{color:#006778}p{max-width:780px}nav{display:flex;flex-wrap:wrap;gap:8px 24px;padding:12px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd}nav a{padding:4px 0}section{scroll-margin-top:24px;padding:25px 0 40px;border-bottom:1px solid #ccc}details{background:#fff;border:1px solid #ddd;border-radius:6px;margin:12px 0;padding:14px 18px}summary{font-weight:650;cursor:pointer}table{border-collapse:collapse;width:100%;margin:14px 0;font-size:16px}th,td{padding:10px;text-align:left;vertical-align:top;border-bottom:1px solid #e1e1db}th:first-child,td:first-child{width:25%}ol{padding-left:24px}li{padding:3px 0}.quick-start{border-left:3px solid #007582;padding:3px 0 3px 16px}.purpose{font-size:20px;line-height:1.45}.effects{font-size:15px;color:#4c4c4c}code{font-size:.9em}footer{font-size:14px;margin-top:28px;color:#555}@media(max-width:600px){main{padding:0 16px}h1{font-size:29px}h2{font-size:25px}table{font-size:14px}th,td{padding:8px}details{padding:12px}nav{gap:8px 18px}}
 </style>
 <main>
 <a href="/">Open Cohort</a>
@@ -25,7 +25,7 @@
 <details><summary>Optional controls</summary>
 <table><tr><th>Control</th><th>Use it when…</th></tr>
 <tr><td>Agent roles and settings</td><td>You want to inspect who will do the work. Workers retrieve and propose; reviewers check claims after the workers finish.</td></tr>
-<tr><td>Customize the roster</td><td>You need specific worker tasks or models. For the demo, keep the automatic setup.</td></tr>
+<tr><td>Customize the roster</td><td>You need specific worker tasks or models. The automatic setup is sufficient to start.</td></tr>
 <tr><td>Agent ID / Model</td><td>You need identifiable authors and different model families. An agent cannot review its own claim.</td></tr>
 <tr><td>Corpus scope / Method</td><td>You want to give an agent a narrower task or approach. These fields are included in its instructions; they do not impose a separate corpus-access filter.</td></tr>
 <tr><td>Add agent / reviewer</td><td>You need another task or a separate review. More agents do not automatically mean stronger evidence.</td></tr>
@@ -38,9 +38,9 @@
 <p><strong>Current run:</strong> execution state, elapsed time, model calls, tool activity and costs. A finished run may contain proposals, refusals or no useful finding.</p>
 <p><strong>Refusal:</strong> the graph blocked an attempted operation. Open the reason; a refusal is not the same as finding no corpus match.</p>
 <p><strong>Previous runs:</strong> saved execution summaries. Findings and Graph hold the resulting research records.</p>
-<p>Runs continue on the server when you leave the tab. Records save automatically; the server must stay running. This demo has no monetary stopping limit. Turn limits and the stop control still apply.</p>
+<p>Runs continue on the server when you leave the tab. Records save automatically; the server must stay running. Spending limits depend on the server configuration. Turn limits and the stop control still apply.</p>
 </details>
-<p class="demo"><strong>For the demo:</strong> show the question and instructions. Keep model settings and old runs collapsed. Use saved findings as a fallback for live execution.</p>
+<p class="quick-start"><strong>Getting started:</strong> review the question and instructions. Keep model settings and old runs collapsed. Reopen saved findings without rerunning the agents.</p>
 </section>
 
 <section id="corpus">
@@ -61,7 +61,7 @@
 <tr><td>CBETA link</td><td>Opens the published text externally. Verification uses the local source, which may differ from that edition.</td></tr>
 </table>
 </details>
-<p class="demo"><strong>For the demo:</strong> use the suggested T0603 phrase, open one result and show its context. Skip markup and external links unless asked.</p>
+<p class="quick-start"><strong>Getting started:</strong> use the suggested T0603 phrase, open one result and read its context. Use markup and external links when you need to check the source.</p>
 </section>
 
 <section id="evidence">
@@ -83,7 +83,7 @@
 <details><summary>Optional controls</summary>
 <table><tr><th>Control</th><th>Use it when…</th></tr>
 <tr><td>Text picker</td><td>You want a target beyond the examples. Search by title, identifier or translator name.</td></tr>
-<tr><td>Vocabulary and method</td><td>You want to change the strings being counted. Curated strings, common label-free strings and their combination are different experiments. Keep one setup for the main demo.</td></tr>
+<tr><td>Vocabulary and method</td><td>You want to change the strings being counted. Curated strings, common label-free strings and their combination are different experiments. Keep the string set fixed when comparing the effect of exclusions.</td></tr>
 <tr><td>Additional exclusions</td><td>You suspect related material is driving the result. Use exact corpus-unit IDs. Chaptered works need each chapter ID; a whole-work ID does not expand automatically.</td></tr>
 <tr><td>Restore these texts</td><td>You want to remove the additional exclusions and compare the baseline again.</td></tr>
 <tr><td>Highlighting groups</td><td>You want a fixed colour comparison between two groups. This changes highlighting, not the overall ranking. Empty means automatic selection, which can change when the setup changes.</td></tr>
@@ -97,7 +97,7 @@
 <p><strong>String counts and weights:</strong> which strings drive the colour comparison. Counts are raw occurrences; rates use string hits as their denominator, not characters. Weights are scores, not confidence estimates.</p>
 <p>The corpus’s group order is not a newly inferred date for the target.</p>
 </details>
-<p class="demo"><strong>For the demo:</strong> use the text selector, result and exclusion box. Keep vocabulary, highlighting controls and detailed tables closed unless a question calls for them.</p>
+<p class="quick-start"><strong>Getting started:</strong> use the text selector, result and exclusion box. Keep vocabulary, highlighting controls and detailed tables closed unless a question calls for them.</p>
 </section>
 
 <section id="findings">
@@ -122,7 +122,7 @@
 <p><strong>Researcher decisions:</strong> approved records and rejections with reasons.</p>
 <p><strong>Record integrity:</strong> checks hashes and compares database reconstruction with the event log. Useful for auditing storage, not for deciding historical questions.</p>
 </details>
-<p class="demo"><strong>For the demo:</strong> open one proposal and one citation. Leave integrity checks and the full decision lists closed.</p>
+<p class="quick-start"><strong>Getting started:</strong> open one proposal and one citation. Leave integrity checks and the full decision lists closed.</p>
 </section>
 
 <section id="graph">
@@ -157,7 +157,7 @@
 <p><strong>Settings:</strong> theme and audit-node visibility. Repeated passage span checks stay grouped in the inspector even with audit nodes enabled.</p>
 <p><strong>Drag and zoom:</strong> arrange the display. These positions do not encode a scholarly ranking.</p>
 </details>
-<p class="demo"><strong>For the demo:</strong> follow one evidence chain. Expand the link explanation if needed. You do not need to accept records or narrate the whole network.</p>
+<p class="quick-start"><strong>Getting started:</strong> follow one evidence chain. Expand the link explanation if needed. Accept a record only after reviewing it.</p>
 </section>
-<footer>This guide describes the current presentation build. It explains controls, not guarantees of research accuracy. The source corpus, saved graph and Evidence calculations remain separate.</footer>
+<footer>This guide describes the current interface. It explains controls, not guarantees of research accuracy. The source corpus, saved graph and Evidence calculations remain separate.</footer>
 </main></html>
