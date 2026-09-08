@@ -23,8 +23,12 @@ def activity_result(result):
     if not isinstance(result, dict):
         return result if isinstance(result, (str, int, float, bool, type(None))) else None
     keys = ('uid', 'uid_a', 'uid_b', 'nearest_unit_tally', 'longest_shared_run',
-            'witnesses', 'passages', 'withheld_extra', 'margin', 'first', 'second')
+            'witnesses', 'passages', 'withheld_extra', 'margin', 'first', 'second',
+            'ref', 'start', 'end', 'total_characters', 'returned', 'limit', 'order',
+            'id', 'type', 'status', 'authorship', 'created_by')
     summary = {key: result[key] for key in keys if key in result}
+    if isinstance(result.get('hits'), list):
+        summary['hits'] = [{'ref': h['ref']} for h in result['hits']]
     if 'shown' in result:
         summary['shown'] = [
             {'neighbors': [{'uid': n['uid']} for n in window.get('neighbors', [])]}

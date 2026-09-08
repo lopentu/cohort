@@ -268,6 +268,14 @@ class Graph:
         self._apply(ev)
         return ev
 
+    def log_analysis(self, *, authored_by: str, model_call_id: int, text: str) -> None:
+        """Save a reader's interpretation as run history, never as evidence."""
+        ev = self.event_log_or_raise().append(
+            "analysis", authored_by=authored_by, model_call_id=model_call_id,
+            detail={"text": text},
+        )
+        self._apply(ev)
+
     def log_tool_activity(
         self, *, authored_by: str, model_call_id: int, detail: dict,
         completed: bool = False,
@@ -1035,7 +1043,7 @@ class Graph:
             self._apply_ask(ev)
         elif ev.event == "register_agent":
             self._apply_register_agent(ev)
-        elif ev.event in {"refused", "model_call", "tool_action", "tool_result"}:
+        elif ev.event in {"refused", "model_call", "tool_action", "tool_result", "analysis"}:
             pass  # an audit marker only; never mutates state
         elif ev.event in ("run_started", "run_finished"):
             pass  # a run beginning is not a change to the graph

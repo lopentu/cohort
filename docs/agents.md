@@ -205,3 +205,21 @@ summary without bulk excerpts. They replay without adding evidence nodes or edge
 A missing result means the outcome was not recorded, not that the action succeeded.
 The shared run-history reader reconstructs these actions for both CLI and UI.
 Older events are unchanged and have no retroactively generated explanations.
+
+### Read-only view analysis
+
+The `analyst` run role explains a Graph or Evidence view and can investigate with
+`inspect_node`, `search_corpus`, `read_source`, and configured Evidence tools.
+It has no proposal, attestation, review or researcher-decision tools. Its calls,
+stated reasons and final interpretation are saved as audit events; `analysis`
+events do not create evidence nodes or change their status. The interpretation
+is model output, not a verified finding. It remains the researcher's job to assess
+it. The role uses the existing single-run scheduler and can hit its turn limit.
+
+The UI's **Analyze this view** opens controls; **Start analysis** launches the paid
+model calls. Graph sends its visible record IDs and activity as starting context;
+Evidence sends the current text, vocabulary, highlighting pair and exclusions.
+The analyst may investigate beyond that starting view using read-only tools.
+CLI equivalent: `cohort run --analyze --agent 'Explain claim:... using its citations'`
+(with the usual corpus/model configuration). `--json` includes the interpretation,
+and run history preserves it across restarts. No output-token ceiling is sent.

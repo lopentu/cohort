@@ -509,7 +509,7 @@ EVENT_TYPES = {
     "propose", "attest", "accept", "reject", "reopen", "add_edge", "refused",
     "model_call", "verify", "register_agent",
     # Tool activity is audit history, not a new evidence node or edge.
-    "tool_action", "tool_result",
+    "tool_action", "tool_result", "analysis",
     # A question is asked, never proposed: it does not climb the ladder, so it
     # cannot share the "propose" event, which is what puts a node at the
     # bottom rung. Its own event, the same way `verify` has one.

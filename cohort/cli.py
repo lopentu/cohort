@@ -858,6 +858,8 @@ def cmd_run(args) -> None:
 
     source = _corpus(args)
     workers = args.agent or []
+    if args.analyze and not workers:
+        raise SystemExit("--analyze requires --agent with the question or view to explain")
     reviewers = args.reviewer or []
 
     # `--question` with no roster plans one. Same function the browser's auto
@@ -937,7 +939,7 @@ def cmd_run(args) -> None:
         specs = [
             AgentSpec(agent_id=f"agent:cli-{i + 1}", instructions=text,
                       corpus_scope=scopes[i], method_label=methods[i],
-                      model=worker_models[i])
+                      model=worker_models[i], role="analyst" if args.analyze else "worker")
             for i, text in enumerate(workers)
         ]
         # Reviewers come after the workers in the roster because that is the
@@ -995,6 +997,10 @@ def cmd_run(args) -> None:
         if r.get("error"):
             print(f"\nrun error: {r['error']}")
     _emit(args, run, render)
+    if not args.json:
+        for agent in run.get("agents", []):
+            if agent.get("analysis"):
+                print(agent["analysis"])
 
 
 def _run_history(args) -> None:
@@ -1185,6 +1191,7 @@ def build_parser() -> argparse.ArgumentParser:
                         "the run was asked. Every claim or conjecture the run "
                         "proposes gets an `addresses` edge to it")
     p.add_argument("--budget", type=float, default=0.25, help="hard USD cap for the run")
+    p.add_argument("--analyze", action="store_true", help="use read-only investigation tools and return an explanation")
     p.add_argument("--max-turns", type=int, default=32)
     p.add_argument("--max-agents", type=int, default=4,
                    help="ceiling on a planned roster (--question). An explicit "

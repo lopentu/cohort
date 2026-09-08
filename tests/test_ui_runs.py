@@ -903,3 +903,29 @@ def test_uncapped_api_run_keeps_null_budget(manager, graph_files, source):
     result = _await_finish(manager)
     assert result["spend"]["budget_usd"] is None
     assert result["error"] is None
+
+
+def test_read_only_analysis_is_saved_without_evidence_writes(graph_files, source, monkeypatch):
+    monkeypatch.setenv('OPENROUTER_API_KEY', 'fake')
+    monkeypatch.setenv('OPENROUTER_MODEL', 'test/model')
+    def transport(url, headers, body, timeout):
+        payload = json.loads(body)
+        assert 'max_tokens' not in payload
+        assert {t['function']['name'] for t in payload['tools']}.isdisjoint({'propose_claim', 'review_claim'})
+        return 200, json.dumps({
+            'id': 'analysis', 'model': 'test/model',
+            'choices': [{'message': {'role': 'assistant', 'content': 'No additional relationship established.'}, 'finish_reason': 'stop'}],
+            'usage': {'prompt_tokens': 1, 'completion_tokens': 1, 'cost': 0},
+        }).encode()
+    db, log = graph_files
+    with Graph.open_read_only(db) as graph:
+        before = [(n.id, n.status) for n in graph.nodes()]
+    manager = RunManager(db, log, source, transport_factory=lambda budget, on_call: transport)
+    manager.start([spec(role='analyst')], budget_usd=0.1)
+    run = _await_finish(manager)
+    assert run['state'] == 'finished', run.get('error')
+    assert run['agents'][0]['analysis'] == 'No additional relationship established.'
+    fresh = RunManager(db, log, source)
+    assert fresh.recorded()[0]['agents'][0]['analysis'] == run['agents'][0]['analysis']
+    with Graph.open_read_only(db) as graph:
+        assert [(n.id, n.status) for n in graph.nodes()] == before

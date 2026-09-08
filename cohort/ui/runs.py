@@ -58,6 +58,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from cohort.agents.analysis_worker import AnalysisWorker
 from cohort.agents.attestation_worker import AttestationWorker
 from cohort.agents.budget import BudgetedTransport, BudgetExceeded
 from cohort.agents.openrouter import OpenRouterError, load_model_pool, load_openrouter_config
@@ -92,7 +93,8 @@ class RunRejected(RuntimeError):
 
 ROLE_WORKER = "worker"
 ROLE_REVIEWER = "reviewer"
-ROLES = (ROLE_WORKER, ROLE_REVIEWER)
+ROLE_ANALYST = "analyst"
+ROLES = (ROLE_WORKER, ROLE_REVIEWER, ROLE_ANALYST)
 
 
 class AgentSpec:
@@ -281,6 +283,7 @@ class Run:
         #: from `agent_errors` so "there was no work" never reads as "it
         #: broke", and so a run of one skipped reviewer still finishes.
         self.agent_notes: dict[str, str] = {}
+        self.agent_analyses: dict[str, str] = {}
         self.instructions = specs[0].instructions if len(specs) == 1 else ""
         self.agent_id = specs[0].agent_id if len(specs) == 1 else f"{len(specs)} agents"
         self.budget_usd = budget_usd
@@ -315,6 +318,7 @@ class Run:
                         "tool_calls": list(self.per_agent.get(spec.agent_id, [])),
                         "error": self.agent_errors.get(spec.agent_id),
                         "note": self.agent_notes.get(spec.agent_id),
+                        "analysis": self.agent_analyses.get(spec.agent_id),
                     }
                     for spec in self.specs
                 ],
@@ -381,6 +385,7 @@ class RunManager:
             configured, detail = False, str(e)
         return {
             "runs_enabled": True,
+            "analysis_enabled": True,
             "corpus_available": self.source is not None,
             "model_configured": configured,
             "model": detail if configured else None,
@@ -594,7 +599,8 @@ class RunManager:
                         model=spec.model,
                     )
                     graph.register_agent(profile, authored_by=spec.agent_id)
-                cls = ReviewWorker if spec.is_reviewer else AttestationWorker
+                cls = (AnalysisWorker if spec.role == ROLE_ANALYST else
+                       ReviewWorker if spec.is_reviewer else AttestationWorker)
                 if self.source is None:  # already refused above; this is the type-level guarantee
                     msg = "no corpus is mounted, so no agent can be built"
                     raise RunRejected(msg)
@@ -742,6 +748,8 @@ class RunManager:
             )
             with run._lock:
                 for worker, _ in assignments:
+                    if getattr(worker, "IS_ANALYST", False) and worker.final_response:
+                        run.agent_analyses[worker.authored_by] = worker.final_response
                     if getattr(worker, "turn_limit_reached", False):
                         note = f"Turn limit reached ({run.max_turns}); investigation incomplete."
                         run.agent_notes[worker.authored_by] = note

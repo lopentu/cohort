@@ -383,6 +383,7 @@ class AttestationWorker:
         ]
         log: list[dict[str, Any]] = []
 
+        self.final_response = None
         self.turn_limit_reached = False
         for _ in range(max_turns):
             if should_stop is not None and should_stop():
@@ -414,6 +415,12 @@ class AttestationWorker:
             messages.append(assistant)
 
             if choice.finish_reason != "tool_calls":
+                self.final_response = choice.message.content
+                if getattr(self, "IS_ANALYST", False) and self.final_response:
+                    self.graph.log_analysis(
+                        authored_by=self.authored_by, model_call_id=call_event.seq,
+                        text=self.final_response,
+                    )
                 break
 
             for tc in choice.message.tool_calls or []:

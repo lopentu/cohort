@@ -321,6 +321,12 @@ def read_runs(path: str | Path, *, limit: int | None = None) -> list[RunRecord]:
                 budget_usd=ev.detail.get("budget_usd"),
                 question_id=ev.detail.get("question_id"),
             )
+        elif ev.event == "analysis":
+            record = runs.get(ev.run_id)
+            if record is not None:
+                agent = next((a for a in record.agents if a.get("agent_id") == ev.authored_by), None)
+                if agent is not None:
+                    agent["analysis"] = ev.detail.get("text")
         elif ev.event == "tool_action":
             record = runs.get(ev.run_id)
             if record is not None:
