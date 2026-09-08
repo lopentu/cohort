@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getGraph, getHealth, getRefusals } from './api'
 import DetailPanel from './DetailPanel'
-import GraphView, { nodeLegendFor } from './GraphView'
+import GraphView, { nodeLegendFor, TYPE_SHAPE } from './GraphView'
 import CorpusPanel from './CorpusPanel'
 import EvidencePanel from './EvidencePanel'
 import FindingsPanel from './FindingsPanel'
@@ -293,7 +293,8 @@ function Legend({ data, showAudit }) {
   const nodeKey = nodeLegendFor(data.nodes, showAudit)
 
   return (
-    <div className="legend">
+    <div className="legend" aria-label="Graph key">
+      <strong className="legend-title">Graph key</strong>
       {edges.map((e) => (
         <span className="li" key={e.key}>
           <i className={`swatch ${e.klass}`} /> {emphasise(e.text, e.strong)}
@@ -302,7 +303,7 @@ function Legend({ data, showAudit }) {
       {!!edges.length && !!nodeKey.length && <span className="sep" />}
       {nodeKey.map((n) => (
         <span className="li" key={n.key}>
-          <i className="dot" style={{ background: n.color }} /> {n.key}
+          <NodeKeyShape shape={n.types ? TYPE_SHAPE[n.types[0]] : 'diamond'} color={n.color} /> {n.key}
         </span>
       ))}
     </div>
@@ -318,5 +319,19 @@ function emphasise(text, word) {
     <>
       {text.slice(0, at)}<b>{word}</b>{text.slice(at + word.length)}
     </>
+  )
+}
+
+function NodeKeyShape({ shape, color }) {
+  const common = { fill: color, stroke: 'currentColor', strokeWidth: 0.7 }
+  return (
+    <svg className="node-key-shape" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" data-shape={shape}>
+      {shape === 'star' ? <polygon points="10,1 12.8,6.5 19,7.5 14.5,12 15.5,18.5 10,15.5 4.5,18.5 5.5,12 1,7.5 7.2,6.5" {...common} />
+        : shape === 'diamond' ? <polygon points="10,1 19,10 10,19 1,10" {...common} />
+          : shape === 'ellipse' ? <ellipse cx="10" cy="10" rx="9" ry="5.5" {...common} />
+            : shape === 'box' ? <rect x="1" y="4" width="18" height="12" rx="2" {...common} />
+              : shape === 'square' ? <rect x="3" y="3" width="14" height="14" {...common} />
+                : <circle cx="10" cy="10" r="6" {...common} />}
+    </svg>
   )
 }

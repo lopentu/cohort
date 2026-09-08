@@ -24,9 +24,9 @@ const KEY = 'cohort.theme'
 export function loadTheme() {
   try {
     const v = localStorage.getItem(KEY)
-    return THEMES.some(([k]) => k === v) ? v : 'system'
+    return THEMES.some(([k]) => k === v) ? v : 'light'
   } catch {
-    return 'system'
+    return 'light'
   }
 }
 

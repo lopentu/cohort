@@ -1,3 +1,4 @@
+import { explainProfileCodes } from './evidence-labels'
 import { useEffect, useRef, useState } from 'react'
 import { fetchCorpus, searchCorpus } from './api'
 import Reveal from './Reveal'
@@ -135,7 +136,7 @@ export default function CorpusPanel({ onCite }) {
               <li key={h.ref} className={openRef === h.ref ? 'open' : ''}>
                 <div className="corpus-row">
                   <button className="corpus-ref" onClick={() => open(h.ref)}>
-                    {h.title || h.ref}
+                    {h.title ? explainProfileCodes(h.title) : h.ref}
                   </button>
                   {h.cbeta_url && (
                     <a

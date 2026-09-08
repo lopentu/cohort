@@ -39,7 +39,7 @@ function palette() {
 // pair "hypothesis" (see the legend comment below) and drawing them
 // differently — a box for one, a diamond for the other — read as two kinds of
 // thing where the vocabulary says there is one.
-const TYPE_SHAPE = {
+export const TYPE_SHAPE = {
   witness: 'ellipse', passage: 'box', claim: 'diamond', conjecture: 'diamond',
   query: 'dot', question: 'star', verification: 'square', decision: 'square',
 }
@@ -120,8 +120,8 @@ const NODE_LEGEND_ALL = [
   { key: 'work — not placed', color: ASSESSMENT_COLORS.unplaced.fill, states: ['unplaced'] },
   { key: 'source text', color: NODE_COLORS.witness.fill, types: ['witness'] },
   { key: 'passage', color: NODE_COLORS.passage.fill, types: ['passage'] },
-  { key: 'query', color: NODE_COLORS.query.fill, types: ['query'] },
-  { key: 'question', color: NODE_COLORS.question.fill, types: ['question'] },
+  { key: 'search query', color: NODE_COLORS.query.fill, types: ['query'] },
+  { key: 'research question', color: NODE_COLORS.question.fill, types: ['question'] },
 ]
 
 // The key for *this* graph, not the vocabulary — the same discipline

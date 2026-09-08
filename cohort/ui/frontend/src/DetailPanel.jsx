@@ -1,3 +1,4 @@
+import { explainProfileCodes } from './evidence-labels'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   acceptNode, attestNode, getAgent, getNode, getPassageContext, rejectNode,
@@ -93,7 +94,8 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
         <div className={`badge assurance lvl-${node.assurance}`}>{node.assurance}</div>
       </header>
 
-      <h2>{nodeTitle(node)}</h2>
+      <h2>{['claim', 'conjecture'].includes(node.type) && node.payload?.text
+        ? explainProfileCodes(node.payload.text) : nodeTitle(node)}</h2>
       <code className="node-id">{node.id}</code>
 
       {/* Where this text is published, for a reader who wants to see the

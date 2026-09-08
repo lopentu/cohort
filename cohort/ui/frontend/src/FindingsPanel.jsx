@@ -1,3 +1,4 @@
+import { explainProfileCodes } from './evidence-labels'
 import { useCallback, useEffect, useState } from 'react'
 import {
   getCitable,
@@ -132,7 +133,7 @@ function Hypotheses({ findings, onSelect }) {
             <li key={f.id} className={`hyp ${open === f.id ? 'open' : ''}`}>
               <button className="hyp-head" onClick={() => toggle(f.id)}>
                 <span className={`badge t-${f.type}`}>{f.type}</span>
-                <span className="hyp-text">{f.assertion || f.id}</span>
+                <span className="hyp-text">{f.assertion ? explainProfileCodes(f.assertion) : f.id}</span>
               </button>
 
               <div className="hyp-marks">
@@ -205,7 +206,7 @@ function Dossier({ d, onSelect }) {
           {fields.map(([k, v]) => (
             <div key={k}>
               <dt>{k.replace(/_/g, ' ')}</dt>
-              <dd>{v}</dd>
+              <dd>{typeof v === 'string' ? explainProfileCodes(v) : v}</dd>
             </div>
           ))}
         </dl>
