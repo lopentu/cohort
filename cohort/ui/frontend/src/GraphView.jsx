@@ -315,6 +315,9 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   const nodesRef = useRef(null)
   const edgesRef = useRef(null)
   const idsRef = useRef(new Set())
+  const layoutReady = useRef(false)
+  const positionsRef = useRef({})
+  const clickedSelection = useRef(false)
   // latest onSelect / selectedId, so the click handler (bound once) never goes stale
   const onSelectRef = useRef(onSelect)
   const selectedRef = useRef(selectedId)
@@ -349,16 +352,21 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
     network.on('click', (params) => {
       if (params.nodes && params.nodes.length) {
         const id = params.nodes[0]
+        clickedSelection.current = true
         onSelectRef.current(id === selectedRef.current ? null : id)
       }
     })
-    // Fit the whole graph into view once physics settles, and again whenever the
-    // container resizes (the canvas height tracks the viewport), so the graph is
-    // never left zoomed into a corner.
-    network.on('stabilizationIterationsDone', () => network.fit({ animation: false }))
-    const ro = new ResizeObserver(() => networkRef.current && networkRef.current.fit({ animation: false }))
-    ro.observe(containerRef.current)
-    return () => { ro.disconnect(); network.destroy(); networkRef.current = null }
+    // Arrange once, then stop the simulation. Reading, dragging and incoming
+    // records must not restart physics or move the camera.
+    const finishLayout = () => {
+      if (layoutReady.current || !nodes.length) return
+      layoutReady.current = true
+      network.setOptions({ physics: { enabled: false } })
+      network.fit({ animation: false })
+    }
+    network.on('stabilizationIterationsDone', finishLayout)
+    network.on('stabilized', finishLayout)
+    return () => { network.destroy(); networkRef.current = null; layoutReady.current = false }
   }, [])
 
   // (re)load the data whenever it or the audit toggle changes
@@ -369,10 +377,28 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
     const visNodes = buildNodes(data.nodes, showAudit, p, contradicted)
     idsRef.current = new Set(visNodes.map((n) => n.id))
     const visEdges = buildEdges(data.edges, idsRef.current, p)
-    nodesRef.current.clear()
-    edgesRef.current.clear()
-    nodesRef.current.add(visNodes)
-    edgesRef.current.add(visEdges)
+    const net = networkRef.current
+    Object.assign(positionsRef.current, net.getPositions())
+    const positions = positionsRef.current
+    if (layoutReady.current) {
+      visNodes.forEach((node, i) => {
+        if (positions[node.id]) Object.assign(node, positions[node.id])
+        else {
+          const edge = visEdges.find((e) =>
+            (e.from === node.id && positions[e.to]) || (e.to === node.id && positions[e.from]))
+          const anchor = edge ? positions[edge.from === node.id ? edge.to : edge.from] : net.getViewPosition()
+          const angle = i * 2.399963229728653
+          Object.assign(node, { x: anchor.x + 150 * Math.cos(angle), y: anchor.y + 150 * Math.sin(angle) })
+        }
+      })
+    }
+    // Update existing records in place; clearing the datasets discards layout.
+    const edgeIds = new Set(visEdges.map((e) => e.id))
+    edgesRef.current.remove(edgesRef.current.getIds().filter((id) => !edgeIds.has(id)))
+    nodesRef.current.remove(nodesRef.current.getIds().filter((id) => !idsRef.current.has(id)))
+    nodesRef.current.update(visNodes)
+    edgesRef.current.update(visEdges)
+    if (!layoutReady.current && visNodes.length) net.stabilize(180)
     if (selectedRef.current && idsRef.current.has(selectedRef.current)) {
       networkRef.current.selectNodes([selectedRef.current])
     }
@@ -382,9 +408,11 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   useEffect(() => {
     const net = networkRef.current
     if (!net) return
+    const fromClick = clickedSelection.current
+    clickedSelection.current = false
     if (selectedId && idsRef.current.has(selectedId)) {
       net.selectNodes([selectedId])
-      net.focus(selectedId, { scale: 1.0, animation: { duration: 300 } })
+      if (!fromClick) net.focus(selectedId, { scale: 1.0, animation: false })
     } else {
       net.unselectAll()
     }
@@ -392,6 +420,8 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
 
   return (
     <div className="graph-scroll">
+      <button className="btn tiny" style={{ margin: '8px 18px' }}
+        onClick={() => networkRef.current?.fit({ animation: false })}>Fit graph</button>
       <div
         ref={containerRef}
         className="graph-canvas"
