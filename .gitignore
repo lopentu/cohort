@@ -33,3 +33,8 @@ wget-log
 
 # Playwright MCP scratch (screenshots, snapshots) from browser checks
 .playwright-mcp/
+
+# Claude Code personal/local settings (permission rules etc.) — not team-shared
+.claude/settings.local.json
+
+serve_ui.log

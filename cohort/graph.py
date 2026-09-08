@@ -9,7 +9,6 @@ fresh timestamp, so replay is deterministic.
 """
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import itertools
 import json
@@ -19,6 +18,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Literal, NoReturn, TypeVar
 
+from ._locking import lock_exclusive_nonblocking, unlock
 from .errors import (
     CohortError,
     EdgeAlreadyRetracted,
@@ -222,7 +222,7 @@ class Graph:
         lock_path = db_path.with_suffix(db_path.suffix + ".lock")
         f = open(lock_path, "w")
         try:
-            fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            lock_exclusive_nonblocking(f)
         except BlockingIOError:
             f.close()
             raise SingleWriterViolation(
@@ -234,7 +234,7 @@ class Graph:
         if self.conn is not None:
             self.conn.close()
         if self._lock_file is not None:
-            fcntl.flock(self._lock_file.fileno(), fcntl.LOCK_UN)
+            unlock(self._lock_file)
             self._lock_file.close()
             self._lock_file = None
 
