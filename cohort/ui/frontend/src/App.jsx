@@ -232,7 +232,7 @@ export default function App() {
             }}
           />
         </div>
-        <nav className="tabs" ref={tabTrackRef}>
+        <nav className="tabs" data-view={tab} ref={tabTrackRef}>
           {/* One raised surface that slides between segments, rather than a
               background switching off here and on there: the tab bar is a
               macOS segmented control (styles.css), and that control moves. */}
@@ -241,6 +241,7 @@ export default function App() {
             <button
               key={key}
               className={`tab ${tab === key ? 'on' : ''}`}
+              data-view={key}
               data-seg-on={tab === key}
               onClick={() => goTab(key)}
             >{label}</button>
@@ -291,7 +292,7 @@ export default function App() {
               thumb sliding in the tab bar above. The panel — not `main` — is
               the scroller, so the graph and the refusals list share one
               scrollable column exactly as they did when `main` held them. */}
-          <div className="tab-panel" key={tab} data-dir={tabDir}>
+          <div className="tab-panel" key={tab} data-view={tab} data-dir={tabDir}>
             {tab === 'graph' && (
               <>
                 <QuestionFilter nodes={data.nodes} hidden={hiddenQuestions}
