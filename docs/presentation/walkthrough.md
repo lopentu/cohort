@@ -99,6 +99,14 @@ These descriptions appear on Functions and again on each tab’s slide. Introduc
 
 The **Analyze this view** button in Graph and Vocabulary comparison opens a separate analyst. It can investigate using read-only tools and save an explanation. Its answer does not become a claim or an accepted finding automatically.
 
+## AI proposals and further research
+
+Slide 14 shows what an agent can contribute beyond retrieving a match: summarise observations, propose alternative explanations and suggest follow-up searches. For T0603, possible explanations for shared wording include reuse, a common source and recurring formulas. Searching elsewhere for the same wording and repeating the comparison without T1694 are concrete follow-up operations.
+
+Present these as possibilities to investigate. The saved run does not establish a new historical relationship. Its proposed tests and interpretations still need scrutiny.
+
+The Graph makes the supporting records inspectable: cited passages, source positions, author and model, checks, and researcher decisions. Verifying a quotation’s location does not establish that an interpretation follows from it. The researcher reads the sources and decides what to pursue.
+
 ## Technical reference: what runs in each tab
 
 | Tab | What runs | What it saves |

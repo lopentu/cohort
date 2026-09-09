@@ -54,9 +54,9 @@ T1694 is in the mixed early-material group. Removing it changes that group’s p
 
 Give agents a research question and inspect their actions.
 
-## 14. Worker, reviewer and analyst
+## 14. From passages to research proposals
 
-The worker chooses tools and proposes. The reviewer records checks. The analyst explains a selected view and can investigate further, but cannot write graph proposals.
+The worker can pull material together, suggest explanations we might want to examine, and propose a next search. These are possibilities for research. We inspect the cited passages and recorded checks before deciding what to pursue.
 
 ## 15. Findings
 
