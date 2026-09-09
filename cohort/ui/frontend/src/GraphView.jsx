@@ -235,14 +235,10 @@ function truncate(s, n) {
   return chars.length > n ? chars.slice(0, n).join('') + '…' : chars.join('')
 }
 
-// vis-network draws a box/ellipse's label INSIDE the shape, tinted for
-// contrast against its fill — but a diamond or a star gets its label
-// OUTSIDE, underneath, sitting on the canvas background rather than on
-// `c.fill`. Using the fill-contrast colour there was picking white for
-// several hypothesis statuses (proposed/attested/rejected) whenever the
-// canvas itself reads light, which is illegible. These two shapes get a
-// fixed dark label regardless of status colour.
-const OUTSIDE_LABEL_SHAPES = new Set(['diamond', 'star'])
+// Boxes and ellipses contain their labels. Diamonds, stars, dots and
+// squares place labels outside, on the light canvas. Query and audit labels
+// must use canvas ink too, rather than white chosen for their node fills.
+const OUTSIDE_LABEL_SHAPES = new Set(['diamond', 'star', 'dot', 'square'])
 
 function buildNodes(nodes, showAudit, p, contradicted) {
   return nodes.filter((n) => isVisible(n, showAudit)).map((n) => {

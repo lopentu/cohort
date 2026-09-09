@@ -139,6 +139,12 @@ Clicking an author in a node's provenance opens that agent's contribution
 counts. Counts, never a score: a reputation number would reward volume, so an
 agent proposing ten weak claims would outrank one proposing a single good one.
 
+## Conjecture test queries
+
+A `tests` link connects a recorded query to a conjecture. Running the test searches the configured corpus and compares the returned count with the recorded prediction: at least or at most a stated number of matches. The result is pass, fail or indeterminate. Passing neither accepts the conjecture nor proves its interpretation.
+
+The worker’s conjecture-proposal tool always records a test query. A directly created conjecture can lack one while proposed, but cannot be attested without a `tests` link. Claims do not require test queries. Older queries can lack a numerical prediction, in which case the test reports indeterminate. A link alone does not show that the test has run.
+
 ## Action lists
 
 Inquiry run reports and view-analysis conversations share a compact action display. Rows show the tool name, recorded status and a shortened reason. Expand a row for the complete reason, then open Inputs and result for the original payload. No action records are removed or shortened in storage.

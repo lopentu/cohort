@@ -262,3 +262,13 @@ def test_the_floating_panels_stay_opaque(css):
             assert "var(--bg-raised)" in rule, (
                 f"{sel} must use the opaque raised surface"
             )
+
+
+def test_canvas_external_labels_cover_queries_and_audit_nodes():
+    """Dots and squares put their labels on the canvas, like stars and diamonds."""
+    source = (CSS_PATH.parent / "GraphView.jsx").read_text()
+    declaration = re.search(r"const OUTSIDE_LABEL_SHAPES = new Set\(\[([^]]+)\]\)", source)
+    assert declaration is not None
+    shapes = set(re.findall(r"'([^']+)'", declaration[1]))
+    assert {"dot", "square", "diamond", "star"} <= shapes
+    assert "OUTSIDE_LABEL_SHAPES.has(shape) ? INK_DARK : c.text" in source
