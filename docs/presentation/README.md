@@ -22,4 +22,4 @@ The PDF is rendered from the shared HTML layout. PowerPoint text and shapes are 
 
 Related-passage examples are reproduced by `scripts/check_method_examples.py`; `method-examples.json` contains aggregate measurements only.
 
-Slides 7, 11, 13, 15 and 16 show the five tabs. Source-passage text is hidden where applicable; Inquiry shows an unsent draft. Screenshot images can be replaced in PowerPoint. Slide 3 states the purpose; slide 4 introduces the abstract. Open the application at slide 19 and return to slide 20 for results and limits.
+Slides 7, 11, 13, 15 and 16 show the five tabs, each beside a workflow diagram. Source-passage text is hidden where applicable; Inquiry shows an unsent draft. Screenshot images can be replaced in PowerPoint. Slide 3 states the purpose; slide 4 introduces the abstract. Open the application at slide 19 and return to slide 20 for results and limits.

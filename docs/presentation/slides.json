@@ -815,7 +815,7 @@
     "title": "Corpus",
     "topic": "Functions · Corpus",
     "minutes": 1,
-    "notes": "SAY: Find passages and read them in context.\n\nSAY: This is where we retrieve passages and read their context. I will show one Lotus comparison in the application.\n\nBACKGROUND\nThe selected passage is on the left; related results scroll on the right. This is the stored-embedding mode, not exact-phrase search. Source text is hidden in the screenshot. ",
+    "notes": "SAY: Find passages and read them in context.\n\nSAY: This is where we retrieve passages and read their context. I will show one Lotus comparison in the application.\n\nBACKGROUND\nThe selected passage is on the left; related results scroll on the right. This is the stored-embedding mode, not exact-phrase search. Source text is hidden in the screenshot. \n\nVISUAL: The screenshot orients the audience; the diagram explains the operation. Read the diagram first. Its arrows show UI workflow, not evidence-graph edge types. In Corpus the two top boxes are alternative search modes; in Vocabulary comparison and Inquiry they are inputs used together.",
     "items": [
       {
         "kind": "text",
@@ -840,91 +840,6 @@
         "bold": true
       },
       {
-        "kind": "image",
-        "path": "screenshots/corpus.png",
-        "x": 52,
-        "y": 190,
-        "w": 880,
-        "h": 489
-      },
-      {
-        "kind": "text",
-        "text": "Find",
-        "x": 984,
-        "y": 204,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "155F88",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Search exact wording or select Related passages.",
-        "x": 984,
-        "y": 247,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Read",
-        "x": 984,
-        "y": 347,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "155F88",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Selected passage on the left; candidates on the right.",
-        "x": 984,
-        "y": 390,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Compare",
-        "x": 984,
-        "y": 490,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "155F88",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Open shared wording and inspect source positions.",
-        "x": 984,
-        "y": 533,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Source passages hidden; controls and recorded outputs retained.",
-        "x": 56,
-        "y": 681,
-        "w": 875,
-        "h": 22,
-        "size": 10,
-        "color": "526778",
-        "bold": false
-      },
-      {
         "kind": "shape",
         "shape": "rect",
         "x": 1190,
@@ -944,6 +859,187 @@
         "size": 16,
         "color": "FFFFFF",
         "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/corpus.png",
+        "x": 52,
+        "y": 216,
+        "w": 680,
+        "h": 378
+      },
+      {
+        "kind": "text",
+        "text": "Interface",
+        "x": 55,
+        "y": 185,
+        "w": 680,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "How to use it",
+        "x": 785,
+        "y": 185,
+        "w": 425,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 230,
+        "w": 200,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "155F88"
+      },
+      {
+        "kind": "text",
+        "text": "Exact phrase",
+        "x": 800,
+        "y": 245,
+        "w": 170,
+        "h": 60,
+        "size": 19,
+        "color": "155F88",
+        "bold": true
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 1015,
+        "y": 230,
+        "w": 210,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "155F88"
+      },
+      {
+        "kind": "text",
+        "text": "Indexed passage",
+        "x": 1030,
+        "y": 245,
+        "w": 180,
+        "h": 60,
+        "size": 19,
+        "color": "155F88",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 885,
+        "y": 318,
+        "w": 115,
+        "h": 42,
+        "color": "526778"
+      },
+      {
+        "kind": "line",
+        "x": 1120,
+        "y": 318,
+        "w": -120,
+        "h": 42,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 377,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "155F88"
+      },
+      {
+        "kind": "text",
+        "text": "Find matches",
+        "x": 800,
+        "y": 392,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "155F88",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 1005,
+        "y": 464,
+        "w": 0,
+        "h": 39,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 520,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "155F88"
+      },
+      {
+        "kind": "text",
+        "text": "Read and compare passages",
+        "x": 800,
+        "y": 535,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "155F88",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Exact search or stored-vector retrieval.",
+        "x": 55,
+        "y": 622,
+        "w": 680,
+        "h": 52,
+        "size": 21,
+        "color": "155F88",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Browsing does not add graph records.",
+        "x": 785,
+        "y": 622,
+        "w": 440,
+        "h": 51,
+        "size": 17,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Screenshot: source passages hidden where applicable. Diagram: schematic.",
+        "x": 55,
+        "y": 684,
+        "w": 1100,
+        "h": 21,
+        "size": 10,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "or",
+        "x": 989,
+        "y": 253,
+        "w": 25,
+        "h": 30,
+        "size": 13,
+        "color": "526778"
       }
     ]
   },
@@ -1416,7 +1512,7 @@
     "title": "Vocabulary comparison",
     "topic": "Functions · Vocabulary comparison",
     "minutes": 1,
-    "notes": "SAY: Compare a text’s wording with texts labelled by translator.\n\nSAY: Read the group names beside A and B. Highlighting is the contribution to their score difference. The strings can occur in both groups. Strong colour is not certainty.\n\nBACKGROUND\nThis compares a text against pooled groups using string counts, not embeddings. Use the live view for exclusions. Source passages are hidden in the screenshot. ",
+    "notes": "SAY: Compare a text’s wording with texts labelled by translator.\n\nSAY: Read the group names beside A and B. Highlighting is the contribution to their score difference. The strings can occur in both groups. Strong colour is not certainty.\n\nBACKGROUND\nThis compares a text against pooled groups using string counts, not embeddings. Use the live view for exclusions. Source passages are hidden in the screenshot. \n\nVISUAL: The screenshot orients the audience; the diagram explains the operation. Read the diagram first. Its arrows show UI workflow, not evidence-graph edge types. In Corpus the two top boxes are alternative search modes; in Vocabulary comparison and Inquiry they are inputs used together.",
     "items": [
       {
         "kind": "text",
@@ -1441,91 +1537,6 @@
         "bold": true
       },
       {
-        "kind": "image",
-        "path": "screenshots/vocabulary.png",
-        "x": 52,
-        "y": 190,
-        "w": 880,
-        "h": 489
-      },
-      {
-        "kind": "text",
-        "text": "Rankings",
-        "x": 984,
-        "y": 204,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "80511B",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Which group’s string frequencies resemble this text?",
-        "x": 984,
-        "y": 247,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Colours",
-        "x": 984,
-        "y": 347,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "80511B",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Teal adds weight to A; rust adds weight to B.",
-        "x": 984,
-        "y": 390,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Exclusions",
-        "x": 984,
-        "y": 490,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "80511B",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Remove comparison material and calculate again.",
-        "x": 984,
-        "y": 533,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Source passages hidden; controls and recorded outputs retained.",
-        "x": 56,
-        "y": 681,
-        "w": 875,
-        "h": 22,
-        "size": 10,
-        "color": "526778",
-        "bold": false
-      },
-      {
         "kind": "shape",
         "shape": "rect",
         "x": 1190,
@@ -1545,6 +1556,177 @@
         "size": 16,
         "color": "FFFFFF",
         "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/vocabulary.png",
+        "x": 52,
+        "y": 216,
+        "w": 680,
+        "h": 378
+      },
+      {
+        "kind": "text",
+        "text": "Interface",
+        "x": 55,
+        "y": 185,
+        "w": 680,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "How to use it",
+        "x": 785,
+        "y": 185,
+        "w": 425,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 230,
+        "w": 200,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "80511B"
+      },
+      {
+        "kind": "text",
+        "text": "Target + strings",
+        "x": 800,
+        "y": 245,
+        "w": 170,
+        "h": 60,
+        "size": 19,
+        "color": "80511B",
+        "bold": true
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 1015,
+        "y": 230,
+        "w": 210,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "80511B"
+      },
+      {
+        "kind": "text",
+        "text": "Labelled texts",
+        "x": 1030,
+        "y": 245,
+        "w": 180,
+        "h": 60,
+        "size": 19,
+        "color": "80511B",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 885,
+        "y": 318,
+        "w": 115,
+        "h": 42,
+        "color": "526778"
+      },
+      {
+        "kind": "line",
+        "x": 1120,
+        "y": 318,
+        "w": -120,
+        "h": 42,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 377,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "80511B"
+      },
+      {
+        "kind": "text",
+        "text": "Compare string frequencies",
+        "x": 800,
+        "y": 392,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "80511B",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 1005,
+        "y": 464,
+        "w": 0,
+        "h": 39,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 520,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "80511B"
+      },
+      {
+        "kind": "text",
+        "text": "Rank the catalogue groups",
+        "x": 800,
+        "y": 535,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "80511B",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Exclude a comparison text and repeat.",
+        "x": 55,
+        "y": 622,
+        "w": 680,
+        "h": 52,
+        "size": 21,
+        "color": "80511B",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "The vocabulary selects which strings count.",
+        "x": 785,
+        "y": 622,
+        "w": 440,
+        "h": 51,
+        "size": 17,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Screenshot: source passages hidden where applicable. Diagram: schematic.",
+        "x": 55,
+        "y": 684,
+        "w": 1100,
+        "h": 21,
+        "size": 10,
+        "color": "526778",
+        "bold": false
       }
     ]
   },
@@ -1677,7 +1859,7 @@
     "title": "Inquiry",
     "topic": "Functions · Inquiry",
     "minutes": 1,
-    "notes": "SAY: Give agents a research question and inspect their actions.\n\nSAY: Suggested inputs fill a draft. Inquire starts the workers. This screenshot contains an unsent draft; I will inspect a saved run in the application.\n\nBACKGROUND\nShow the distinction between a research question and research instructions. The screenshot shows an unsent draft; no new model run was started. Run history was hidden for this capture. ",
+    "notes": "SAY: Give agents a research question and inspect their actions.\n\nSAY: Suggested inputs fill a draft. Inquire starts the workers. This screenshot contains an unsent draft; I will inspect a saved run in the application.\n\nBACKGROUND\nShow the distinction between a research question and research instructions. The screenshot shows an unsent draft; no new model run was started. Run history was hidden for this capture. \n\nVISUAL: The screenshot orients the audience; the diagram explains the operation. Read the diagram first. Its arrows show UI workflow, not evidence-graph edge types. In Corpus the two top boxes are alternative search modes; in Vocabulary comparison and Inquiry they are inputs used together.",
     "items": [
       {
         "kind": "text",
@@ -1702,91 +1884,6 @@
         "bold": true
       },
       {
-        "kind": "image",
-        "path": "screenshots/inquiry.png",
-        "x": 52,
-        "y": 190,
-        "w": 880,
-        "h": 489
-      },
-      {
-        "kind": "text",
-        "text": "Question",
-        "x": 984,
-        "y": 204,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "65439A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "What do you want to find out?",
-        "x": 984,
-        "y": 247,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Instructions",
-        "x": 984,
-        "y": 347,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "65439A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "How should the worker investigate it?",
-        "x": 984,
-        "y": 390,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Run results",
-        "x": 984,
-        "y": 490,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "65439A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Reopen the actions, inputs and outputs.",
-        "x": 984,
-        "y": 533,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Source passages hidden; controls and recorded outputs retained.",
-        "x": 56,
-        "y": 681,
-        "w": 875,
-        "h": 22,
-        "size": 10,
-        "color": "526778",
-        "bold": false
-      },
-      {
         "kind": "shape",
         "shape": "rect",
         "x": 1190,
@@ -1806,6 +1903,177 @@
         "size": 16,
         "color": "FFFFFF",
         "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/inquiry.png",
+        "x": 52,
+        "y": 216,
+        "w": 680,
+        "h": 378
+      },
+      {
+        "kind": "text",
+        "text": "Interface",
+        "x": 55,
+        "y": 185,
+        "w": 680,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "How to use it",
+        "x": 785,
+        "y": 185,
+        "w": 425,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 230,
+        "w": 200,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "65439A"
+      },
+      {
+        "kind": "text",
+        "text": "Question",
+        "x": 800,
+        "y": 245,
+        "w": 170,
+        "h": 60,
+        "size": 19,
+        "color": "65439A",
+        "bold": true
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 1015,
+        "y": 230,
+        "w": 210,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "65439A"
+      },
+      {
+        "kind": "text",
+        "text": "Instructions",
+        "x": 1030,
+        "y": 245,
+        "w": 180,
+        "h": 60,
+        "size": 19,
+        "color": "65439A",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 885,
+        "y": 318,
+        "w": 115,
+        "h": 42,
+        "color": "526778"
+      },
+      {
+        "kind": "line",
+        "x": 1120,
+        "y": 318,
+        "w": -120,
+        "h": 42,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 377,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "65439A"
+      },
+      {
+        "kind": "text",
+        "text": "Worker calls tools",
+        "x": 800,
+        "y": 392,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "65439A",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 1005,
+        "y": 464,
+        "w": 0,
+        "h": 39,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 520,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "65439A"
+      },
+      {
+        "kind": "text",
+        "text": "Save actions and proposals",
+        "x": 800,
+        "y": 535,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "65439A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "A separate reviewer records checks.",
+        "x": 55,
+        "y": 622,
+        "w": 680,
+        "h": 52,
+        "size": 21,
+        "color": "65439A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Reopen completed work in Run results.",
+        "x": 785,
+        "y": 622,
+        "w": 440,
+        "h": 51,
+        "size": 17,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Screenshot: source passages hidden where applicable. Diagram: schematic.",
+        "x": 55,
+        "y": 684,
+        "w": 1100,
+        "h": 21,
+        "size": 10,
+        "color": "526778",
+        "bold": false
       }
     ]
   },
@@ -2020,7 +2288,7 @@
     "title": "Findings",
     "topic": "Functions · Findings",
     "minutes": 1,
-    "notes": "SAY: Read the agents’ proposals, citations and checks.\n\nSAY: Findings is a readable view of saved proposals. A conjecture adds an explanation, limits and a proposed test; it is not a container made of claims.\n\nBACKGROUND\nThese are saved proposals, not established conclusions. The conjecture review found weaknesses; do not imply attested means correct. No proposal was accepted for the screenshot. ",
+    "notes": "SAY: Read the agents’ proposals, citations and checks.\n\nSAY: Findings is a readable view of saved proposals. A conjecture adds an explanation, limits and a proposed test; it is not a container made of claims.\n\nBACKGROUND\nThese are saved proposals, not established conclusions. The conjecture review found weaknesses; do not imply attested means correct. No proposal was accepted for the screenshot. \n\nVISUAL: The screenshot orients the audience; the diagram explains the operation. Read the diagram first. Its arrows show UI workflow, not evidence-graph edge types. In Corpus the two top boxes are alternative search modes; in Vocabulary comparison and Inquiry they are inputs used together.",
     "items": [
       {
         "kind": "text",
@@ -2045,91 +2313,6 @@
         "bold": true
       },
       {
-        "kind": "image",
-        "path": "screenshots/findings.png",
-        "x": 52,
-        "y": 190,
-        "w": 880,
-        "h": 489
-      },
-      {
-        "kind": "text",
-        "text": "Proposal",
-        "x": 984,
-        "y": 204,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "146C68",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "A claim or a conjecture from the worker.",
-        "x": 984,
-        "y": 247,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Sources",
-        "x": 984,
-        "y": 347,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "146C68",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Read its citations and recorded checks.",
-        "x": 984,
-        "y": 390,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Alternatives",
-        "x": 984,
-        "y": 490,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "146C68",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Inspect what else could explain the observation.",
-        "x": 984,
-        "y": 533,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Source passages hidden; controls and recorded outputs retained.",
-        "x": 56,
-        "y": 681,
-        "w": 875,
-        "h": 22,
-        "size": 10,
-        "color": "526778",
-        "bold": false
-      },
-      {
         "kind": "shape",
         "shape": "rect",
         "x": 1190,
@@ -2149,6 +2332,159 @@
         "size": 16,
         "color": "FFFFFF",
         "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/findings.png",
+        "x": 52,
+        "y": 216,
+        "w": 680,
+        "h": 378
+      },
+      {
+        "kind": "text",
+        "text": "Interface",
+        "x": 55,
+        "y": 185,
+        "w": 680,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "How to use it",
+        "x": 785,
+        "y": 185,
+        "w": 425,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 230,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "146C68"
+      },
+      {
+        "kind": "text",
+        "text": "Open a saved proposal",
+        "x": 800,
+        "y": 245,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "146C68",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 1000,
+        "y": 319,
+        "w": -115,
+        "h": 48,
+        "color": "526778"
+      },
+      {
+        "kind": "line",
+        "x": 1000,
+        "y": 319,
+        "w": 120,
+        "h": 48,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 385,
+        "w": 200,
+        "h": 86,
+        "fill": "FFFFFF",
+        "color": "146C68"
+      },
+      {
+        "kind": "text",
+        "text": "Cited passages",
+        "x": 800,
+        "y": 400,
+        "w": 170,
+        "h": 66,
+        "size": 19,
+        "color": "146C68",
+        "bold": true
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 1015,
+        "y": 385,
+        "w": 210,
+        "h": 86,
+        "fill": "FFFFFF",
+        "color": "146C68"
+      },
+      {
+        "kind": "text",
+        "text": "Checks",
+        "x": 1030,
+        "y": 400,
+        "w": 180,
+        "h": 66,
+        "size": 19,
+        "color": "146C68",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Read its explanation\nand alternatives.",
+        "x": 785,
+        "y": 526,
+        "w": 440,
+        "h": 80,
+        "size": 23,
+        "color": "146C68",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Follow a citation into Graph to inspect its source.",
+        "x": 55,
+        "y": 622,
+        "w": 680,
+        "h": 52,
+        "size": 21,
+        "color": "146C68",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Inspect one proposal at a time.",
+        "x": 785,
+        "y": 622,
+        "w": 440,
+        "h": 51,
+        "size": 17,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Screenshot: source passages hidden where applicable. Diagram: schematic.",
+        "x": 55,
+        "y": 684,
+        "w": 1100,
+        "h": 21,
+        "size": 10,
+        "color": "526778",
+        "bold": false
       }
     ]
   },
@@ -2156,7 +2492,7 @@
     "title": "Graph",
     "topic": "Functions · Graph",
     "minutes": 1,
-    "notes": "SAY: Follow links between sources, proposals and decisions.\n\nSAY: The graph is already populated by saved work. It is not a display of every corpus text. Selecting a node shows its author, model and records.\n\nBACKGROUND\nFollow records and their relationships. Source-passage labels and query phrases are hidden in this screenshot; graph records and topology are otherwise unchanged. \n\n### Why a query can point straight to a proposal\n\nThere is no required Query → Witness → Passage → Hypothesis chain. The graph records different relationships:\n\n- Witness → Passage, labelled **contains**: where the passage comes from. Internally, this is stored in the reverse direction as `part_of`.\n- Passage → Claim or conjecture, labelled **attests**: the passage is cited as support.\n- Query → Claim or conjecture, labelled **searched for**: a search ran while preparing that proposal.\n- Query → Conjecture, labelled **tests**: the author recorded a query and an expected result for a later test. This link alone does not mean the test ran or passed.\n- Claim or conjecture → Research question, labelled **addresses**: which question the proposal concerns.\n\nFor a claim, the proposal tool runs a grounding search and saves its phrase and hit count. It refuses the claim if there are no hits. It does not automatically save each hit as a witness or passage, or link the query to those hits. Citation gathering is a separate operation. A hit therefore shows that wording was found; it does not establish that the proposed interpretation follows from it.\n\nFor a conjecture, the tool records an earlier search under “prior art” and a separate proposed test. Here “prior art” means a corpus search made before proposing the conjecture, not a search of published scholarship.\n\nThe UI uses “hypothesis” as a heading for claims and conjectures. A conjecture is not a container assembled from claim nodes. Read its own citations, explanation and proposed test.\n\n",
+    "notes": "SAY: Follow links between sources, proposals and decisions.\n\nSAY: The graph is already populated by saved work. It is not a display of every corpus text. Selecting a node shows its author, model and records.\n\nBACKGROUND\nFollow records and their relationships. Source-passage labels and query phrases are hidden in this screenshot; graph records and topology are otherwise unchanged. \n\n### Why a query can point straight to a proposal\n\nThere is no required Query → Witness → Passage → Hypothesis chain. The graph records different relationships:\n\n- Witness → Passage, labelled **contains**: where the passage comes from. Internally, this is stored in the reverse direction as `part_of`.\n- Passage → Claim or conjecture, labelled **attests**: the passage is cited as support.\n- Query → Claim or conjecture, labelled **searched for**: a search ran while preparing that proposal.\n- Query → Conjecture, labelled **tests**: the author recorded a query and an expected result for a later test. This link alone does not mean the test ran or passed.\n- Claim or conjecture → Research question, labelled **addresses**: which question the proposal concerns.\n\nFor a claim, the proposal tool runs a grounding search and saves its phrase and hit count. It refuses the claim if there are no hits. It does not automatically save each hit as a witness or passage, or link the query to those hits. Citation gathering is a separate operation. A hit therefore shows that wording was found; it does not establish that the proposed interpretation follows from it.\n\nFor a conjecture, the tool records an earlier search under “prior art” and a separate proposed test. Here “prior art” means a corpus search made before proposing the conjecture, not a search of published scholarship.\n\nThe UI uses “hypothesis” as a heading for claims and conjectures. A conjecture is not a container assembled from claim nodes. Read its own citations, explanation and proposed test.\n\n\n\nVISUAL: The screenshot orients the audience; the diagram explains the operation. Read the diagram first. Its arrows show UI workflow, not evidence-graph edge types. In Corpus the two top boxes are alternative search modes; in Vocabulary comparison and Inquiry they are inputs used together.",
     "items": [
       {
         "kind": "text",
@@ -2181,91 +2517,6 @@
         "bold": true
       },
       {
-        "kind": "image",
-        "path": "screenshots/graph.png",
-        "x": 52,
-        "y": 190,
-        "w": 880,
-        "h": 489
-      },
-      {
-        "kind": "text",
-        "text": "Records",
-        "x": 984,
-        "y": 204,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "24384A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Sources, passages, proposals and questions.",
-        "x": 984,
-        "y": 247,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Links",
-        "x": 984,
-        "y": 347,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "24384A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Read the relationship label on each arrow.",
-        "x": 984,
-        "y": 390,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Exploration",
-        "x": 984,
-        "y": 490,
-        "w": 244,
-        "h": 39,
-        "size": 20,
-        "color": "24384A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Show recorded tool activity beyond cited evidence.",
-        "x": 984,
-        "y": 533,
-        "w": 244,
-        "h": 94,
-        "size": 18,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "Source passages hidden; controls and recorded outputs retained.",
-        "x": 56,
-        "y": 681,
-        "w": 875,
-        "h": 22,
-        "size": 10,
-        "color": "526778",
-        "bold": false
-      },
-      {
         "kind": "shape",
         "shape": "rect",
         "x": 1190,
@@ -2285,6 +2536,148 @@
         "size": 16,
         "color": "FFFFFF",
         "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/graph.png",
+        "x": 52,
+        "y": 216,
+        "w": 680,
+        "h": 378
+      },
+      {
+        "kind": "text",
+        "text": "Interface",
+        "x": 55,
+        "y": 185,
+        "w": 680,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "How to use it",
+        "x": 785,
+        "y": 185,
+        "w": 425,
+        "h": 29,
+        "size": 13,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 230,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Select a research question",
+        "x": 800,
+        "y": 245,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 1005,
+        "y": 318,
+        "w": 0,
+        "h": 42,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 377,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Inspect linked records",
+        "x": 800,
+        "y": 392,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "line",
+        "x": 1005,
+        "y": 464,
+        "w": 0,
+        "h": 39,
+        "color": "526778"
+      },
+      {
+        "kind": "shape",
+        "shape": "rect",
+        "x": 785,
+        "y": 520,
+        "w": 440,
+        "h": 80,
+        "fill": "FFFFFF",
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Accept or reject a record",
+        "x": 800,
+        "y": 535,
+        "w": 410,
+        "h": 60,
+        "size": 19,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Show exploration adds recorded tool activity.",
+        "x": 55,
+        "y": 622,
+        "w": 680,
+        "h": 52,
+        "size": 21,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Filtering the view does not delete records.",
+        "x": 785,
+        "y": 622,
+        "w": 440,
+        "h": 51,
+        "size": 17,
+        "color": "526778",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Screenshot: source passages hidden where applicable. Diagram: schematic.",
+        "x": 55,
+        "y": 684,
+        "w": 1100,
+        "h": 21,
+        "size": 10,
+        "color": "526778",
+        "bold": false
       }
     ]
   },
