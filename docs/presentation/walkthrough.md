@@ -63,7 +63,7 @@ Screenshots introduce each tab; diagrams explain the operations. During the appl
 
 ### The live sequence
 
-1. **Corpus → Related passages:** click **Lotus Sūtra · Dharmarakṣa**. The target is `T0263-rest`, a catalogue remainder of the earlier Lotus translation, not a complete edition. Read the model label and coverage. Open a result from `T0262-exDevadatta`, Kumārajīva’s Lotus translation without its separately catalogued Devadatta chapter. The button starts at source position 4000, beyond the opening. Expand **Check shared wording**. In the measured result, the nearest passage is in the other Lotus translation at position 2800, with cosine 0.865 and a longest shared sequence of only three Chinese characters. This illustrates retrieval despite little exact wording in those displayed windows; it is not proof that every returned neighbour is relevant. The result is a candidate for reading, not proof of a historical relationship.
+1. **Corpus → Related passages:** click **Lotus Sūtra · Dharmarakṣa**. The target is `T0263-rest`, a catalogue remainder of the earlier Lotus translation, not a complete edition. Read the model label and coverage. Open a result from `T0262-exDevadatta`, Kumārajīva’s Lotus translation without its separately catalogued Devadatta chapter. The button starts at source position 4000, beyond the opening. Expand **Check shared wording**. In the measured result, the nearest passage is in the other Lotus translation at position 2800, with cosine 0.865 and a longest shared sequence of only three Chinese characters. This illustrates retrieval despite little exact wording in those displayed windows; it is not proof that every returned neighbour is relevant. The result comes from another translation of the same Lotus Sūtra, so it is a relevant candidate for comparing translations. The cosine score does not establish an exact passage correspondence; read the pair before making that claim.
 2. **Vocabulary comparison:** click the Lotus example. Both string lists rank Dharmarakṣa first for this target, with its own work removed from the reference profiles. That answers a different question from passage retrieval. It is one illustrative agreement with a known label, not validation of the classifier. The reverse target, `T0262-exDevadatta`, incorrectly ranks Dharmakṣema first under both lists; say this when discussing limits.
 3. Still in **Vocabulary comparison**, select **T0603**, retain the curated strings, then exclude **T1694**. Explain the changing reference material using the instructions below.
 4. **Inquiry:** open a saved completed run. Show the research question, instructions and one actual tool action. Do not claim every run uses embeddings: the worker must choose `semantic_neighbors`. Do not wait for a fresh run during the presentation.
@@ -152,6 +152,10 @@ Say:
 > The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.
 
 The catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.
+
+## CBETA Online links
+
+Use CBETA ↗ to open recognised texts in the online edition. Links appear beside exact-search results, both sides of Related passages, the Vocabulary comparison target, recognised Findings citations and source records in the Graph inspector. Chapter and remainder identifiers open the whole work. Local source positions are not CBETA page/line positions.
 
 ## Corpus: find wording and read its context
 

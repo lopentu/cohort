@@ -1122,14 +1122,14 @@
     ]
   },
   {
-    "title": "Example: related content, little shared wording",
+    "title": "Example: finding another Lotus translation",
     "topic": "Across time · two Lotus translations",
     "minutes": 1,
-    "notes": "TIME CUE: Compare material from different periods. Ask whether shared wording reflects transmission, reuse or revision. Dates and the direction of borrowing need historical evidence.\n\nSAY: These two Lotus windows are close in the embedding index, but their longest exact shared sequence is only three Chinese characters. Retrieval gives us a pair to read; alignment shows where wording matches.\n\nBACKGROUND\nHistorical orientation: An Shigao worked in the second century CE. Scholarship identifies T1694 as a later commentary, probably from the third century; do not treat the date as inferred by Cohort. Its title repeats 陰持入經 and adds 註, commentary. This is why shared wording may reflect transmission over time rather than the same translator.\n\nExplain the titles. T0603 is the Yin chi ru jing, associated with An Shigao. T1694 is its commentary; this relationship is known from scholarship. The tool locates shared runs, not the historical direction of borrowing.\n\nThese are tools available to agents; they are not separate top-level tabs.\n\n**Semantic neighbours** searches an embedding index. An embedding is a numerical representation used to retrieve passages with similar content. It supplies candidates to inspect. It does not establish who translated a passage. A nearest neighbour is the closest among the candidates searched; that alone does not make it a useful match.\n\n**Align passages** compares two selected texts for exact shared Chinese-character sequences and returns matching runs with source positions. Normalisation removes material such as punctuation from that comparison. Shared wording can suggest reuse, a common source or a recurring formula. Its direction and historical explanation require further evidence.\n\nT0603 is the *Yin chi ru jing* 陰持入經, traditionally associated with **An Shigao 安世高**. T1694 is the *Yin chi ru jing zhu* 陰持入經註, a commentary on it. The character 註 in the title means commentary, and the relationship is identified in scholarship. Cohort did not discover the genre from a similarity score. See the scholarly references at the end of this guide.\n\nIn a saved run, show the action that retrieved candidates and the action that compared T0603 with T1694. Explain the tool inputs before the result. If the worker searched a short string taken from an earlier alignment, say that it reused a retrieved string. Do not describe a previously observed match as an independent prediction.\n\nThe tools for comparing edition apparatus require the appropriate XML source configuration. The current plain-text setup supports the exact-overlap example; do not present it as a full textual-variant collation or a reconstruction of a text’s genealogy.\n\nSAY: The methods give us different things: candidate passages, vocabulary rankings and a way to test exclusions.\n\nNEXT: Explain the limitations.\n\nBACKGROUND\nThe first count concerns T0263-rest and T0262-exDevadatta, not every passage in complete editions. Nearest means first under vector similarity among indexed other works. This is an illustrative case selected after inspecting outputs, not a retrieval accuracy benchmark. Vocabulary excludes the target’s entire Taishō work, but other dependence and genre effects remain. Reverse control: T0262-exDevadatta ranks with Dharmakṣema under both vocabularies, not its catalogue label Kumārajīva. Mention that failure verbally: agreement for one example does not validate attribution. Measurements: scripts/check_method_examples.py; docs/presentation/method-examples.json.",
+    "notes": "TIME CUE: Two translations from different periods.\n\nSAY: We start with Dharmarakṣa’s Lotus translation. The retrieved passage comes from Kumārajīva’s translation of the same sūtra. That makes it a relevant candidate for comparing how the work was translated, even though these windows share little exact wording.\n\nThe measured source window is T0263-rest at position 4000; its nearest indexed window is T0262-exDevadatta at position 2800. Cosine similarity is 0.865 and the longest shared Chinese-character sequence is three characters. These values come from method-examples.json. The score ranks a candidate; it does not prove that the windows are exact counterparts. This presentation has not established a specialist passage-by-passage correspondence for the pair.\n\nT0263-rest is a catalogue remainder of Dharmarakṣa’s Lotus translation. T0262-exDevadatta is Kumārajīva’s translation with the separately catalogued Devadatta chapter excluded. CBETA links open the complete online work; local character offsets do not directly map to its pages.\n",
     "items": [
       {
         "kind": "text",
-        "text": "Example: related content, little shared wording",
+        "text": "Example: finding another Lotus translation",
         "x": 52,
         "y": 78,
         "w": 1170,
@@ -1214,12 +1214,12 @@
       },
       {
         "kind": "text",
-        "text": "Shared wording is checked separately, with positions in both sources.",
+        "text": "The result is from another translation of the same sūtra.\nRead the passages to judge how closely they correspond.",
         "x": 78,
         "y": 551,
         "w": 1115,
-        "h": 50,
-        "size": 22,
+        "h": 90,
+        "size": 23,
         "color": "24384A",
         "bold": false
       },

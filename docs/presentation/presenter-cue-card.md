@@ -34,11 +34,11 @@ Find passages and read them in context.
 
 An embedder has already converted passages to vectors. We compare those stored vectors, then read the candidates. The worker language model is separate.
 
-## 9. Example: related content, little shared wording
+## 9. Example: finding another Lotus translation
 
 **Time cue:** Two translations from different periods.
 
-These two Lotus windows are close in the embedding index, but their longest exact shared sequence is only three Chinese characters. Retrieval gives us a pair to read; alignment shows where wording matches.
+We start with Dharmarakṣa’s Lotus translation. The retrieved passage comes from Kumārajīva’s translation of the same sūtra. It is a relevant candidate to read, even with little exact shared wording; the score does not prove an exact correspondence.
 
 ## 10. What vocabulary comparison calculates
 
