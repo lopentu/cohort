@@ -538,14 +538,38 @@ main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: h
    `.panel` media queries below). Either way it claims the right edge or the
    whole bottom strip, so bottom-right is the one corner of the canvas that is
    never actually free. Top-left is clear in both layouts. */
-.graph-clear-orphans {
+.graph-clear-wrap {
   position: absolute; left: 14px; top: 14px; z-index: 2;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  max-width: 260px;
+}
+.graph-clear-orphans {
   padding: 6px 12px; border-radius: 8px;
   background: var(--bg-raised); color: var(--text-dim);
   border: 1px solid var(--line); font-size: 12px;
   cursor: pointer;
 }
 .graph-clear-orphans:hover { color: var(--text); border-color: var(--hairline); background: var(--fill-4); }
+/* The reason box and its result line: a real graph write, unlike the two
+   buttons above it, so it gets the same opaque-surface treatment as the
+   floating inspector rather than sitting bare on the canvas. */
+.graph-reject-box {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 8px; border-radius: 8px;
+  background: var(--bg-raised); border: 1px solid var(--line);
+  width: 240px;
+}
+.graph-reject-box textarea {
+  font: inherit; font-size: 12px; resize: vertical;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; padding: 6px;
+}
+.graph-reject-actions { display: flex; gap: 6px; }
+.graph-reject-summary {
+  margin: 0; padding: 6px 10px; border-radius: 8px;
+  background: var(--bg-raised); border: 1px solid var(--line);
+  color: var(--text-dim); font-size: 12px;
+}
 .graph { display: block; }
 .col-label {
   fill: var(--text-faint); font-size: 10px; letter-spacing: .1em;
@@ -1982,6 +2006,18 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
 .question-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
 .question-row .question-text { min-width: 0; }
 .questions-hidden { margin-top: 0.6rem; }
+/* Reject & remove's reason box: a real graph write, so it gets its own
+   confirm step in-row rather than firing on the same click as Hide. */
+.question-reject-box {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 0.5rem; padding: 8px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--line);
+}
+.question-reject-box textarea {
+  font: inherit; font-size: 12px; resize: vertical;
+  background: var(--bg-raised); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; padding: 6px;
+}
 /* Dimmed, not removed from the tab order or given a different shape: a hidden
    question is still real, just not drawn on the graph right now. */
 .question-list.dim { opacity: 0.6; }

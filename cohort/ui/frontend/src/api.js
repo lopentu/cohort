@@ -47,6 +47,28 @@ export const reopenNode = (id, reason) => post('/api/reopen', id, { reason })
 export const retractEdge = (id, reason) => post('/api/edge/retract', id, { reason })
 export const restoreEdge = (id, reason) => post('/api/edge/restore', id, { reason })
 
+// A bulk "reject & remove" sweep (GraphView's orphan cleanup, RunPanel's
+// per-question sweep) attempts every id and never throws itself: some ids in
+// a swept set are routinely un-rejectable (a question or a verification node
+// is always `accepted`, bypassing the promotion ladder by design — see
+// docs/design.md §8 — so `reject` refuses it every time), and that is
+// information for the summary the caller shows, not a reason to abandon the
+// rest of the sweep. Sequential, not parallel: the single-writer lock would
+// serialize these anyway, and a caller reporting progress wants one result at
+// a time rather than N in whatever order they race back.
+export async function rejectMany(ids, reason) {
+  const results = []
+  for (const id of ids) {
+    try {
+      await rejectNode(id, reason)
+      results.push({ id, ok: true })
+    } catch (e) {
+      results.push({ id, ok: false, message: e.message })
+    }
+  }
+  return results
+}
+
 // --- corpus (read-only; the same source.search()/fetch() Python calls) ------
 export const searchCorpus = (q, limit = 20) =>
   json(`/api/corpus/search?q=${encodeURIComponent(q)}&limit=${limit}`)

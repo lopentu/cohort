@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { askQuestion, getQuestions, getRunConfig, getRuns, startRun, stopRun } from './api'
+import {
+  askQuestion, getQuestions, getRunConfig, getRuns, rejectMany, startRun, stopRun,
+} from './api'
+import { hiddenIdsForQuestions } from './graph-model'
 
 // Which questions the researcher has hidden from the Graph tab, so it stays a
 // working view rather than an ever-growing history. Hiding removes nothing —
@@ -63,7 +66,10 @@ const REVIEWER_TASK =
   'Review each pending hypothesis: re-check that its cited passages say what '
   + 'it claims they say, and give a verdict.'
 
-export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuestions, onToggleHiddenQuestion }) {
+export default function RunPanel({
+  instructionSeed, onGraphChanged, hiddenQuestions, onToggleHiddenQuestion,
+  graphNodes, graphEdges, canWrite,
+}) {
   const [config, setConfig] = useState(null)
   const [runs, setRuns] = useState(null)
   const [agents, setAgents] = useState([blankAgent(0)])
@@ -197,6 +203,10 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
         onSelect={setQuestionId}
         hidden={hiddenQuestions}
         onToggleHidden={onToggleHiddenQuestion}
+        graphNodes={graphNodes}
+        graphEdges={graphEdges}
+        canWrite={canWrite}
+        onGraphChanged={onGraphChanged}
       />
 
       <form className="run-form" onSubmit={submit}>
@@ -431,7 +441,9 @@ function RunHistory({ runs }) {
 // Only the researcher may ask — setting the agenda is the supervision, so the
 // form is absent rather than disabled on a read-only server (the route is not
 // mounted either).
-function Questions({ selected, onSelect, hidden, onToggleHidden }) {
+function Questions({
+  selected, onSelect, hidden, onToggleHidden, graphNodes, graphEdges, canWrite, onGraphChanged,
+}) {
   const [data, setData] = useState(null)
   const [asking, setAsking] = useState(false)
   const [text, setText] = useState('')
@@ -507,33 +519,17 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
 
       <ul className="question-list">
         {data?.questions?.filter((q) => !hidden?.has(q.id)).map((q) => (
-          <li
+          <QuestionRow
             key={q.id}
-            className={`question pick${selected === q.id ? ' on' : ''}`}
-            onClick={() => onSelect(selected === q.id ? null : q.id)}
-          >
-            <div className="question-row">
-              <p className="question-text">{q.question}</p>
-              {/* Hides the question and, in the Graph tab, whatever was only
-                  there to support it (graph-model.js `hiddenIdsForQuestions`).
-                  A view preference, not a graph write — nothing in the event
-                  log changes, so this never conflicts with a run holding the
-                  writer lock and needs no researcher permission. */}
-              <button
-                type="button" className="btn tiny"
-                title="Hide from the Graph tab, along with anything only there for it — a display filter, not a graph edit"
-                onClick={(e) => { e.stopPropagation(); onToggleHidden?.(q.id) }}
-              >Hide</button>
-            </div>
-            <p className="question-answerable">
-              <span>Answerable by</span> {q.answerable_by}
-            </p>
-            <p className="hint small">
-              {q.addressed_by === 0
-                ? 'Nothing has been put forward as an answer yet.'
-                : `${q.addressed_by} hypothes${q.addressed_by === 1 ? 'is' : 'es'} address it — a tally, not a verdict.`}
-            </p>
-          </li>
+            q={q}
+            selected={selected === q.id}
+            onSelect={() => onSelect(selected === q.id ? null : q.id)}
+            onToggleHidden={() => onToggleHidden?.(q.id)}
+            graphNodes={graphNodes}
+            graphEdges={graphEdges}
+            canWrite={canWrite}
+            onGraphChanged={onGraphChanged}
+          />
         ))}
       </ul>
 
@@ -563,6 +559,110 @@ function Questions({ selected, onSelect, hidden, onToggleHidden }) {
         </div>
       )}
     </div>
+  )
+}
+
+// One question, and its two ways of not seeing it any more.
+//
+// Hide (above, on the parent's click handler) is the free, reversible, view-
+// only one: nothing in the event log changes, so it needs no write access and
+// never conflicts with a run holding the writer lock.
+//
+// Reject & remove is the other one: a real `reject()` call, with a reason,
+// on this question's own node and on every node `hiddenIdsForQuestions`
+// finds exclusively tied to it — the identical set Hide already computes,
+// just persisted instead of only filtered. The question node itself is
+// always `accepted` (bypasses the promotion ladder by design — audit
+// bookkeeping, docs/design.md §8) and so is any verification/decision swept
+// in with it, so `reject` refuses those every time; `rejectMany` reports the
+// skips rather than treating them as a failure, and Hide is still there for
+// exactly what this cannot durably remove.
+function QuestionRow({
+  q, selected, onSelect, onToggleHidden, graphNodes, graphEdges, canWrite, onGraphChanged,
+}) {
+  const [rejecting, setRejecting] = useState(false)
+  const [reason, setReason] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [summary, setSummary] = useState(null)
+
+  const confirmReject = async () => {
+    if (!reason.trim() || !graphNodes || !graphEdges) return
+    setBusy(true)
+    setSummary(null)
+    const ids = hiddenIdsForQuestions(graphNodes, graphEdges, new Set([q.id]))
+    const results = await rejectMany([...ids], reason.trim())
+    const ok = results.filter((r) => r.ok).length
+    const failed = results.length - ok
+    setSummary({ ok, failed })
+    setReason('')
+    setBusy(false)
+    setRejecting(false)
+    onGraphChanged?.()
+  }
+
+  return (
+    <li
+      className={`question pick${selected ? ' on' : ''}`}
+      onClick={onSelect}
+    >
+      <div className="question-row">
+        <p className="question-text">{q.question}</p>
+        {/* Hides the question and, in the Graph tab, whatever was only
+            there to support it (graph-model.js `hiddenIdsForQuestions`).
+            A view preference, not a graph write — nothing in the event
+            log changes, so this never conflicts with a run holding the
+            writer lock and needs no researcher permission. */}
+        <button
+          type="button" className="btn tiny"
+          title="Hide from the Graph tab, along with anything only there for it — a display filter, not a graph edit"
+          onClick={(e) => { e.stopPropagation(); onToggleHidden() }}
+        >Hide</button>
+        {canWrite && (
+          <button
+            type="button" className="btn tiny"
+            title="Permanently reject this question's exclusively-tied nodes, with a reason — a real graph write, not a view filter"
+            onClick={(e) => { e.stopPropagation(); setRejecting((v) => !v) }}
+          >Reject &amp; remove…</button>
+        )}
+      </div>
+      <p className="question-answerable">
+        <span>Answerable by</span> {q.answerable_by}
+      </p>
+      <p className="hint small">
+        {q.addressed_by === 0
+          ? 'Nothing has been put forward as an answer yet.'
+          : `${q.addressed_by} hypothes${q.addressed_by === 1 ? 'is' : 'es'} address it — a tally, not a verdict.`}
+      </p>
+      {rejecting && (
+        <div className="question-reject-box" onClick={(e) => e.stopPropagation()}>
+          <textarea
+            rows={2}
+            placeholder="Reason (required)"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <div className="graph-reject-actions">
+            <button
+              type="button" className="btn tiny"
+              disabled={busy || !reason.trim()}
+              onClick={confirmReject}
+            >{busy ? 'Rejecting…' : 'Confirm'}</button>
+            <button
+              type="button" className="btn tiny"
+              onClick={() => { setRejecting(false); setReason('') }}
+            >Cancel</button>
+          </div>
+        </div>
+      )}
+      {summary && (
+        <p className="hint small">
+          Rejected {summary.ok}
+          {summary.failed > 0 && `, skipped ${summary.failed} (already accepted — the `
+            + 'question itself and any audit records aren’t on the promotion ladder; '
+            + 'Hide still applies to those)'}
+        </p>
+      )}
+    </li>
   )
 }
 

@@ -242,6 +242,8 @@ export default function App() {
                   selectedId={selectedId}
                   onSelect={setSelectedId}
                   showAudit={showAudit}
+                  canWrite={!!health?.writes_enabled}
+                  onGraphChanged={reload}
                 />
                 {refusalsShown.mounted && (
                   <RefusalsPanel refusals={refusals} closing={refusalsShown.closing} />
@@ -265,6 +267,9 @@ export default function App() {
                 onGraphChanged={reload}
                 hiddenQuestions={hiddenQuestions}
                 onToggleHiddenQuestion={toggleHiddenQuestion}
+                graphNodes={data.nodes}
+                graphEdges={data.edges}
+                canWrite={!!health?.writes_enabled}
               />
             )}
           </div>

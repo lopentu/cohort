@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DataSet, Network } from 'vis-network/standalone'
+import { rejectMany } from './api'
 import { EDGE_STYLE, isVisible, nodeTitle } from './graph-model'
 
 // A draggable force-directed rendering of the evidence graph. It replaces the
@@ -314,7 +315,7 @@ function buildEdges(edges, visibleIds, p) {
     })
 }
 
-export default function GraphView({ data, selectedId, onSelect, showAudit }) {
+export default function GraphView({ data, selectedId, onSelect, showAudit, canWrite, onGraphChanged }) {
   const containerRef = useRef(null)
   const networkRef = useRef(null)
   const nodesRef = useRef(null)
@@ -414,26 +415,28 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
   }, [selectedId])
 
   // A stopgap for the diff-sync above still occasionally leaving a node on
-  // canvas with none of its edges: sweep anything currently touching zero
-  // *evidentiary* edges in the live DataSets. Canvas-only, like the
-  // hide-question filter — it does not touch `data`, so the same nodes
-  // return on the next reload or audit toggle if they are still in the graph.
+  // canvas with none of its edges: find anything currently touching zero
+  // *evidentiary* edges in the live DataSets.
   //
   // A lone edge-less node is the simple case. But `parallel_of` /
   // `descends_from` link witnesses to each other and carry no weight of their
   // own — graph-model.js's `ignoredForOwnLiveness` already treats them this
   // way when deciding what a hidden question drags down with it — so two or
   // three witnesses connected only to each other by those types are just as
-  // orphaned as one with no edges at all, and were not caught by the
-  // touches-zero-edges check above. Union-find groups witnesses joined by
-  // those edges into one component first, so the whole group is judged (and
-  // removed) together rather than each witness individually finding itself
-  // "not touching zero edges" because its neighbour is right there.
+  // orphaned as one with no edges at all, and were not caught by a plain
+  // touches-zero-edges check. Union-find groups witnesses joined by those
+  // edges into one component first, so the whole group is judged together
+  // rather than each witness individually finding itself "not touching zero
+  // edges" because its neighbour is right there.
+  //
+  // Shared by both buttons below: "Clear" only ever removes from the canvas
+  // (this exact computation), and "Reject & remove" targets the identical
+  // set so what disappears when you click either one is never a surprise.
   const GROUP_ONLY_TYPES = new Set(['parallel_of', 'descends_from'])
-  const clearOrphans = () => {
+  const computeOrphanIds = () => {
     const nodes = nodesRef.current
     const edges = edgesRef.current
-    if (!nodes || !edges) return
+    if (!nodes || !edges) return []
     const allEdges = edges.get()
     const nodeIds = nodes.getIds()
 
@@ -462,8 +465,45 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
       if (parent.has(e.to)) hasEvidence.add(find(e.to))
     }
 
-    const orphanIds = nodeIds.filter((id) => !hasEvidence.has(find(id)))
+    return nodeIds.filter((id) => !hasEvidence.has(find(id)))
+  }
+
+  // Canvas-only, like the hide-question filter — it does not touch `data`,
+  // so the same nodes return on the next reload or audit toggle if they are
+  // still in the graph.
+  const clearOrphans = () => {
+    const nodes = nodesRef.current
+    if (!nodes) return
+    const orphanIds = computeOrphanIds()
     if (orphanIds.length) nodes.remove(orphanIds)
+  }
+
+  // The durable counterpart: a real `reject()` per orphaned node, with a
+  // reason, so it survives a rebuild and shows up in `/api/rejected` — not
+  // just gone from this canvas. A question or verification/decision node
+  // swept in here is always `accepted` (bypasses the promotion ladder by
+  // design, docs/design.md §8) and `reject` refuses it every time; that is
+  // reported in the summary rather than treated as a failure of the whole
+  // sweep — see `rejectMany`.
+  const [rejecting, setRejecting] = useState(false)
+  const [rejectReason, setRejectReason] = useState('')
+  const [rejectBusy, setRejectBusy] = useState(false)
+  const [rejectSummary, setRejectSummary] = useState(null)
+
+  const rejectOrphans = async () => {
+    if (!rejectReason.trim()) return
+    setRejectBusy(true)
+    setRejectSummary(null)
+    const ids = computeOrphanIds()
+    const results = await rejectMany(ids, rejectReason.trim())
+    const ok = results.filter((r) => r.ok)
+    const failed = results.filter((r) => !r.ok)
+    if (ok.length && nodesRef.current) nodesRef.current.remove(ok.map((r) => r.id))
+    setRejectSummary({ ok: ok.length, failed: failed.length })
+    setRejectReason('')
+    setRejectBusy(false)
+    setRejecting(false)
+    onGraphChanged?.()
   }
 
   return (
@@ -475,14 +515,56 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
         aria-label="Evidence graph (draggable)"
         style={{ width: '100%', height: 'calc(100vh - 150px)', minHeight: '420px' }}
       />
-      <button
-        type="button"
-        className="graph-clear-orphans"
-        onClick={clearOrphans}
-        title="Remove nodes with no edges on screen (view only — nothing in the graph is changed)"
-      >
-        Clear orphan nodes
-      </button>
+      <div className="graph-clear-wrap">
+        <button
+          type="button"
+          className="graph-clear-orphans"
+          onClick={clearOrphans}
+          title="Remove nodes with no edges on screen (view only — nothing in the graph is changed)"
+        >
+          Clear orphan nodes
+        </button>
+        {canWrite && (
+          <button
+            type="button"
+            className="graph-clear-orphans"
+            onClick={() => setRejecting((v) => !v)}
+            title="Permanently reject the same orphaned nodes, with a reason — a real graph write, not a view filter"
+          >
+            Reject &amp; remove…
+          </button>
+        )}
+        {rejecting && (
+          <div className="graph-reject-box">
+            <textarea
+              rows={2}
+              placeholder="Reason (required)"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            />
+            <div className="graph-reject-actions">
+              <button
+                type="button" className="btn tiny"
+                disabled={rejectBusy || !rejectReason.trim()}
+                onClick={rejectOrphans}
+              >
+                {rejectBusy ? 'Rejecting…' : 'Confirm'}
+              </button>
+              <button
+                type="button" className="btn tiny"
+                onClick={() => { setRejecting(false); setRejectReason('') }}
+              >Cancel</button>
+            </div>
+          </div>
+        )}
+        {rejectSummary && (
+          <p className="graph-reject-summary">
+            Rejected {rejectSummary.ok}
+            {rejectSummary.failed > 0 && `, skipped ${rejectSummary.failed} (already accepted — `
+              + 'a question or audit record isn’t on the promotion ladder; hide it instead)'}
+          </p>
+        )}
+      </div>
     </div>
   )
 }
