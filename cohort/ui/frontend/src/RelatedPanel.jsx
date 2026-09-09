@@ -10,6 +10,7 @@ export default function RelatedPanel({ onInvestigate }) {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [wordingOpen, setWordingOpen] = useState({})
   const request = useRef(0)
   useEffect(() => {
     let live = true
@@ -18,7 +19,7 @@ export default function RelatedPanel({ onInvestigate }) {
   }, [])
   const search = async (target = uid, position = start) => {
     const id = ++request.current
-    setUid(target); setStart(position); setBusy(true); setError(null); setResult(null)
+    setUid(target); setStart(position); setBusy(true); setError(null); setResult(null); setWordingOpen({})
     try {
       const data = await getRelated(target, position)
       if (id === request.current) setResult(data)
@@ -78,22 +79,28 @@ export default function RelatedPanel({ onInvestigate }) {
       {result.matches.map((m, i) => <article className="related-match" key={`${m.uid}:${m.start}`}>
         <h4>{i + 1}. {textName(m.uid)} <span className="hint small">Cosine {m.cosine.toFixed(3)}</span></h4>
         <p className="hint small">{m.uid} · Source characters {m.start}–{m.end}</p>
-        <div className="related-match-actions">
         <CbetaLink url={m.cbeta_url} />
+        <div className="related-match-actions">
+        <button className="btn related-wording" type="button"
+          aria-expanded={!!wordingOpen[i]} aria-controls={`shared-wording-${i}`}
+          onClick={() => setWordingOpen(current => ({ ...current, [i]: !current[i] }))}>
+          <span aria-hidden="true">{wordingOpen[i] ? '▾' : '▸'}</span> Shared wording
+          <span className="related-wording-count" title="Longest shared sequence of Chinese characters">{m.longest_shared_run} chars</span>
+        </button>
         {onInvestigate && <button className="btn related-investigate" type="button"
           title="Open an editable Inquiry question with both passages"
           onClick={() => onInvestigate({ kind: 'passage-pair', selected: result.query, match: m })}>
           Investigate this pair <span aria-hidden="true">→</span>
         </button>}
         </div>
-        <p className="related-text" lang="zh">{m.text}</p>
-        <details><summary>Check shared wording</summary>
-          <p>Longest shared sequence: {m.longest_shared_run} Chinese characters. Punctuation is ignored; only these two displayed passages are compared.</p>
+        <div className="related-wording-panel" id={`shared-wording-${i}`} hidden={!wordingOpen[i]}>
+          <p><b>Longest match: {m.longest_shared_run} Chinese characters.</b> This checks the selected excerpt against this result’s excerpt, not the full works. Punctuation is ignored.</p>
           {m.shared_runs.length ? <ul>{m.shared_runs.map((r, j) => <li key={j}>
             <span lang="zh">{r.text}</span> · {r.chars} characters<br />
             Selected text: {r.a_start}–{r.a_end} · Related text: {r.b_start}–{r.b_end}
           </li>)}</ul> : <p>No shared sequence of four or more Chinese characters.</p>}
-        </details>
+        </div>
+        <p className="related-text" lang="zh">{m.text}</p>
       </article>)}
       </section>
       </div>

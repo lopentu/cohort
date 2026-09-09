@@ -341,7 +341,9 @@ Corpus offers **Exact phrase** (corpus-order matches) and **Related passages**
 (cosine-ranked windows from a configured embedding index). Related search takes
 an indexed unit ID and source position, not a free-text question. All units of
 the target's Taishō work are excluded. Results show both bounded passages and
-an expandable shared-wording comparison; this does not write graph records.
+a **Shared wording** button above each result, showing the longest match length.
+Expanding it shows matching strings and their positions in the two excerpts,
+not a comparison of the complete works; this does not write graph records.
 
 **Investigate this pair** opens an editable Inquiry draft with the two displayed
 passages, their local positions and retrieval measurements. The worker is asked
