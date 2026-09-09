@@ -411,8 +411,8 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
       {pair && (
         <p className="hint small">
           Text highlighting: <b className="ev-a">{profileName(a)}</b> (A) vs <b className="ev-b">{profileName(b)}</b> (B)
-          {pair.pinned ? ', pinned' : a === data.label ? ', the catalogue label vs its strongest rival' : ', the leader vs its strongest rival'}.
-          Profiles hold {data.profiles[a].feature_tokens.toLocaleString()} and {data.profiles[b].feature_tokens.toLocaleString()} feature tokens.
+          {pair.pinned ? '. Groups selected manually' : a === data.label ? '. A is the catalogue group; B is the highest-scoring other group' : '. A and B are the two highest-scoring groups'}.
+          Selected-string occurrences in the reference texts: A {data.profiles[a].feature_tokens.toLocaleString()}; B {data.profiles[b].feature_tokens.toLocaleString()} (including repeats).
       </p>
       )}
 
