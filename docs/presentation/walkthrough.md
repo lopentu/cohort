@@ -233,6 +233,8 @@ For T0453, this list offers an exploratory vocabulary comparison, not a translat
 
 Use the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.
 
+The uncertain texts supply only the frequent-string list. They do not supply the reference groups or assign a translator to the target. This is an alternative feature-selection baseline: it avoids selecting strings specifically to separate known translator labels, but common subjects and formulae may dominate. The list matches Radich’s list in size and proportions of two-, three- and four-character strings. It is selected by frequency, not by measured ability to distinguish groups.
+
 A profile records how frequently each selected string occurs in one comparison group. Cohort scores the target’s matching strings against each profile. Repeated occurrences contribute repeatedly. Related strings can overlap, so they are not independent pieces of evidence.
 
 The full ranking’s **Score relative to leader** is a total score difference: the leader is 0 and the other values are negative. The headline **Score difference** is the lead over the runner-up divided by the number of distinct matched strings. The two displays use different scales. Neither is a probability, and neither has a validated cutoff for assigning a translator.
