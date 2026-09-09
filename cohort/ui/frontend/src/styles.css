@@ -2332,3 +2332,12 @@ a.cbeta-link.block:hover { color: var(--text); }
   .action-tool { max-width: 52%; }
   .action-viewport { max-height: 240px; }
 }
+
+/* Keep the inquiry handoff distinct from the external source link. */
+.related-match-actions { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin:16px 0; }
+.related-match-actions .related-investigate { flex:0 1 auto; gap:12px; min-height:44px; padding:10px 16px; white-space:normal; font-weight:650; background:var(--workspace-ink); border-color:var(--workspace-ink); color:var(--workspace-on-action); margin-left:auto; }
+.related-match-actions .related-investigate:hover { background:var(--workspace-ink); border-color:var(--workspace-ink); color:var(--workspace-on-action); filter:brightness(1.1); }
+.related-investigate:focus-visible { outline:2px solid var(--workspace-ink); outline-offset:3px; }
+@media (max-width:600px) {
+  .related-match-actions .related-investigate { flex-basis:100%; margin-left:0; }
+}

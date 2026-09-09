@@ -78,12 +78,14 @@ export default function RelatedPanel({ onInvestigate }) {
       {result.matches.map((m, i) => <article className="related-match" key={`${m.uid}:${m.start}`}>
         <h4>{i + 1}. {textName(m.uid)} <span className="hint small">Cosine {m.cosine.toFixed(3)}</span></h4>
         <p className="hint small">{m.uid} · Source characters {m.start}–{m.end}</p>
+        <div className="related-match-actions">
         <CbetaLink url={m.cbeta_url} />
-        {onInvestigate && <button className="btn tiny" type="button"
+        {onInvestigate && <button className="btn related-investigate" type="button"
           title="Open an editable Inquiry question with both passages"
           onClick={() => onInvestigate({ kind: 'passage-pair', selected: result.query, match: m })}>
-          Investigate this pair
+          Investigate this pair <span aria-hidden="true">→</span>
         </button>}
+        </div>
         <p className="related-text" lang="zh">{m.text}</p>
         <details><summary>Check shared wording</summary>
           <p>Longest shared sequence: {m.longest_shared_run} Chinese characters. Punctuation is ignored; only these two displayed passages are compared.</p>
