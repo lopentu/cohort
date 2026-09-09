@@ -1,5 +1,9 @@
 # PNC presentation source
 
+**Current editable base:** [cohort-pnc-2026-main.pptx](cohort-pnc-2026-main.pptx), supplied and edited by the presenter. Make subsequent edits directly in this file. `slides.json`, the older PowerPoint and its PDF predate the presenter’s edits; rebuilding them does not preserve this deck. Export a fresh PDF from the current PowerPoint when needed.
+
+The current scope wording describes exact search, embedding-based passage retrieval, shared-wording alignment, agent proposals and source-linked review. It does not claim full semantic analysis or textual-variant collation.
+
 Downloads: [PowerPoint](cohort-pnc-2026.pptx) · [PDF](cohort-pnc-2026.pdf) · [Presenter cue card](presenter-cue-card.md)
 
 The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 20 slides in one main sequence: twenty minutes of slides and ten minutes in the application, with no scheduled audience Q&A.
