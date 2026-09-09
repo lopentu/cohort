@@ -295,6 +295,11 @@ function buildEdges(edges, visibleIds, p) {
         id: e.id,
         from: e.src,
         to: e.dst,
+        // Not read by vis-network itself — carried through so `clearOrphans`
+        // below can tell a parallel_of/descends_from edge apart from one that
+        // actually carries evidentiary weight, without a second lookup back
+        // into `data`.
+        type: e.type,
         color: { color: s.color, highlight: s.color, hover: s.color, opacity: 0.9 },
         width: s.width,
         dashes: s.dashes || false,
@@ -408,6 +413,59 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
     }
   }, [selectedId])
 
+  // A stopgap for the diff-sync above still occasionally leaving a node on
+  // canvas with none of its edges: sweep anything currently touching zero
+  // *evidentiary* edges in the live DataSets. Canvas-only, like the
+  // hide-question filter — it does not touch `data`, so the same nodes
+  // return on the next reload or audit toggle if they are still in the graph.
+  //
+  // A lone edge-less node is the simple case. But `parallel_of` /
+  // `descends_from` link witnesses to each other and carry no weight of their
+  // own — graph-model.js's `ignoredForOwnLiveness` already treats them this
+  // way when deciding what a hidden question drags down with it — so two or
+  // three witnesses connected only to each other by those types are just as
+  // orphaned as one with no edges at all, and were not caught by the
+  // touches-zero-edges check above. Union-find groups witnesses joined by
+  // those edges into one component first, so the whole group is judged (and
+  // removed) together rather than each witness individually finding itself
+  // "not touching zero edges" because its neighbour is right there.
+  const GROUP_ONLY_TYPES = new Set(['parallel_of', 'descends_from'])
+  const clearOrphans = () => {
+    const nodes = nodesRef.current
+    const edges = edgesRef.current
+    if (!nodes || !edges) return
+    const allEdges = edges.get()
+    const nodeIds = nodes.getIds()
+
+    const parent = new Map(nodeIds.map((id) => [id, id]))
+    const find = (x) => {
+      while (parent.get(x) !== x) {
+        parent.set(x, parent.get(parent.get(x)))
+        x = parent.get(x)
+      }
+      return x
+    }
+    const union = (a, b) => {
+      const ra = find(a); const rb = find(b)
+      if (ra !== rb) parent.set(ra, rb)
+    }
+    for (const e of allEdges) {
+      if (GROUP_ONLY_TYPES.has(e.type) && parent.has(e.from) && parent.has(e.to)) {
+        union(e.from, e.to)
+      }
+    }
+
+    const hasEvidence = new Set()
+    for (const e of allEdges) {
+      if (GROUP_ONLY_TYPES.has(e.type)) continue
+      if (parent.has(e.from)) hasEvidence.add(find(e.from))
+      if (parent.has(e.to)) hasEvidence.add(find(e.to))
+    }
+
+    const orphanIds = nodeIds.filter((id) => !hasEvidence.has(find(id)))
+    if (orphanIds.length) nodes.remove(orphanIds)
+  }
+
   return (
     <div className="graph-scroll">
       <div
@@ -417,6 +475,14 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
         aria-label="Evidence graph (draggable)"
         style={{ width: '100%', height: 'calc(100vh - 150px)', minHeight: '420px' }}
       />
+      <button
+        type="button"
+        className="graph-clear-orphans"
+        onClick={clearOrphans}
+        title="Remove nodes with no edges on screen (view only — nothing in the graph is changed)"
+      >
+        Clear orphan nodes
+      </button>
     </div>
   )
 }
