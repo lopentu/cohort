@@ -36,6 +36,8 @@ An embedder has already converted passages to vectors. We compare those stored v
 
 ## 9. Example: related content, little shared wording
 
+**Time cue:** Two translations from different periods.
+
 These two Lotus windows are close in the embedding index, but their longest exact shared sequence is only three Chinese characters. Retrieval gives us a pair to read; alignment shows where wording matches.
 
 ## 10. What vocabulary comparison calculates
@@ -48,6 +50,8 @@ Compare a text’s wording with texts labelled by translator.
 
 ## 12. T0603: remove the later commentary
 
+**Time cue:** A later commentary preserves wording from an earlier text.
+
 T1694 is in the mixed early-material group. Removing it changes that group’s profile and the leader. The target and vocabulary stay fixed. The margin is the score gap divided by distinct matched strings; it is not a probability.
 
 ## 13. Inquiry
@@ -55,6 +59,8 @@ T1694 is in the mixed early-material group. Removing it changes that group’s p
 Give agents a research question and inspect their actions.
 
 ## 14. From passages to research proposals
+
+**Time cue:** Could reuse, revision or transmission explain the resemblance?
 
 The worker can pull material together, suggest explanations we might want to examine, and propose a next search. These are possibilities for research. We inspect the cited passages and recorded checks before deciding what to pursue.
 

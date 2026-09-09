@@ -89,6 +89,14 @@ Keep corpus inspection to a relevant, bounded passage. The deck uses editable di
 
 These descriptions appear on Functions and again on each tab’s slide. Introduce the T0603 example as “Could shared wording mislead us about who translated this text?” Explain catalogue groups later, when showing the vocabulary calculation.
 
+## How Cohort supports diachronic research
+
+Diachronic research examines texts and their relationships across time. Cohort can retrieve related passages from different translations, locate shared wording and help test explanations such as reuse, revision or commentary. The Lotus example compares two translations from different periods. The T0603 example tests whether wording preserved in a later commentary changes a comparison of the earlier text.
+
+Dates and the direction of borrowing come from scholarship and further investigation. Similarity alone does not establish either. The Graph preserves the sources, proposals and recorded relationships needed to inspect those interpretations.
+
+The slides mark these examples with short time cues; the cue card repeats them.
+
 ## How the tabs connect
 
 ![Map of the tabs and their connections](diagrams/tabs.svg)
@@ -174,7 +182,7 @@ Expand **Agent roles and settings** only if discussing model configuration. A wo
 
 The local session has no monetary stopping threshold or output-token cap. A worker still has a 32-turn limit and can finish earlier. A turn is an iteration of its model/tool loop, not a guarantee of a new text or finding. Switching tabs does not stop the server-side run. The stop control requests a stop after the current turn.
 
-Use **Run results** to reopen a completed run. Expand an action to show its inputs and result. New worker actions have a recorded explanation of why the worker chose that action or string. This is the model’s stated rationale, not proof that the choice was good or a transcript of its hidden reasoning. Older runs can lack these explanations.
+Use **Run results** to reopen a completed run. Actions appear as compact rows in a scrollable list. Each row shows the tool, status and a shortened reason. Expand it for the full reason, then open Inputs and result. The live list follows new actions only while you are at the bottom and no action is expanded; scrolling back keeps your place. Reduced-motion settings disable the arrival animation and smooth scrolling. New worker actions have a recorded explanation of why the worker chose that action or string. This is the model’s stated rationale, not proof that the choice was good or a transcript of its hidden reasoning. Older runs can lack these explanations.
 
 A new question need not produce a large graph. A worker can search many texts but attach only a few passages to its proposals. In Graph, **Show exploration** adds recorded search activity. Those dashed activity records are separate from evidence supporting a proposal.
 
@@ -335,6 +343,9 @@ The reviewer is fallible. In the current implementation, its tool re-fetches cit
 The Vocabulary comparison tab does not currently offer a grounded `quotes` or `parallel_of` edge proposal for later acceptance. Accepting a graph record also does not change Vocabulary comparison profiles. The exclusion above is a separate researcher-controlled calculation.
 
 ## AI analysis in Graph and Vocabulary comparison
+
+Open Actions and reasons to inspect the analyst’s compact action list. The full reason, inputs and result remain expandable. The list scrolls within the panel; it does not keep extending the page as actions arrive.
+
 
 Click **Analyze this view**. A side panel opens without moving the main tab. Choose or retain the model, then click **Start analysis**. Merely opening the panel does not call a model.
 
