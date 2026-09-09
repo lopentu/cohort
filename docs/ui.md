@@ -365,3 +365,11 @@ Related search also works without `--allow-runs`; no paid call is needed.
 `GET /api/corpus/related` reports coverage; add `uid`, `start` and optional
 `limit` for a search. CLI equivalent: `cohort related T0263-rest --start 4000
 --radich PATH --json` (omit the ID for coverage).
+
+Exact-search results have a **Compare** action. Select two results to read them
+in independently scrollable columns (stacked on narrow screens). The search
+phrase is highlighted in each search excerpt and loaded source text. The source
+view loads at most 4,000 characters from the beginning; it may not reach the
+search occurrence, so the search excerpt remains separately labelled. Selections
+survive another phrase search and can be removed or cleared. Comparing does not
+write graph records or launch an agent.

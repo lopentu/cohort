@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { fetchCorpus, searchCorpus } from './api'
 import Reveal from './Reveal'
 import RelatedPanel from './RelatedPanel'
+import ExactComparison from './ExactComparison'
 
 // Browsing and searching the corpus, so the web UI can do what a script can.
 //
@@ -27,6 +28,7 @@ import RelatedPanel from './RelatedPanel'
 
 export default function CorpusPanel({ onCite }) {
   const [mode, setMode] = useState('exact')
+  const [comparison, setComparison] = useState([])
   const [query, setQuery] = useState('')
   const [results, setResults] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -125,6 +127,10 @@ export default function CorpusPanel({ onCite }) {
 
       {error && <p className="error">{error}</p>}
 
+      <ExactComparison selections={comparison}
+        onRemove={ref => setComparison(current => current.filter(hit => hit.ref !== ref))}
+        onClear={() => setComparison([])} />
+
       {results && (
         <>
           <div className="corpus-meta">
@@ -160,6 +166,14 @@ export default function CorpusPanel({ onCite }) {
                       CBETA ↗
                     </a>
                   )}
+                  <button className="btn tiny corpus-compare"
+                    aria-pressed={comparison.some(item => item.ref === h.ref)}
+                    disabled={comparison.length === 2 && !comparison.some(item => item.ref === h.ref)}
+                    onClick={() => setComparison(current => current.some(item => item.ref === h.ref)
+                      ? current.filter(item => item.ref !== h.ref)
+                      : current.length < 2 ? [...current, { ...h, phrase: results.query || query.trim() }] : current)}>
+                    {comparison.some(item => item.ref === h.ref) ? 'Selected for comparison' : 'Compare'}
+                  </button>
                   {onCite && (
                     <button
                       className="btn tiny"
