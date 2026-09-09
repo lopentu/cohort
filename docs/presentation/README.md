@@ -1,6 +1,8 @@
 # PNC presentation source
 
-The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 7 main slides and 25 reference slides. The plan is eight minutes of introduction, sixteen minutes in the application and six minutes of results and limits, with no scheduled audience Q&A.
+Downloads: [PowerPoint](cohort-pnc-2026.pptx) · [PDF](cohort-pnc-2026.pdf) · [Presenter cue card](presenter-cue-card.md)
+
+The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 7 main slides and 28 reference slides. The plan is eight minutes of introduction, sixteen minutes in the application and six minutes of results and limits, with no scheduled audience Q&A.
 
 - [Walkthrough](walkthrough.md): current controls, speaking guidance and background explanations.
 - [Researcher review](researcher-review.md): usefulness, limitations and inspection of the Q3 branches.

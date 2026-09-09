@@ -82,6 +82,26 @@ Keep corpus inspection to a relevant, bounded passage. The deck uses editable in
 
 The **Analyze this view** button in Graph and Vocabulary comparison opens a separate analyst. It can investigate using read-only tools and save an explanation. Its answer does not become a claim or an accepted finding automatically.
 
+## Technical reference: what runs in each tab
+
+| Tab | What runs | What it saves |
+|---|---|---|
+| Corpus | Exact phrase search reads the local corpus. Related passages compares stored embedding vectors. Shared-wording checks locate matching character sequences. | Browsing alone adds nothing to the evidence graph. Investigate this passage fills an Inquiry draft. |
+| Vocabulary comparison | Counts strings in the target and scores it against catalogue-labelled group profiles. The target’s whole work is withheld; you can exclude other works. | Calculations alone add no graph nodes. The ranking changes with the vocabulary and reference material. |
+| Inquiry | A language-model worker chooses tools and proposes claims or conjectures. A separate reviewer uses a different model family to check proposals. | The question, recorded proposals, citations, checks and run activity. Reopen completed runs under Run results. |
+| Findings | Reads the saved claims and conjectures, their cited passages and recorded checks. | It displays the existing investigation; opening the tab does not run another worker. |
+| Graph | Draws saved records and their relationships. Show exploration adds recorded tool activity. | Accepting or rejecting an eligible record saves a researcher decision. Hiding nodes only changes the view. |
+
+Graph and Vocabulary comparison also have an AI analyst. It can use read-only tools and continue a conversation about the selected view. Its explanation does not automatically become a graph proposal.
+
+### The embedder and the worker are different models
+
+The configured embedding file is `mitra-qwen35-embedder.npz`. It holds vectors computed before the session. Corpus → Related passages compares the selected passage’s vector with other stored vectors using cosine similarity. Higher scores mean closer vectors; read the returned passages to decide whether the relationship is useful.
+
+Inquiry workers and the view analyst can search these embeddings with `semantic_neighbors`. They use them only if they call that tool. Exact phrase search, string-frequency rankings, citation checks and graph drawing do not use the embedder.
+
+The filename identifies the embedder as `mitra-qwen35-embedder`. The legacy index does not record its exact model revision. Its coverage and training limitations are described under Semantic analysis and alignment below. The worker and reviewer model names are shown separately in Inquiry and in saved run records.
+
 ## The source collection and the comparison groups
 
 CBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.
@@ -247,6 +267,22 @@ Select a single node. Its inspector shows the record’s type, status, worker, m
 A search pointing to a claim records retrieval activity; it does not itself prove the claim. The **Show exploration** overlay adds works inspected in recorded tool activity, including some that were never attached as evidence. It is not a map of every source available in the corpus or every thought the model had.
 
 **Verified with an exact span** means a recorded check found the quoted passage at its source location. Repeated verification attempts remain in the history but are not presented as multiple independent witnesses.
+
+### Why a query can point straight to a proposal
+
+There is no required Query → Witness → Passage → Hypothesis chain. The graph records different relationships:
+
+- Witness → Passage, labelled **contains**: where the passage comes from. Internally, this is stored in the reverse direction as `part_of`.
+- Passage → Claim or conjecture, labelled **attests**: the passage is cited as support.
+- Query → Claim or conjecture, labelled **searched for**: a search ran while preparing that proposal.
+- Query → Conjecture, labelled **tests**: the author recorded a query and an expected result for a later test. This link alone does not mean the test ran or passed.
+- Claim or conjecture → Research question, labelled **addresses**: which question the proposal concerns.
+
+For a claim, the proposal tool runs a grounding search and saves its phrase and hit count. It refuses the claim if there are no hits. It does not automatically save each hit as a witness or passage, or link the query to those hits. Citation gathering is a separate operation. A hit therefore shows that wording was found; it does not establish that the proposed interpretation follows from it.
+
+For a conjecture, the tool records an earlier search under “prior art” and a separate proposed test. Here “prior art” means a corpus search made before proposing the conjecture, not a search of published scholarship.
+
+The UI uses “hypothesis” as a heading for claims and conjectures. A conjecture is not a container assembled from claim nodes. Read its own citations, explanation and proposed test.
 
 ## Checks and researcher decisions
 

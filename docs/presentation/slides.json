@@ -694,7 +694,7 @@
     "topic": "Interface reference",
     "minutes": 0,
     "appendix": true,
-    "notes": "Follow records and their relationships. Source-passage labels and query phrases are hidden in this screenshot; graph records and topology are otherwise unchanged. Use this slide as backup rather than repeating the live walkthrough.",
+    "notes": "Follow records and their relationships. Source-passage labels and query phrases are hidden in this screenshot; graph records and topology are otherwise unchanged. Use this slide as backup rather than repeating the live walkthrough.\n\n### Why a query can point straight to a proposal\n\nThere is no required Query → Witness → Passage → Hypothesis chain. The graph records different relationships:\n\n- Witness → Passage, labelled **contains**: where the passage comes from. Internally, this is stored in the reverse direction as `part_of`.\n- Passage → Claim or conjecture, labelled **attests**: the passage is cited as support.\n- Query → Claim or conjecture, labelled **searched for**: a search ran while preparing that proposal.\n- Query → Conjecture, labelled **tests**: the author recorded a query and an expected result for a later test. This link alone does not mean the test ran or passed.\n- Claim or conjecture → Research question, labelled **addresses**: which question the proposal concerns.\n\nFor a claim, the proposal tool runs a grounding search and saves its phrase and hit count. It refuses the claim if there are no hits. It does not automatically save each hit as a witness or passage, or link the query to those hits. Citation gathering is a separate operation. A hit therefore shows that wording was found; it does not establish that the proposed interpretation follows from it.\n\nFor a conjecture, the tool records an earlier search under “prior art” and a separate proposed test. Here “prior art” means a corpus search made before proposing the conjecture, not a search of published scholarship.\n\nThe UI uses “hypothesis” as a heading for claims and conjectures. A conjecture is not a container assembled from claim nodes. Read its own citations, explanation and proposed test.\n\n",
     "items": [
       {
         "kind": "text",
@@ -3651,5 +3651,488 @@
     ],
     "appendix": true,
     "diagram": "tabs"
+  },
+  {
+    "title": "How each tab works",
+    "topic": "Technical reference",
+    "minutes": 0,
+    "notes": "## Technical reference: what runs in each tab\n\n| Tab | What runs | What it saves |\n|---|---|---|\n| Corpus | Exact phrase search reads the local corpus. Related passages compares stored embedding vectors. Shared-wording checks locate matching character sequences. | Browsing alone adds nothing to the evidence graph. Investigate this passage fills an Inquiry draft. |\n| Vocabulary comparison | Counts strings in the target and scores it against catalogue-labelled group profiles. The target’s whole work is withheld; you can exclude other works. | Calculations alone add no graph nodes. The ranking changes with the vocabulary and reference material. |\n| Inquiry | A language-model worker chooses tools and proposes claims or conjectures. A separate reviewer uses a different model family to check proposals. | The question, recorded proposals, citations, checks and run activity. Reopen completed runs under Run results. |\n| Findings | Reads the saved claims and conjectures, their cited passages and recorded checks. | It displays the existing investigation; opening the tab does not run another worker. |\n| Graph | Draws saved records and their relationships. Show exploration adds recorded tool activity. | Accepting or rejecting an eligible record saves a researcher decision. Hiding nodes only changes the view. |\n\nGraph and Vocabulary comparison also have an AI analyst. It can use read-only tools and continue a conversation about the selected view. Its explanation does not automatically become a graph proposal.\n\n### The embedder and the worker are different models\n\nThe configured embedding file is `mitra-qwen35-embedder.npz`. It holds vectors computed before the session. Corpus → Related passages compares the selected passage’s vector with other stored vectors using cosine similarity. Higher scores mean closer vectors; read the returned passages to decide whether the relationship is useful.\n\nInquiry workers and the view analyst can search these embeddings with `semantic_neighbors`. They use them only if they call that tool. Exact phrase search, string-frequency rankings, citation checks and graph drawing do not use the embedder.\n\nThe filename identifies the embedder as `mitra-qwen35-embedder`. The legacy index does not record its exact model revision. Its coverage and training limitations are described under Semantic analysis and alignment below. The worker and reviewer model names are shown separately in Inquiry and in saved run records.\n\n",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Technical reference",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "How each tab works",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Corpus",
+        "x": 55,
+        "y": 208,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Exact search, stored-vector retrieval and shared wording.",
+        "x": 420,
+        "y": 208,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Vocabulary comparison",
+        "x": 55,
+        "y": 292,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "String counts scored against catalogue-labelled groups.",
+        "x": 420,
+        "y": 292,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Inquiry",
+        "x": 55,
+        "y": 376,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "A worker calls tools; a separate reviewer checks proposals.",
+        "x": 420,
+        "y": 376,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Findings",
+        "x": 55,
+        "y": 460,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Read saved proposals, citations and checks.",
+        "x": 420,
+        "y": 460,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Graph",
+        "x": 55,
+        "y": 544,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Inspect links and record researcher decisions.",
+        "x": 420,
+        "y": 544,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "33",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778"
+      }
+    ],
+    "appendix": true
+  },
+  {
+    "title": "Which model does what?",
+    "topic": "Technical reference",
+    "minutes": 0,
+    "notes": "## Technical reference: what runs in each tab\n\n| Tab | What runs | What it saves |\n|---|---|---|\n| Corpus | Exact phrase search reads the local corpus. Related passages compares stored embedding vectors. Shared-wording checks locate matching character sequences. | Browsing alone adds nothing to the evidence graph. Investigate this passage fills an Inquiry draft. |\n| Vocabulary comparison | Counts strings in the target and scores it against catalogue-labelled group profiles. The target’s whole work is withheld; you can exclude other works. | Calculations alone add no graph nodes. The ranking changes with the vocabulary and reference material. |\n| Inquiry | A language-model worker chooses tools and proposes claims or conjectures. A separate reviewer uses a different model family to check proposals. | The question, recorded proposals, citations, checks and run activity. Reopen completed runs under Run results. |\n| Findings | Reads the saved claims and conjectures, their cited passages and recorded checks. | It displays the existing investigation; opening the tab does not run another worker. |\n| Graph | Draws saved records and their relationships. Show exploration adds recorded tool activity. | Accepting or rejecting an eligible record saves a researcher decision. Hiding nodes only changes the view. |\n\nGraph and Vocabulary comparison also have an AI analyst. It can use read-only tools and continue a conversation about the selected view. Its explanation does not automatically become a graph proposal.\n\n### The embedder and the worker are different models\n\nThe configured embedding file is `mitra-qwen35-embedder.npz`. It holds vectors computed before the session. Corpus → Related passages compares the selected passage’s vector with other stored vectors using cosine similarity. Higher scores mean closer vectors; read the returned passages to decide whether the relationship is useful.\n\nInquiry workers and the view analyst can search these embeddings with `semantic_neighbors`. They use them only if they call that tool. Exact phrase search, string-frequency rankings, citation checks and graph drawing do not use the embedder.\n\nThe filename identifies the embedder as `mitra-qwen35-embedder`. The legacy index does not record its exact model revision. Its coverage and training limitations are described under Semantic analysis and alignment below. The worker and reviewer model names are shown separately in Inquiry and in saved run records.\n\n\nThe index has no recorded model revision. Do not claim that the example texts were absent from training.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Technical reference",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Which model does what?",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Embedder",
+        "x": 55,
+        "y": 208,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "mitra-qwen35-embedder (identified by the index filename).",
+        "x": 420,
+        "y": 208,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Passage retrieval",
+        "x": 55,
+        "y": 292,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cosine similarity between stored passage vectors.",
+        "x": 420,
+        "y": 292,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Worker",
+        "x": 55,
+        "y": 376,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Chooses tools and writes proposals. See Inquiry for its model.",
+        "x": 420,
+        "y": 376,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Reviewer",
+        "x": 55,
+        "y": 460,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "A different model family records checks on proposals.",
+        "x": 420,
+        "y": 460,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "No embedding call",
+        "x": 55,
+        "y": 544,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Exact search, vocabulary rankings and graph display.",
+        "x": 420,
+        "y": 544,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "34",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778"
+      }
+    ],
+    "appendix": true
+  },
+  {
+    "title": "Reading the Graph arrows",
+    "topic": "Technical reference",
+    "minutes": 0,
+    "notes": "### Why a query can point straight to a proposal\n\nThere is no required Query → Witness → Passage → Hypothesis chain. The graph records different relationships:\n\n- Witness → Passage, labelled **contains**: where the passage comes from. Internally, this is stored in the reverse direction as `part_of`.\n- Passage → Claim or conjecture, labelled **attests**: the passage is cited as support.\n- Query → Claim or conjecture, labelled **searched for**: a search ran while preparing that proposal.\n- Query → Conjecture, labelled **tests**: the author recorded a query and an expected result for a later test. This link alone does not mean the test ran or passed.\n- Claim or conjecture → Research question, labelled **addresses**: which question the proposal concerns.\n\nFor a claim, the proposal tool runs a grounding search and saves its phrase and hit count. It refuses the claim if there are no hits. It does not automatically save each hit as a witness or passage, or link the query to those hits. Citation gathering is a separate operation. A hit therefore shows that wording was found; it does not establish that the proposed interpretation follows from it.\n\nFor a conjecture, the tool records an earlier search under “prior art” and a separate proposed test. Here “prior art” means a corpus search made before proposing the conjecture, not a search of published scholarship.\n\nThe UI uses “hypothesis” as a heading for claims and conjectures. A conjecture is not a container assembled from claim nodes. Read its own citations, explanation and proposed test.\n\n",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Technical reference",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Reading the Graph arrows",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 105,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Witness → Passage",
+        "x": 55,
+        "y": 208,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "contains: the passage belongs to this source.",
+        "x": 420,
+        "y": 208,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Passage → Proposal",
+        "x": 55,
+        "y": 292,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "attests: the passage is offered as support.",
+        "x": 420,
+        "y": 292,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Query → Proposal",
+        "x": 55,
+        "y": 376,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "searched for: a search used to prepare the proposal.",
+        "x": 420,
+        "y": 376,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Query → Conjecture",
+        "x": 55,
+        "y": 460,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "tests: a planned check; inspect whether it was run.",
+        "x": 420,
+        "y": 460,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Proposal → Question",
+        "x": 55,
+        "y": 544,
+        "w": 340,
+        "h": 76,
+        "size": 22,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "addresses: the question this proposal concerns.",
+        "x": 420,
+        "y": 544,
+        "w": 805,
+        "h": 76,
+        "size": 22,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "35",
+        "x": 1180,
+        "y": 676,
+        "w": 48,
+        "h": 25,
+        "size": 12,
+        "color": "526778"
+      }
+    ],
+    "appendix": true
   }
 ]
