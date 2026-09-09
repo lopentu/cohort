@@ -2231,7 +2231,7 @@ a.cbeta-link.block:hover { color: var(--text); }
 .corpus-modes [aria-pressed="true"] { font-weight:700; outline:2px solid var(--accent, #126b85); }
 .related-form { display:flex; gap:12px; flex-wrap:wrap; align-items:end; margin:16px 0; }
 .related-form label { display:grid; gap:6px; flex:1; min-width:150px; }
-.related-form input { width:100%; box-sizing:border-box; padding:8px; }
+.related-form input, .related-form select { min-width:0; width:100%; box-sizing:border-box; padding:8px; }
 .related-text { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.9; max-width:75ch; }
 .related-match { padding:16px 0; border-top:1px solid var(--border); }
 .related-match h4 { margin:0; }

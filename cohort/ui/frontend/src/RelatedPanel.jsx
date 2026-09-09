@@ -39,8 +39,10 @@ export default function RelatedPanel() {
         <p>The search excludes all units of the target’s Taishō work. Different units of another work may still appear together.</p>
       </details>
       <form className="related-form" onSubmit={e => { e.preventDefault(); search() }}>
-        <label>Indexed text<input list="related-units" value={uid} onChange={e => change(e.target.value)} /></label>
-        <datalist id="related-units">{config.units.map(u => <option key={u} value={u}>{textName(u)}</option>)}</datalist>
+        <label>Indexed text<select aria-label="Indexed text" value={config.units.includes(uid) ? uid : ''} onChange={e => change(e.target.value)}>
+          <option value="" disabled>Select a text</option>
+          {config.units.map(u => <option key={u} value={u}>{textName(u)}</option>)}
+        </select></label>
         <label>Source position<input type="number" min="0" step={config.window_chars} value={start}
           onChange={e => { request.current++; setStart(Number(e.target.value)); setResult(null); setBusy(false) }} /></label>
         <button className="btn" disabled={busy || !config.units.includes(uid)}>{busy ? 'Searching…' : 'Find related passages'}</button>
