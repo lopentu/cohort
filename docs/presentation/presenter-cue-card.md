@@ -64,21 +64,21 @@ Give agents a research question and inspect their actions.
 
 The worker can pull material together, suggest explanations we might want to examine, and propose a next search. These are possibilities for research. We inspect the cited passages and recorded checks before deciding what to pursue.
 
-## 15. Findings
-
-Read the agents’ proposals, citations and checks.
-
-## 16. Graph
+## 15. Graph
 
 Follow links between sources, proposals and decisions.
 
-## 17. Why a query points to a proposal
+## 16. Why a query points to a proposal
 
 Supporting passages and investigation records are separate links. A grounding search saves a query and hit count but does not automatically make nodes for every result. A tests arrow records a planned test; check whether it ran.
 
-## 18. Why use an evidence graph?
+## 17. Why use an evidence graph?
 
 The graph helps us trace proposals back to sources, inspect recorded relationships between sources, and retain the history of checks and decisions. A possible next step is edge prediction: suggesting a relationship worth investigating. We have not implemented or evaluated that capability.
+
+## 18. Findings
+
+Read the agents’ proposals, citations and checks.
 
 ## 19. Cohort
 
@@ -92,5 +92,5 @@ We have useful candidate retrieval, inspectable comparisons and a record of agen
 
 1. Corpus → Lotus related passages → shared wording.
 2. Vocabulary comparison → T0603 → exclude T1694.
-3. Inquiry → saved tool action → Findings → proposal → Graph → sources and checks.
+3. Inquiry → saved tool action → Graph → sources and checks → Findings → proposal.
 4. Return to slide 20.

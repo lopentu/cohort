@@ -26,4 +26,6 @@ The PDF is rendered from the shared HTML layout. PowerPoint text and shapes are 
 
 Related-passage examples are reproduced by `scripts/check_method_examples.py`; `method-examples.json` contains aggregate measurements only.
 
-Slides 7, 11, 13, 15 and 16 show the five tabs, each beside a workflow diagram. Source-passage text is hidden where applicable; Inquiry shows an unsent draft. Screenshot images can be replaced in PowerPoint. Slide 3 states the purpose; slide 4 introduces the abstract. Open the application at slide 19 and return to slide 20 for results and limits.
+In the current PowerPoint, slides 7, 11, 13, 15 and 18 show the five tabs, each beside a workflow diagram. Source-passage text is hidden where applicable; Inquiry shows an unsent draft. Screenshot images can be replaced in PowerPoint. Slide 3 states the purpose; slide 4 introduces the abstract. Open the application at slide 19 and return to slide 20 for results and limits.
+
+Current tab order: Corpus → Vocabulary comparison → Inquiry → Graph → Findings. Slides 15–17 cover Graph, relationships and provenance; slide 18 presents Findings. These are two views of the same saved investigation.

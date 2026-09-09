@@ -55,7 +55,7 @@ All 20 slides belong to the main presentation. Planned total: 30 minutes, includ
 | 1–6 | Authors, Radich acknowledgement, purpose, abstract, functions and example questions |
 | 7–9 | Corpus, embedding retrieval and a Lotus passage comparison |
 | 10–12 | Vocabulary counts, colours and the T0603 exclusion |
-| 13–18 | Inquiry, agent roles, Findings, Graph relationships and decisions |
+| 13–18 | Inquiry, agent roles, Graph relationships and decisions, Findings |
 | 19 | Ten minutes in Cohort: retrieve, compare, inspect saved work |
 | 20 | Useful outputs and observed failures |
 
@@ -67,7 +67,7 @@ Screenshots introduce each tab; diagrams explain the operations. During the appl
 2. **Vocabulary comparison:** click the Lotus example. Both string lists rank Dharmarakṣa first for this target, with its own work removed from the reference profiles. That answers a different question from passage retrieval. It is one illustrative agreement with a known label, not validation of the classifier. The reverse target, `T0262-exDevadatta`, incorrectly ranks Dharmakṣema first under both lists; say this when discussing limits.
 3. Still in **Vocabulary comparison**, select **T0603**, retain the curated strings, then exclude **T1694**. Explain the changing reference material using the instructions below.
 4. **Inquiry:** open a saved completed run. Show the research question, instructions and one actual tool action. Do not claim every run uses embeddings: the worker must choose `semantic_neighbors`. Do not wait for a fresh run during the presentation.
-5. **Findings → Graph:** follow one proposal to a source passage and its recorded check. Show who proposed it and which model was used. Explain the researcher’s decision controls; do not accept a scholarly proposal merely to illustrate a button.
+5. **Graph → Findings:** follow one proposal to a source passage and its recorded check. Show who proposed it and which model was used. Explain the researcher’s decision controls; do not accept a scholarly proposal merely to illustrate a button.
 
 ## Before opening the slides
 
