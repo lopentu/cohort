@@ -394,3 +394,11 @@ Use it to explain retrieval and alignment if asked for another example. Do not p
 - [Silk, “Maitreya”](https://openphilology.eu/publications-jonathan-silk/articles_2019d_maitreya.pdf) and the earlier background guide provide context for T0453. No new quantitative claim about that example is added here.
 - `measurements.json` contains only aggregate output from the local Vocabulary comparison API, captured 9 September 2026. It contains no source passages or private file paths.
 - Interface descriptions were checked against `AnalysisPanel.jsx`, `CorpusPanel.jsx`, `Vocabulary comparisonPanel.jsx`, `FindingsPanel.jsx`, `RunPanel.jsx`, the graph vocabulary and the current agent tools. Diagrams are simplified guides, not output screenshots.
+
+
+The current server reads Radich’s stripped texts through `LocalReader`. It does
+not expose CBETA’s cross-reference markup to `link_parallels`, so asking the
+worker to call that tool will not create CBETA parallel links in this setup.
+Quotation and descent proposal tools are also absent. The graph can display
+these edge types when recorded, but the slides must not imply that the current
+Inquiry flow creates them. See [relationship import check](../relationship-import-audit.md).
