@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import html
 import json
 import shutil
@@ -24,6 +25,9 @@ WIDTH, HEIGHT = 1280, 720
 
 def svg_item(item):
     x, y, w, h = (item.get(k, 0) for k in ("x", "y", "w", "h"))
+    if item["kind"] == "image":
+        data = base64.b64encode((HERE / item["path"]).read_bytes()).decode()
+        return f'<image x="{x}" y="{y}" width="{w}" height="{h}" href="data:image/png;base64,{data}"/>'
     colour = item.get("color", "24384A")
     if item["kind"] == "line":
         return f'<line x1="{x}" y1="{y}" x2="{x+w}" y2="{y+h}" stroke="#{colour}" stroke-width="2" marker-end="url(#arrow)"/>'
@@ -67,7 +71,9 @@ def text_style(item):
 def add_native(slide, item):
     x, y, w, h = (Inches(item.get(k, 0) / 96) for k in ("x", "y", "w", "h"))
     colour = RGBColor.from_string(item.get("color", "24384A"))
-    if item["kind"] == "line":
+    if item["kind"] == "image":
+        slide.shapes.add_picture(str(HERE / item["path"]), x, y, width=w, height=h)
+    elif item["kind"] == "line":
         line = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, x, y, x+w, y+h)
         line.line.color.rgb = colour
         line.line.width = Pt(1.5)
@@ -132,7 +138,7 @@ def build(output):
     body = markdown.markdown(guide, extensions=["tables", "toc"])
     css = 'body{max-width:980px;margin:48px auto;padding:0 26px;color:#24384a;font:18px/1.65 Lato,sans-serif;background:white}h1,h2,h3{line-height:1.2}h2{margin-top:2.3em}img{width:100%;height:auto;border:1px solid #d2dae0}table{border-collapse:collapse;width:100%;font-size:16px}td,th{text-align:left;vertical-align:top;padding:10px;border-bottom:1px solid #d2dae0}a{color:#126b85}blockquote{border-left:3px solid #126b85;margin-left:0;padding-left:20px}@media print{@page{size:A4;margin:18mm}body{margin:0;padding:0;font-size:11pt}h2,h3{break-after:avoid}tr,blockquote,img{break-inside:avoid}}'
     (output / "how-cohort-works.html").write_text('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cohort: presenter walkthrough</title><style>'+css+'</style>'+body+'</html>')
-    for name in ("measurements.json", "method-examples.json", "researcher-review.md", "slides.json"):
+    for name in ("measurements.json", "method-examples.json", "researcher-review.md", "presenter-cue-card.md", "conjecture-review.md", "slides.json"):
         shutil.copy2(HERE / name, output / name)
     (output / "README.md").write_text('# Current PNC materials\n\nUse `cohort-pnc-2026.pptx` for editable slides, `cohort-pnc-2026.pdf` for a fixed-layout fallback, and `how-cohort-works.html` for the walkthrough. Detailed notes are embedded in PowerPoint and in `speaker-notes.md`.\n\nThe main deck follows the abstract; reference slides contain supplementary detail. Interface diagrams use editable text and shapes, not captured source passages. No files have been uploaded.\n\n`researcher-review.md` assesses usefulness and the separate Q3 branches. `measurements.json` records the aggregate vocabulary results used in the slides.\n\nThe HTML/PDF proof is checked locally. PowerPoint must still be opened in the presenting application to check font substitution.\n')
     print(json.dumps({"slides": len(slides), "main": sum(not s.get("appendix", False) for s in slides), "output": str(output)}))

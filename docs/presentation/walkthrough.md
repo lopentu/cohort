@@ -2,6 +2,12 @@
 
 Updated 9 September 2026. Use this walkthrough with the revised PNC slides. It replaces the earlier walkthrough and speaking sequence. The longer background guide remains useful for Buddhist studies context, but its interface instructions and descriptions of particular runs may be out of date.
 
+## A short version to remember
+
+Use the [presenter cue card](presenter-cue-card.md) beside the slides. Each main slide has a **SAY** sentence and a **NEXT** cue in its speaker notes. Your route is **find → compare → inspect**. The longer notes below are background, not a script to recite.
+
+Thank Michael Radich on the **Data and thanks** slide for the corpus, catalogue labels and curated string list. Introduce the research questions as practical examples we want to explore with specialists, not as completed philological results.
+
 ## What you are presenting
 
 The title is **Agent-Based Infrastructures for Diachronic Digital Humanities**. Present the software through the activities named in the abstract: retrieve corpus material, analyse it, align passages, develop interpretations, preserve provenance, and let researchers make decisions.
@@ -42,11 +48,11 @@ Use seven main slides and the application. There is no scheduled audience Q&A. T
 
 | Part | Time | What to show |
 |---|---:|---|
-| Slides 1–4 | 8 minutes | Purpose, research activities, named texts and corpus scope |
+| Slides 1–4 | 8 minutes | Title, Radich acknowledgement and data, functions, example questions |
 | Slide 5, then application | 16 minutes | Corpus retrieval; vocabulary and exclusion; saved Inquiry; Findings and Graph |
 | Slides 6–7 | 6 minutes | Measured results, failure case and limits |
 
-The remaining slides are reference material. Do not show each interface diagram and then repeat the same explanation in the application. Keep the diagrams available if the application cannot be reached.
+Slides 8–12 provide a screenshot of each tab; source passages are hidden where applicable. Use them as backup if the application is unavailable. The remaining slides are reference material. Do not show each interface diagram and then repeat the same explanation in the application. Keep the diagrams available if the application cannot be reached.
 
 ### The live sequence
 
@@ -133,7 +139,7 @@ A new question need not produce a large graph. A worker can search many texts bu
 
 The worker’s language model chooses actions and writes proposals. The embedding model previously converted passages into vectors. Searching compares stored vectors; it does not retrain the model or embed a new typed question.
 
-Select an indexed text, then a source position, or use an example button. **Next passage** and **Previous passage** navigate its indexed windows. Results are ordered by cosine similarity and exclude every unit of the target’s Taishō work. Expand **Check shared wording** to see matching Chinese-character sequences within the two displayed windows. Positions are zero-based local source character offsets, with the end excluded, not CBETA page/line numbers. Several results can belong to the same other work.
+Select an indexed text, then a source position, or use an example button. The selected passage stays in the left column while related passages scroll independently on the right. On narrow screens the columns stack. **Next passage** and **Previous passage** navigate its indexed windows. Results are ordered by cosine similarity and exclude every unit of the target’s Taishō work. Expand **Check shared wording** to see matching Chinese-character sequences within the two displayed windows. Positions are zero-based local source character offsets, with the end excluded, not CBETA page/line numbers. Several results can belong to the same other work.
 
 The running index contains 54,616 windows from 2,160 text/chapter units. This is selected local material, not all CBETA. The filename identifies `mitra-qwen35-embedder`; the index has no recorded model revision or source hashes from generation. The UI distinguishes that filename-based model label from verified provenance. Hashes shown with results describe the source texts read now.
 

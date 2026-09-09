@@ -3,7 +3,7 @@
     "title": "Agent-Based Infrastructures for\nDiachronic Digital Humanities",
     "topic": "",
     "minutes": 1,
-    "notes": "Opening. Introduce yourself and your affiliation verbally. This is a presentation of working research tools, with a bounded example, not a claim to solve translator ascription.\n\nThe title is **Agent-Based Infrastructures for Diachronic Digital Humanities**. Present the software through the activities named in the abstract: retrieve corpus material, analyse it, align passages, develop interpretations, preserve provenance, and let researchers make decisions.\n\nA plain opening you can use:\n\n> Cohort lets a researcher ask agents to find and compare passages, then inspect their proposals and sources. I’ll show the tools, the records they produce, and the decisions the researcher can make. Our examples use early Chinese Buddhist texts and a question about translator ascriptions.\n\nAn **ascription** assigns a text to a translator. The broader research question is whether computational evidence can help assess those assignments. This presentation does not identify an unknown translator. It shows the operations available for investigating that question.\n\nMichael Radich supplied the corpus, working catalogue labels and curated string list used in the comparison. Acknowledge that contribution when introducing the material. The talk concerns Cohort’s infrastructure; it does not report a completed solution to his research programme.",
+    "notes": "SAY: Cohort helps researchers find passages, compare them and keep a record of the investigation.\n\nNEXT: Thank Michael Radich and introduce the data.\n\nBACKGROUND\nOpening. Introduce yourself and your affiliation verbally. This is a presentation of working research tools, with a bounded example, not a claim to solve translator ascription.\n\nThe title is **Agent-Based Infrastructures for Diachronic Digital Humanities**. Present the software through the activities named in the abstract: retrieve corpus material, analyse it, align passages, develop interpretations, preserve provenance, and let researchers make decisions.\n\nA plain opening you can use:\n\n> Cohort lets a researcher ask agents to find and compare passages, then inspect their proposals and sources. I’ll show the tools, the records they produce, and the decisions the researcher can make. Our examples use early Chinese Buddhist texts and a question about translator ascriptions.\n\nAn **ascription** assigns a text to a translator. The broader research question is whether computational evidence can help assess those assignments. This presentation does not identify an unknown translator. It shows the operations available for investigating that question.\n\nMichael Radich supplied the corpus, working catalogue labels and curated string list used in the comparison. Acknowledge that contribution when introducing the material. The talk concerns Cohort’s infrastructure; it does not report a completed solution to his research programme.",
     "items": [
       {
         "kind": "text",
@@ -86,152 +86,10 @@
     "appendix": false
   },
   {
-    "title": "What the researcher can do",
-    "topic": "Cohort",
-    "minutes": 2,
-    "notes": "Follow the abstract’s retrieval, semantic analysis, alignment, interpretation and provenance activities. Do not tour every control now; the application will supply the examples. The worker language model chooses tools; the frozen embedding vectors support related-passage retrieval. Neither alignment nor vocabulary scoring uses embeddings.",
-    "items": [
-      {
-        "kind": "text",
-        "text": "Cohort",
-        "x": 52,
-        "y": 25,
-        "w": 1120,
-        "h": 30,
-        "size": 14,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "What the researcher can do",
-        "x": 52,
-        "y": 84,
-        "w": 1176,
-        "h": 120,
-        "size": 32,
-        "color": "24384A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Cohort · PNC 2026",
-        "x": 52,
-        "y": 677,
-        "w": 950,
-        "h": 22,
-        "size": 11,
-        "color": "526778"
-      },
-      {
-        "kind": "text",
-        "text": "Find passages — exact phrases or similar content.",
-        "x": 58,
-        "y": 225,
-        "w": 1120,
-        "h": 120,
-        "size": 25,
-        "color": "24384A"
-      },
-      {
-        "kind": "text",
-        "text": "Compare wording — shared sequences and vocabulary frequencies.",
-        "x": 58,
-        "y": 360,
-        "w": 1120,
-        "h": 120,
-        "size": 25,
-        "color": "24384A"
-      },
-      {
-        "kind": "text",
-        "text": "Inspect proposals — sources, checks, alternatives and researcher decisions.",
-        "x": 58,
-        "y": 495,
-        "w": 1120,
-        "h": 120,
-        "size": 25,
-        "color": "24384A"
-      }
-    ],
-    "appendix": false
-  },
-  {
-    "title": "Two kinds of resemblance",
-    "topic": "Cohort",
-    "minutes": 3,
-    "notes": "Introduce the Lotus Sūtra by name, not just its catalogue IDs. T0263 is Dharmarakṣa’s 正法華經; T0262 is Kumārajīva’s 妙法蓮華經. Our indexed units omit particular separately catalogued sections: these are not complete editions. The T0603 case is a known commentary relationship, not a new attribution. Acknowledge Michael Radich’s corpus, labels and string list. T0263 catalogue: https://dazangthings.nz/cbc/text/398/ .",
-    "items": [
-      {
-        "kind": "text",
-        "text": "Cohort",
-        "x": 52,
-        "y": 25,
-        "w": 1120,
-        "h": 30,
-        "size": 14,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Two kinds of resemblance",
-        "x": 52,
-        "y": 84,
-        "w": 1176,
-        "h": 120,
-        "size": 32,
-        "color": "24384A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Cohort · PNC 2026",
-        "x": 52,
-        "y": 677,
-        "w": 950,
-        "h": 22,
-        "size": 11,
-        "color": "526778"
-      },
-      {
-        "kind": "text",
-        "text": "Same content, different wording: two Chinese translations of the Lotus Sūtra.",
-        "x": 58,
-        "y": 225,
-        "w": 1120,
-        "h": 120,
-        "size": 25,
-        "color": "24384A"
-      },
-      {
-        "kind": "text",
-        "text": "Repeated wording across time: T0603, a text about body, mind and senses, and its later commentary T1694.",
-        "x": 58,
-        "y": 360,
-        "w": 1120,
-        "h": 120,
-        "size": 25,
-        "color": "24384A"
-      },
-      {
-        "kind": "text",
-        "text": "The dates and textual relationships come from scholarship. Cohort searches and measures.",
-        "x": 58,
-        "y": 495,
-        "w": 1120,
-        "h": 120,
-        "size": 25,
-        "color": "24384A"
-      }
-    ],
-    "appendix": false
-  },
-  {
-    "title": "The comparison uses a selected corpus",
+    "title": "Data and thanks",
     "topic": "Research material",
     "minutes": 2,
-    "notes": "Explain the restriction before presenting a ranking. CBETA is much larger than this dataset. The counts below come from the current selection ledger, before target withholding.\n\nCBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.\n\nVocabulary comparison uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.\n\nThe current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.\n\nTo qualify initially, a labelled unit must have at least 2,000 Chinese characters, and a group must have at least five qualifying units. Texts marked as having an uncertain translator are excluded from these reference profiles. Their wording supplies the frequent-string vocabulary instead. Missing text files and rejected units are counted in the selection ledger.\n\nThese are implementation choices for this experiment. They do not establish that the remaining groups are equally representative or that their inherited ascriptions are infallible. After withholding, some groups can have little material left; the interface flags these as thin. Groups with no usable profile are listed as not judged.\n\nSay:\n\n> The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.\n\nThe catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.",
+    "notes": "SAY: Thank you to Michael Radich for sharing the material that made these examples possible.\n\nNEXT: Introduce the functions.\n\nBACKGROUND\nExplain the restriction before presenting a ranking. CBETA is much larger than this dataset. The counts below come from the current selection ledger, before target withholding.\n\nCBETA is the wider electronic collection. The running instance’s Corpus reader is configured for Radich’s local text collection, derived from CBETA. It is not a search across everything available on CBETA Online. The **CBETA ↗** link opens an external edition separately.\n\nVocabulary comparison uses a still narrower selection from the supplied catalogue to build comparison profiles. A **profile** is a table of string counts for one group. The groups are inherited catalogue labels, not clusters discovered by an AI.\n\nThe current selection ledger reports **368 corpus units in 13 comparison groups** before withholding the target’s work or additional texts. Eleven group labels name translators. Two collect material by historical category. A unit may be a short work or a chapter of a larger work, so 368 units does not mean 368 independent books.\n\nTo qualify initially, a labelled unit must have at least 2,000 Chinese characters, and a group must have at least five qualifying units. Texts marked as having an uncertain translator are excluded from these reference profiles. Their wording supplies the frequent-string vocabulary instead. Missing text files and rejected units are counted in the selection ledger.\n\nThese are implementation choices for this experiment. They do not establish that the remaining groups are equally representative or that their inherited ascriptions are infallible. After withholding, some groups can have little material left; the interface flags these as thin. Groups with no usable profile are listed as not judged.\n\nSay:\n\n> The ranking compares this text against the groups available in this dataset. A translator absent from those groups cannot appear in the answer.\n\nThe catalogue has more labels than the ranked list. “Thirteen groups” describes the usable comparison profiles, not the number of translators in Buddhist history or the size of CBETA.",
     "items": [
       {
         "kind": "text",
@@ -246,7 +104,7 @@
       },
       {
         "kind": "text",
-        "text": "The comparison uses a selected corpus",
+        "text": "Data and thanks",
         "x": 52,
         "y": 84,
         "w": 1176,
@@ -268,7 +126,7 @@
       },
       {
         "kind": "text",
-        "text": "4",
+        "text": "2",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -279,77 +137,45 @@
       },
       {
         "kind": "text",
-        "text": "CBETA-derived local texts",
-        "x": 55,
-        "y": 230,
-        "w": 660,
-        "h": 55,
-        "size": 29,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "Michael Radich’s catalogue supplies the group labels.\nCohort builds a count profile for each eligible group.",
-        "x": 55,
-        "y": 315,
-        "w": 720,
-        "h": 170,
-        "size": 25,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 850,
-        "y": 221,
-        "w": 360,
-        "h": 292,
-        "fill": "EDF4F7",
-        "color": "D2DAE0"
-      },
-      {
-        "kind": "text",
-        "text": "368",
-        "x": 882,
-        "y": 250,
-        "w": 290,
-        "h": 73,
-        "size": 43,
-        "color": "126B85",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "retained corpus units",
-        "x": 884,
-        "y": 323,
-        "w": 290,
-        "h": 45,
-        "size": 21,
-        "color": "24384A",
-        "bold": false
-      },
-      {
-        "kind": "text",
-        "text": "13 comparison groups",
-        "x": 883,
-        "y": 408,
-        "w": 290,
-        "h": 80,
-        "size": 25,
-        "color": "24384A",
-        "bold": true
-      },
-      {
-        "kind": "text",
-        "text": "A unit can be a chapter. The groups do not cover every possible translator.",
-        "x": 55,
-        "y": 556,
+        "text": "Thank you, Michael Radich",
+        "x": 58,
+        "y": 235,
         "w": 1120,
-        "h": 70,
+        "h": 95,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "For sharing the corpus, catalogue labels and curated string list.",
+        "x": 58,
+        "y": 315,
+        "w": 1120,
+        "h": 95,
         "size": 25,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "368 texts/chapters in 13 vocabulary comparison groups.",
+        "x": 58,
+        "y": 445,
+        "w": 1120,
+        "h": 95,
+        "size": 24,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "The source texts derive from CBETA. This is a selected corpus, not the whole canon.",
+        "x": 58,
+        "y": 535,
+        "w": 1120,
+        "h": 95,
+        "size": 24,
         "color": "24384A",
         "bold": false
       }
@@ -357,10 +183,10 @@
     "appendix": false
   },
   {
-    "title": "In Cohort",
+    "title": "Functions",
     "topic": "Cohort",
-    "minutes": 16,
-    "notes": "Switch to the light interface here. Spend approximately 4 minutes retrieving the Lotus Sūtra example, 5 on vocabulary and the T0603 exclusion, 4 on a saved inquiry and one finding, and 3 on provenance and researcher controls. These are planned times. Do not wait for a new language-model run. Return to the slides for the last six minutes. Read the walkthrough for exact inputs and interpretation. The reference diagrams are fallback material, not a second walkthrough.",
+    "minutes": 2,
+    "notes": "SAY: These are the functions I’ll show: search, comparison and an agent investigation.\n\nNEXT: Introduce the two example research questions.\n\nBACKGROUND\nFollow the abstract’s retrieval, semantic analysis, alignment, interpretation and provenance activities. Do not tour every control now; the application will supply the examples. The worker language model chooses tools; the frozen embedding vectors support related-passage retrieval. Neither alignment nor vocabulary scoring uses embeddings.",
     "items": [
       {
         "kind": "text",
@@ -375,7 +201,149 @@
       },
       {
         "kind": "text",
-        "text": "In Cohort",
+        "text": "Functions",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 120,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "Corpus search",
+        "x": 58,
+        "y": 225,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Passage and vocabulary comparisons",
+        "x": 58,
+        "y": 360,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "Agent investigations, source records and researcher decisions",
+        "x": 58,
+        "y": 495,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Example research questions",
+    "topic": "Cohort",
+    "minutes": 3,
+    "notes": "SAY: We’re approaching this as tool builders. These are two questions we think are worth exploring with specialists.\n\nNEXT: Switch to the application on the Cohort slide.\n\nBACKGROUND\nIntroduce the Lotus Sūtra by name, not just its catalogue IDs. T0263 is Dharmarakṣa’s 正法華經; T0262 is Kumārajīva’s 妙法蓮華經. Our indexed units omit particular separately catalogued sections: these are not complete editions. The T0603 case is a known commentary relationship, not a new attribution. Acknowledge Michael Radich’s corpus, labels and string list. T0263 catalogue: https://dazangthings.nz/cbc/text/398/ .\n\nThe Lotus Sūtra is a Buddhist scripture preserved in different Chinese translations. T0603 is the Yin chi ru jing 陰持入經, a text about body, mind and senses. T1694 is its commentary. Say the names and relationship before using the IDs. These are our practical example questions; do not attribute this exact wording to Radich. We are not resolving an unknown translator ascription.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Example research questions",
+        "x": 52,
+        "y": 84,
+        "w": 1176,
+        "h": 120,
+        "size": 32,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort · PNC 2026",
+        "x": 52,
+        "y": 677,
+        "w": 950,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      },
+      {
+        "kind": "text",
+        "text": "Lotus Sūtra: where do the two translations discuss the same material in different words?",
+        "x": 58,
+        "y": 225,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "T0603 and its commentary: how much does repeated wording affect the vocabulary result?",
+        "x": 58,
+        "y": 360,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      },
+      {
+        "kind": "text",
+        "text": "These examples test the tools on known textual relationships.",
+        "x": 58,
+        "y": 495,
+        "w": 1120,
+        "h": 120,
+        "size": 25,
+        "color": "24384A"
+      }
+    ],
+    "appendix": false
+  },
+  {
+    "title": "Cohort",
+    "topic": "Cohort",
+    "minutes": 16,
+    "notes": "SAY: I’ll start with finding a related passage, then compare vocabulary, then open a saved investigation.\n\nNEXT: Return to Results after the application walkthrough.\n\nBACKGROUND\nSwitch to the light interface here. Spend approximately 4 minutes retrieving the Lotus Sūtra example, 5 on vocabulary and the T0603 exclusion, 4 on a saved inquiry and one finding, and 3 on provenance and researcher controls. These are planned times. Do not wait for a new language-model run. Return to the slides for the last six minutes. Read the walkthrough for exact inputs and interpretation. The reference diagrams are fallback material, not a second walkthrough.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Cohort",
+        "x": 52,
+        "y": 25,
+        "w": 1120,
+        "h": 30,
+        "size": 14,
+        "color": "126B85",
+        "bold": true
+      },
+      {
+        "kind": "text",
+        "text": "Cohort",
         "x": 52,
         "y": 84,
         "w": 1176,
@@ -428,10 +396,10 @@
     "appendix": false
   },
   {
-    "title": "What the examples show",
+    "title": "Results",
     "topic": "Cohort",
     "minutes": 3,
-    "notes": "The first count concerns T0263-rest and T0262-exDevadatta, not every passage in complete editions. Nearest means first under vector similarity among indexed other works. This is an illustrative case selected after inspecting outputs, not a retrieval accuracy benchmark. Vocabulary excludes the target’s entire Taishō work, but other dependence and genre effects remain. Reverse control: T0262-exDevadatta ranks with Dharmakṣema under both vocabularies, not its catalogue label Kumārajīva. Mention that failure verbally: agreement for one example does not validate attribution. Measurements: scripts/check_method_examples.py; docs/presentation/method-examples.json.",
+    "notes": "SAY: The methods give us different things: candidate passages, vocabulary rankings and a way to test exclusions.\n\nNEXT: Explain the limitations.\n\nBACKGROUND\nThe first count concerns T0263-rest and T0262-exDevadatta, not every passage in complete editions. Nearest means first under vector similarity among indexed other works. This is an illustrative case selected after inspecting outputs, not a retrieval accuracy benchmark. Vocabulary excludes the target’s entire Taishō work, but other dependence and genre effects remain. Reverse control: T0262-exDevadatta ranks with Dharmakṣema under both vocabularies, not its catalogue label Kumārajīva. Mention that failure verbally: agreement for one example does not validate attribution. Measurements: scripts/check_method_examples.py; docs/presentation/method-examples.json.",
     "items": [
       {
         "kind": "text",
@@ -446,7 +414,7 @@
       },
       {
         "kind": "text",
-        "text": "What the examples show",
+        "text": "Results",
         "x": 52,
         "y": 84,
         "w": 1176,
@@ -467,7 +435,7 @@
       },
       {
         "kind": "text",
-        "text": "Lotus Sūtra: 283 of 327 indexed passages retrieve the other translation as their nearest passage.",
+        "text": "Lotus Sūtra: 283 of 327 indexed passages retrieve the other translation first.",
         "x": 58,
         "y": 225,
         "w": 1120,
@@ -477,7 +445,7 @@
       },
       {
         "kind": "text",
-        "text": "Vocabulary: the earlier Lotus translation ranks with Dharmarakṣa’s group under both string lists.",
+        "text": "Vocabulary: Dharmarakṣa ranks first for the earlier Lotus translation under both lists.",
         "x": 58,
         "y": 360,
         "w": 1120,
@@ -487,7 +455,7 @@
       },
       {
         "kind": "text",
-        "text": "T0603: excluding its commentary changes the leading group. The reference material matters.",
+        "text": "T0603: removing the commentary changes the first-ranked group.",
         "x": 58,
         "y": 495,
         "w": 1120,
@@ -499,10 +467,10 @@
     "appendix": false
   },
   {
-    "title": "What remains the researcher’s work",
+    "title": "Limits",
     "topic": "Cohort",
     "minutes": 3,
-    "notes": "Close on the concrete division of labour. No scheduled audience Q&A. We have shown retrieval, comparison and a record of investigation. We have not validated translator attribution, inferred dates or proved a transmission genealogy. Training overlap is unknown: the embedding model card describes Buddhist Chinese training but does not identify CBETA texts. The index lacks a recorded model revision and source hashes at generation time; its UI discloses that. The present source spans can be read and checked. Stop after the final point.",
+    "notes": "SAY: These tools help us inspect the material. They do not settle the historical interpretation.\n\nNEXT: End the presentation.\n\nBACKGROUND\nClose on the concrete division of labour. No scheduled audience Q&A. We have shown retrieval, comparison and a record of investigation. We have not validated translator attribution, inferred dates or proved a transmission genealogy. Training overlap is unknown: the embedding model card describes Buddhist Chinese training but does not identify CBETA texts. The index lacks a recorded model revision and source hashes at generation time; its UI discloses that. The present source spans can be read and checked. Stop after the final point.",
     "items": [
       {
         "kind": "text",
@@ -517,7 +485,7 @@
       },
       {
         "kind": "text",
-        "text": "What remains the researcher’s work",
+        "text": "Limits",
         "x": 52,
         "y": 84,
         "w": 1176,
@@ -538,7 +506,7 @@
       },
       {
         "kind": "text",
-        "text": "Decide whether a retrieved passage is relevant and what explains the resemblance.",
+        "text": "A similar passage still needs to be read in context.",
         "x": 58,
         "y": 225,
         "w": 1120,
@@ -548,7 +516,7 @@
       },
       {
         "kind": "text",
-        "text": "Check chronology, reuse and genre before drawing conclusions about a translator.",
+        "text": "Vocabulary rankings can be wrong. Dates and borrowing need separate evidence.",
         "x": 58,
         "y": 360,
         "w": 1120,
@@ -558,7 +526,7 @@
       },
       {
         "kind": "text",
-        "text": "Inspect and accept a proposal. A located citation does not make an interpretation true.",
+        "text": "The researcher decides whether to accept a proposal.",
         "x": 58,
         "y": 495,
         "w": 1120,
@@ -568,6 +536,196 @@
       }
     ],
     "appendix": false
+  },
+  {
+    "title": "Corpus",
+    "topic": "Interface reference",
+    "minutes": 0,
+    "appendix": true,
+    "notes": "The selected passage is on the left; related results scroll on the right. This is the stored-embedding mode, not exact-phrase search. Source text is hidden in the screenshot. Use this slide as backup rather than repeating the live walkthrough.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Corpus",
+        "x": 58,
+        "y": 28,
+        "w": 1150,
+        "h": 62,
+        "size": 30,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/corpus.png",
+        "x": 118,
+        "y": 100,
+        "w": 1044,
+        "h": 580
+      },
+      {
+        "kind": "text",
+        "text": "Interface reference · source passages hidden where applicable",
+        "x": 58,
+        "y": 689,
+        "w": 1160,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      }
+    ]
+  },
+  {
+    "title": "Vocabulary comparison",
+    "topic": "Interface reference",
+    "minutes": 0,
+    "appendix": true,
+    "notes": "This compares a text against pooled groups using string counts, not embeddings. Use the live view for exclusions. Source passages are hidden in the screenshot. Use this slide as backup rather than repeating the live walkthrough.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Vocabulary comparison",
+        "x": 58,
+        "y": 28,
+        "w": 1150,
+        "h": 62,
+        "size": 30,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/vocabulary.png",
+        "x": 118,
+        "y": 100,
+        "w": 1044,
+        "h": 580
+      },
+      {
+        "kind": "text",
+        "text": "Interface reference · source passages hidden where applicable",
+        "x": 58,
+        "y": 689,
+        "w": 1160,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      }
+    ]
+  },
+  {
+    "title": "Inquiry",
+    "topic": "Interface reference",
+    "minutes": 0,
+    "appendix": true,
+    "notes": "Show the distinction between a research question and research instructions. The screenshot shows an unsent draft; no new model run was started. Run history was hidden for this capture. Use this slide as backup rather than repeating the live walkthrough.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Inquiry",
+        "x": 58,
+        "y": 28,
+        "w": 1150,
+        "h": 62,
+        "size": 30,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/inquiry.png",
+        "x": 118,
+        "y": 100,
+        "w": 1044,
+        "h": 580
+      },
+      {
+        "kind": "text",
+        "text": "Interface reference · source passages hidden where applicable",
+        "x": 58,
+        "y": 689,
+        "w": 1160,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      }
+    ]
+  },
+  {
+    "title": "Findings",
+    "topic": "Interface reference",
+    "minutes": 0,
+    "appendix": true,
+    "notes": "These are saved proposals, not established conclusions. The conjecture review found weaknesses; do not imply attested means correct. No proposal was accepted for the screenshot. Use this slide as backup rather than repeating the live walkthrough.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Findings",
+        "x": 58,
+        "y": 28,
+        "w": 1150,
+        "h": 62,
+        "size": 30,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/findings.png",
+        "x": 118,
+        "y": 100,
+        "w": 1044,
+        "h": 580
+      },
+      {
+        "kind": "text",
+        "text": "Interface reference · source passages hidden where applicable",
+        "x": 58,
+        "y": 689,
+        "w": 1160,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      }
+    ]
+  },
+  {
+    "title": "Graph",
+    "topic": "Interface reference",
+    "minutes": 0,
+    "appendix": true,
+    "notes": "Follow records and their relationships. Source-passage labels and query phrases are hidden in this screenshot; graph records and topology are otherwise unchanged. Use this slide as backup rather than repeating the live walkthrough.",
+    "items": [
+      {
+        "kind": "text",
+        "text": "Graph",
+        "x": 58,
+        "y": 28,
+        "w": 1150,
+        "h": 62,
+        "size": 30,
+        "color": "24384A",
+        "bold": true
+      },
+      {
+        "kind": "image",
+        "path": "screenshots/graph.png",
+        "x": 118,
+        "y": 100,
+        "w": 1044,
+        "h": 580
+      },
+      {
+        "kind": "text",
+        "text": "Interface reference · source passages hidden where applicable",
+        "x": 58,
+        "y": 689,
+        "w": 1160,
+        "h": 22,
+        "size": 11,
+        "color": "526778"
+      }
+    ]
   },
   {
     "title": "Translator usage or later reuse?",
@@ -610,7 +768,7 @@
       },
       {
         "kind": "text",
-        "text": "8",
+        "text": "13",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -696,7 +854,7 @@
       },
       {
         "kind": "text",
-        "text": "9",
+        "text": "14",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -921,7 +1079,7 @@
       },
       {
         "kind": "text",
-        "text": "10",
+        "text": "15",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1156,7 +1314,7 @@
       },
       {
         "kind": "text",
-        "text": "11",
+        "text": "16",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1286,7 +1444,7 @@
       },
       {
         "kind": "text",
-        "text": "12",
+        "text": "17",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1413,7 +1571,7 @@
       },
       {
         "kind": "text",
-        "text": "13",
+        "text": "18",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1597,7 +1755,7 @@
       },
       {
         "kind": "text",
-        "text": "14",
+        "text": "19",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1758,7 +1916,7 @@
       },
       {
         "kind": "text",
-        "text": "15",
+        "text": "20",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -1953,7 +2111,7 @@
       },
       {
         "kind": "text",
-        "text": "16",
+        "text": "21",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2159,7 +2317,7 @@
       },
       {
         "kind": "text",
-        "text": "17",
+        "text": "22",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2289,7 +2447,7 @@
       },
       {
         "kind": "text",
-        "text": "18",
+        "text": "23",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2419,7 +2577,7 @@
       },
       {
         "kind": "text",
-        "text": "19",
+        "text": "24",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2538,7 +2696,7 @@
       },
       {
         "kind": "text",
-        "text": "20",
+        "text": "25",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2657,7 +2815,7 @@
       },
       {
         "kind": "text",
-        "text": "21",
+        "text": "26",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2776,7 +2934,7 @@
       },
       {
         "kind": "text",
-        "text": "22",
+        "text": "27",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -2972,7 +3130,7 @@
       },
       {
         "kind": "text",
-        "text": "23",
+        "text": "28",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -3080,7 +3238,7 @@
       },
       {
         "kind": "text",
-        "text": "24",
+        "text": "29",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -3166,7 +3324,7 @@
       },
       {
         "kind": "text",
-        "text": "25",
+        "text": "30",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -3253,7 +3411,7 @@
       },
       {
         "kind": "text",
-        "text": "26",
+        "text": "31",
         "x": 1180,
         "y": 676,
         "w": 48,
@@ -3371,7 +3529,7 @@
       },
       {
         "kind": "text",
-        "text": "27",
+        "text": "32",
         "x": 1180,
         "y": 676,
         "w": 48,
