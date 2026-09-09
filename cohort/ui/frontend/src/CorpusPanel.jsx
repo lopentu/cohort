@@ -99,7 +99,7 @@ export default function CorpusPanel({ onCite }) {
         <button className="btn" aria-pressed={mode === 'exact'} onClick={() => setMode('exact')}>Exact phrase</button>
         <button className="btn" aria-pressed={mode === 'related'} onClick={() => setMode('related')}>Related passages</button>
       </div>
-      {mode === 'related' ? <RelatedPanel /> : <>
+      {mode === 'related' ? <RelatedPanel onInvestigate={onCite} /> : <>
 
       <form className="corpus-form" onSubmit={(e) => { e.preventDefault(); run() }}>
         <input

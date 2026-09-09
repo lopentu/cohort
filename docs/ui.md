@@ -343,6 +343,12 @@ an indexed unit ID and source position, not a free-text question. All units of
 the target's Taishō work are excluded. Results show both bounded passages and
 an expandable shared-wording comparison; this does not write graph records.
 
+**Investigate this pair** opens an editable Inquiry draft with the two displayed
+passages, their local positions and retrieval measurements. The worker is asked
+to explain their content, compare details and verify quotations through corpus
+searches. Record the question and start Inquiry to run it; the handoff itself
+does not call a model or add graph records.
+
 The index filename supplies the displayed model name. Legacy indexes do not
 record a model revision, generation-time source hashes or training inputs;
 the interface discloses this. Source positions are zero-based local character
