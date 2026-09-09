@@ -8,6 +8,10 @@ Use the [presenter cue card](presenter-cue-card.md) beside the slides. Each main
 
 Thank Michael Radich on the **Data and thanks** slide for the corpus, catalogue labels and curated string list. Introduce the research questions as practical examples we want to explore with specialists, not as completed philological results.
 
+## Why you are presenting
+
+We built Cohort to let researchers direct agents and inspect the evidence behind their proposals. The presentation shows how the functions work on Buddhist texts, where results can mislead, and what the researcher decides. The audience should leave able to judge where these tools could help their own work. We are not reporting a new translator attribution.
+
 ## What you are presenting
 
 The title is **Agent-Based Infrastructures for Diachronic Digital Humanities**. Present the software through the activities named in the abstract: retrieve corpus material, analyse it, align passages, develop interpretations, preserve provenance, and let researchers make decisions.
@@ -44,15 +48,18 @@ The date and commentary relationship are supplied by scholarship. Cohort measure
 
 ## Schedule and slide order
 
-Use seven main slides and the application. There is no scheduled audience Q&A. These are planned timings, not measured durations.
+All 20 slides belong to the main presentation. Planned total: 30 minutes, including ten minutes in the application. No scheduled audience Q&A.
 
-| Part | Time | What to show |
-|---|---:|---|
-| Slides 1–4 | 8 minutes | Title, Radich acknowledgement and data, functions, example questions |
-| Slide 5, then application | 16 minutes | Corpus retrieval; vocabulary and exclusion; saved Inquiry; Findings and Graph |
-| Slides 6–7 | 6 minutes | Measured results, failure case and limits |
+| Slides | Purpose |
+|---|---|
+| 1–6 | Authors, Radich acknowledgement, purpose, abstract, functions and example questions |
+| 7–9 | Corpus, embedding retrieval and a Lotus passage comparison |
+| 10–12 | Vocabulary counts, colours and the T0603 exclusion |
+| 13–18 | Inquiry, agent roles, Findings, Graph relationships and decisions |
+| 19 | Ten minutes in Cohort: retrieve, compare, inspect saved work |
+| 20 | Useful outputs and observed failures |
 
-Slides 8–12 provide a screenshot of each tab; source passages are hidden where applicable. Use them as backup if the application is unavailable. The remaining slides are reference material. Do not show each interface diagram and then repeat the same explanation in the application. Keep the diagrams available if the application cannot be reached.
+Screenshots introduce each tab; diagrams explain the operations. During the application section, show the actions and outputs rather than repeating each tab’s introduction. Source passages are hidden in the slide screenshots. The diagrams are schematics, not additional measurements.
 
 ### The live sequence
 
@@ -70,7 +77,17 @@ Use the existing populated session. It contains earlier research records, not a 
 
 Check that **Run results** in Inquiry lets you select a completed run, that its actions expand, and that Vocabulary comparison loads T0603. Do not restart the server while a run is active. Reading tabs and repeating Vocabulary comparison calculations do not call paid models. **Inquire** and **Start analysis** do.
 
-Keep corpus inspection to a relevant, bounded passage. The deck uses editable interface diagrams instead of embedding restricted source-text screenshots. Those diagrams explain controls; they are not captured run outputs.
+Keep corpus inspection to a relevant, bounded passage. The deck uses editable diagrams and interface screenshots with source passages hidden. Those diagrams explain controls; they are not captured run outputs.
+
+## Tab descriptions used on the slides
+
+- **Corpus:** Find passages and read them in context.
+- **Vocabulary comparison:** Compare a text’s wording with texts labelled by translator.
+- **Inquiry:** Give agents a research question and inspect their actions.
+- **Findings:** Read the agents’ proposals, citations and checks.
+- **Graph:** Follow links between sources, proposals and decisions.
+
+These descriptions appear on Functions and again on each tab’s slide. Introduce the T0603 example as “Could shared wording mislead us about who translated this text?” Explain catalogue groups later, when showing the vocabulary calculation.
 
 ## How the tabs connect
 

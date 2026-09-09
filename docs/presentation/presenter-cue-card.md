@@ -1,65 +1,90 @@
 # Presenter cue card
 
-Seven main slides. Start with slides 1–4, use Cohort at slide 5, then return for slides 6–7. The remaining slides are backup only.
+20 slides, one sequence. Slides 1–18 introduce the purpose, material and tools. Switch to Cohort at slide 19 for ten minutes, then return to slide 20. Planned total: 30 minutes.
 
-## 1. Agent-Based Infrastructures for
-Diachronic Digital Humanities
+## 1. Agent-Based Infrastructures for Diachronic Digital Humanities
 
-**Say:** Cohort helps researchers find passages, compare them and keep a record of the investigation.
-
-**Next:** Thank Michael Radich and introduce the data.
+Cohort helps researchers find passages, compare them and keep a record of the investigation.
 
 ## 2. Data and thanks
 
-**Say:** Thank you to Michael Radich for sharing the material that made these examples possible.
+Thank you, Michael Radich, for sharing the texts, catalogue and string list. The groups come from catalogue labels; Cohort computes the comparisons.
 
-**Next:** Introduce the functions.
+## 3. Why we built Cohort
 
-## 3. Functions
+We built Cohort so researchers can direct agents and inspect the evidence behind their proposals. Today I will show the functions on Chinese Buddhist texts, including results that can mislead. The goal is to make the system and its limits clear enough for researchers to judge where it could help their own work.
 
-**Say:** These are the functions I’ll show: search, comparison and an agent investigation.
+## 4. Agent support for diachronic research
 
-**Next:** Introduce the two example research questions.
+Diachronic means across time. We want agents to help find texts, compare their content and wording, and propose explanations. The sources and checks remain available for inspection, and the researcher decides what to accept.
 
-## 4. Example research questions
+## 5. Functions
 
-**Say:** We’re approaching this as tool builders. These are two questions we think are worth exploring with specialists.
+Corpus is for finding and reading passages. Vocabulary comparison compares wording. Inquiry starts an agent investigation. Findings presents its proposals. Graph shows their sources and relationships.
 
-**Next:** Switch to the application on the Cohort slide.
+## 6. Example research questions
 
-## 5. Cohort
+We know that a later commentary repeats wording from T0603. Could shared wording mislead us about who translated this text? The Lotus example asks whether we can find related passages across two translations.
 
-**Say:** I’ll start with finding a related passage, then compare vocabulary, then open a saved investigation.
+## 7. Corpus
 
-**Next:** Return to Results after the application walkthrough.
+Find passages and read them in context.
 
-## 6. Results
+## 8. How related passages are found
 
-**Say:** The methods give us different things: candidate passages, vocabulary rankings and a way to test exclusions.
+An embedder has already converted passages to vectors. We compare those stored vectors, then read the candidates. The worker language model is separate.
 
-**Next:** Explain the limitations.
+## 9. Example: related content, little shared wording
 
-## 7. Limits
+These two Lotus windows are close in the embedding index, but their longest exact shared sequence is only three Chinese characters. Retrieval gives us a pair to read; alignment shows where wording matches.
 
-**Say:** These tools help us inspect the material. They do not settle the historical interpretation.
+## 10. What vocabulary comparison calculates
 
-**Next:** End the presentation.
+We start with texts labelled by translator in Radich’s catalogue. We pool the string counts for each label into a comparison group. Two groups instead contain mixed historical material. The vocabulary list tells us which strings to count. We compare the target’s pattern of use with those groups.
 
-## While in Cohort
+## 11. Vocabulary comparison
 
-1. Corpus → Related passages → Lotus Sūtra. Read the selected passage and the result alongside it. Expand shared wording.
+Compare a text’s wording with texts labelled by translator.
 
-2. Vocabulary comparison → Lotus Sūtra, then T0603. Exclude T1694 and show the changed ranking.
+## 12. T0603: remove the later commentary
 
-3. Inquiry → a completed run. Open one tool action.
+T1694 is in the mixed early-material group. Removing it changes that group’s profile and the leader. The target and vocabulary stay fixed. The margin is the score gap divided by distinct matched strings; it is not a probability.
 
-4. Findings → one proposal. Graph → its source and recorded check. Do not endorse a weak conjecture just to use the accept button.
+## 13. Inquiry
 
-5. Return to Results.
+Give agents a research question and inspect their actions.
 
+## 14. Worker, reviewer and analyst
 
+The worker chooses tools and proposes. The reviewer records checks. The analyst explains a selected view and can investigate further, but cannot write graph proposals.
 
-If you lose your place: **find → compare → inspect**.
+## 15. Findings
 
+Read the agents’ proposals, citations and checks.
 
-Remember the presentation order: **introduce → show → explain**.
+## 16. Graph
+
+Follow links between sources, proposals and decisions.
+
+## 17. Why a query points to a proposal
+
+Supporting passages and investigation records are separate links. A grounding search saves a query and hit count but does not automatically make nodes for every result. A tests arrow records a planned test; check whether it ran.
+
+## 18. Checks and researcher decisions
+
+Finding a quotation at its source is one check. Whether it supports the interpretation requires reading. Accepting a passage does not accept every connected proposal.
+
+## 19. Cohort
+
+Now I will use the same functions on the saved material.
+
+## 20. Results and limits
+
+We have useful candidate retrieval, inspectable comparisons and a record of agent work. We also have an incorrect vocabulary result and weak conjectures. These need evaluation with researchers, not a stronger claim on the slide.
+
+## Application route
+
+1. Corpus → Lotus related passages → shared wording.
+2. Vocabulary comparison → T0603 → exclude T1694.
+3. Inquiry → saved tool action → Findings → proposal → Graph → sources and checks.
+4. Return to slide 20.

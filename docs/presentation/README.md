@@ -2,7 +2,7 @@
 
 Downloads: [PowerPoint](cohort-pnc-2026.pptx) · [PDF](cohort-pnc-2026.pdf) · [Presenter cue card](presenter-cue-card.md)
 
-The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 7 main slides and 28 reference slides. The plan is eight minutes of introduction, sixteen minutes in the application and six minutes of results and limits, with no scheduled audience Q&A.
+The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 20 slides in one main sequence: twenty minutes of slides and ten minutes in the application, with no scheduled audience Q&A.
 
 - [Walkthrough](walkthrough.md): current controls, speaking guidance and background explanations.
 - [Researcher review](researcher-review.md): usefulness, limitations and inspection of the Q3 branches.
@@ -22,4 +22,4 @@ The PDF is rendered from the shared HTML layout. PowerPoint text and shapes are 
 
 Related-passage examples are reproduced by `scripts/check_method_examples.py`; `method-examples.json` contains aggregate measurements only.
 
-Slides 8–12 are screenshots of the five tabs, for backup use. Source-passage text is hidden where applicable; Inquiry shows an unsent draft. Screenshot images can be replaced in PowerPoint. The title, acknowledgement, functions and example questions precede the application walkthrough.
+Slides 7, 11, 13, 15 and 16 show the five tabs. Source-passage text is hidden where applicable; Inquiry shows an unsent draft. Screenshot images can be replaced in PowerPoint. Slide 3 states the purpose; slide 4 introduces the abstract. Open the application at slide 19 and return to slide 20 for results and limits.
