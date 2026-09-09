@@ -292,14 +292,14 @@ export default function RunPanel({ instructionSeed, onGraphChanged, hiddenQuesti
           <button
             type="button" className="btn"
             disabled={agents.length >= (config.max_agents || 1)}
-            onClick={() => setAgents([...agents, blankAgent(agents.length)])}
+            onClick={() => setAgents([...agents, blankAgent(agents.length, 'worker', nextModel(config, agents))])}
           >
             + Add agent
           </button>
           <button
             type="button" className="btn"
             disabled={agents.length >= (config.max_agents || 1)}
-            onClick={() => setAgents([...agents, blankAgent(agents.length, 'reviewer')])}
+            onClick={() => setAgents([...agents, blankAgent(agents.length, 'reviewer', nextModel(config, agents))])}
           >
             + Add reviewer
           </button>
@@ -623,14 +623,31 @@ function AutoPlan({ config, question }) {
   )
 }
 
-function blankAgent(i, role = 'worker') {
+// The model a newly-added card should start on — swarm settings the
+// researcher would otherwise have to set by hand before the first submit.
+// Leaving a second or third card at "server default" (blank, meaning
+// `config.model`) is not a neutral default: it is the same model the first
+// agent already uses, so the roster check refuses it the moment the run is
+// started, and the failure only shows up after the click. Picking the next
+// pool entry not already claimed by another card in the roster means a
+// researcher who never touches the Model dropdown still gets a roster the
+// server accepts, without predicting which of several distinct providers
+// `check_distinct_model_families` will call the same family — that heuristic
+// lives once, server-side, and this only avoids the one collision it can see
+// for free: reusing an identical model string.
+function nextModel(config, agents) {
+  const used = agents.map((a) => a.model || config.model)
+  return (config.models || []).find((m) => !used.includes(m)) || ''
+}
+
+function blankAgent(i, role = 'worker', model = '') {
   return {
     key: `a${i}-${Math.random().toString(36).slice(2, 7)}`,
     agent_id: role === 'reviewer' ? `agent:ui-reviewer-${i + 1}` : `agent:ui-${i + 1}`,
     instructions: role === 'reviewer' ? REVIEWER_TASK : '',
     corpus_scope: '',
     method_label: '',
-    model: '',
+    model,
     role,
   }
 }
