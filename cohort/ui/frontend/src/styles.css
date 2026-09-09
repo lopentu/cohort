@@ -2368,3 +2368,5 @@ a.cbeta-link.block:hover { color: var(--text); }
 .corpus-compare { color:var(--workspace-ink); border-color:var(--workspace-ink); }
 .corpus-compare[aria-pressed="true"] { background:var(--workspace-ink); color:var(--workspace-on-action); }
 @media (max-width:700px) { .exact-comparison-columns { grid-template-columns:1fr; } }
+
+.ev-next .ev-commentary-shortcut { color:var(--workspace-ink); border-color:var(--workspace-ink); background:var(--workspace-soft); }

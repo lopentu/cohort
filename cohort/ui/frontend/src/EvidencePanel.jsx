@@ -374,6 +374,15 @@ function Reading({ data, withhold, onWithhold, pair: pinnedPair, onPair, onOffse
             onChange={(e) => setWithholdDraft(e.target.value)}
           />
         </label>
+        {data.uid === 'T0603' && <button className="btn tiny ev-commentary-shortcut" type="button"
+          disabled={withhold.split(',').some(id => id.trim() === 'T1694')}
+          onClick={() => {
+            const ids = [...new Set([...withholdDraft.split(',').map(id => id.trim()).filter(Boolean), 'T1694'])].join(',')
+            setWithholdDraft(ids)
+            onWithhold(ids)
+          }}>
+          {withhold.split(',').some(id => id.trim() === 'T1694') ? 'T1694 commentary excluded' : 'Exclude T1694 commentary'}
+        </button>}
         <button className="btn tiny" type="submit">Repeat comparison</button>
         {withhold && <button className="btn tiny" type="button" onClick={() => onWithhold('')}>Restore these texts</button>}
         {withholdDraft.trim() && <p className="ev-exclusion-names">

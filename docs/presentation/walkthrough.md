@@ -402,3 +402,7 @@ worker to call that tool will not create CBETA parallel links in this setup.
 Quotation and descent proposal tools are also absent. The graph can display
 these edge types when recorded, but the slides must not imply that the current
 Inquiry flow creates them. See [relationship import check](../relationship-import-audit.md).
+
+For T0603, **Exclude T1694 commentary** beside the exclusion field adds T1694
+and reruns the comparison in one click. Other entered exclusions are preserved;
+the shortcut is disabled once T1694 is excluded.
