@@ -2347,9 +2347,9 @@ a.cbeta-link.block:hover { color: var(--text); }
 .related-match-actions .related-wording { flex:0 1 auto; gap:8px; min-height:44px; padding:8px 12px; white-space:normal; color:var(--workspace-ink); background:var(--workspace-soft); border-color:var(--workspace-ink); }
 .related-wording-count { padding:2px 6px; border-radius:4px; background:var(--workspace-ink); color:var(--workspace-on-action); font-size:12px; white-space:nowrap; }
 .related-wording:focus-visible { outline:2px solid var(--workspace-ink); outline-offset:3px; }
-.related-wording-panel { padding:12px 16px; margin-bottom:16px; border-left:3px solid var(--workspace-ink); background:var(--workspace-soft); border-radius:4px; }
-.related-wording-panel > p { margin:0 0 8px; }
-.related-wording-panel > :last-child { margin-bottom:0; }
 @media (max-width:600px) {
   .related-match-actions .related-wording { flex-basis:100%; }
 }
+
+.related-wording[aria-pressed="true"] { box-shadow:inset 0 0 0 1px var(--workspace-ink); }
+.related-shared-mark { background:#ffe29a; color:#362707; border-bottom:2px solid #a66b08; border-radius:2px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }

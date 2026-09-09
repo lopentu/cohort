@@ -2,6 +2,7 @@ import CbetaLink from './CbetaLink'
 import { useEffect, useRef, useState } from 'react'
 import { getRelated } from './api'
 import { textName } from './evidence-labels'
+import { sharedWordingSegments } from './shared-wording'
 
 export default function RelatedPanel({ onInvestigate }) {
   const [config, setConfig] = useState(null)
@@ -10,7 +11,7 @@ export default function RelatedPanel({ onInvestigate }) {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [busy, setBusy] = useState(false)
-  const [wordingOpen, setWordingOpen] = useState({})
+  const [wordingIndex, setWordingIndex] = useState(null)
   const request = useRef(0)
   useEffect(() => {
     let live = true
@@ -19,7 +20,7 @@ export default function RelatedPanel({ onInvestigate }) {
   }, [])
   const search = async (target = uid, position = start) => {
     const id = ++request.current
-    setUid(target); setStart(position); setBusy(true); setError(null); setResult(null); setWordingOpen({})
+    setUid(target); setStart(position); setBusy(true); setError(null); setResult(null); setWordingIndex(null)
     try {
       const data = await getRelated(target, position)
       if (id === request.current) setResult(data)
@@ -29,6 +30,7 @@ export default function RelatedPanel({ onInvestigate }) {
   const change = (value) => {
     request.current++; setUid(value); setStart(0); setResult(null); setBusy(false)
   }
+  const activeMatch = result?.matches[wordingIndex] ?? null
   return <div className="related-panel">
     <p>Find passages with similar content in other works. Start from an indexed text, not a typed research question.</p>
     {error && <p className="error" role="alert">{error}</p>}
@@ -64,7 +66,8 @@ export default function RelatedPanel({ onInvestigate }) {
       <h3>Selected passage · {textName(result.query.uid)}</h3>
       <p className="hint small">Source characters {result.query.start}–{result.query.end} (zero-based, end excluded)</p>
       <CbetaLink url={result.query.cbeta_url} />
-      <p className="related-text" lang="zh">{result.query.text}</p>
+      {activeMatch && <p className="hint small" role="status">Shared wording with result {wordingIndex + 1} · {textName(activeMatch.uid)}</p>}
+      <p className="related-text" lang="zh" id="related-selected-text"><SharedText passage={result.query} runs={activeMatch?.shared_runs || []} side="a" /></p>
       <div className="related-navigation">
         <button className="btn tiny" disabled={result.positions.indexOf(start) <= 0}
           onClick={() => search(uid, result.positions[result.positions.indexOf(start) - 1])}>Previous passage</button>
@@ -82,9 +85,9 @@ export default function RelatedPanel({ onInvestigate }) {
         <CbetaLink url={m.cbeta_url} />
         <div className="related-match-actions">
         <button className="btn related-wording" type="button"
-          aria-expanded={!!wordingOpen[i]} aria-controls={`shared-wording-${i}`}
-          onClick={() => setWordingOpen(current => ({ ...current, [i]: !current[i] }))}>
-          <span aria-hidden="true">{wordingOpen[i] ? '▾' : '▸'}</span> Shared wording
+          aria-pressed={wordingIndex === i} aria-controls={`related-selected-text related-result-text-${i}`}
+          onClick={() => setWordingIndex(current => current === i ? null : i)}>
+          <span aria-hidden="true">{wordingIndex === i ? '✓' : '▧'}</span> Shared wording
           <span className="related-wording-count" title="Longest shared sequence of Chinese characters">{m.longest_shared_run} chars</span>
         </button>
         {onInvestigate && <button className="btn related-investigate" type="button"
@@ -93,14 +96,10 @@ export default function RelatedPanel({ onInvestigate }) {
           Investigate this pair <span aria-hidden="true">→</span>
         </button>}
         </div>
-        <div className="related-wording-panel" id={`shared-wording-${i}`} hidden={!wordingOpen[i]}>
-          <p><b>Longest match: {m.longest_shared_run} Chinese characters.</b> This checks the selected excerpt against this result’s excerpt, not the full works. Punctuation is ignored.</p>
-          {m.shared_runs.length ? <ul>{m.shared_runs.map((r, j) => <li key={j}>
-            <span lang="zh">{r.text}</span> · {r.chars} characters<br />
-            Selected text: {r.a_start}–{r.a_end} · Related text: {r.b_start}–{r.b_end}
-          </li>)}</ul> : <p>No shared sequence of four or more Chinese characters.</p>}
-        </div>
-        <p className="related-text" lang="zh">{m.text}</p>
+        {wordingIndex === i && <p className="hint small" role="status">
+          {m.shared_runs.length ? 'Matching sequences of 4+ Chinese characters are highlighted in both excerpts. Punctuation is ignored.' : 'No shared sequence of 4+ Chinese characters to highlight in these excerpts.'}
+        </p>}
+        <p className="related-text" lang="zh" id={`related-result-text-${i}`}><SharedText passage={m} runs={wordingIndex === i ? m.shared_runs : []} side="b" /></p>
       </article>)}
       </section>
       </div>
@@ -111,4 +110,9 @@ export default function RelatedPanel({ onInvestigate }) {
       </details>
     </>}
   </div>
+}
+
+function SharedText({ passage, runs, side }) {
+  return sharedWordingSegments(passage.text, passage.start, runs, side).map((part, i) =>
+    part.shared ? <mark className="related-shared-mark" key={i}>{part.text}</mark> : part.text)
 }
