@@ -139,6 +139,12 @@ Clicking an author in a node's provenance opens that agent's contribution
 counts. Counts, never a score: a reputation number would reward volume, so an
 agent proposing ten weak claims would outrank one proposing a single good one.
 
+## Action lists
+
+Inquiry run reports and view-analysis conversations share a compact action display. Rows show the tool name, recorded status and a shortened reason. Expand a row for the complete reason, then open Inputs and result for the original payload. No action records are removed or shortened in storage.
+
+The list has a bounded scrolling area. An active run follows new actions only when the reader is at the bottom and no action is expanded. Polling preserves open rows. Scrolling back pauses following. Arrival and status transitions are brief; reduced-motion preferences disable animation and smooth scrolling. An unfinished action in a saved run is labelled Unrecorded rather than Running.
+
 ## HTTP API
 
 JSON throughout. Node ids are passed as **query parameters, never path

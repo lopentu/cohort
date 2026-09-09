@@ -1,3 +1,4 @@
+import ActionList from './ActionList'
 import AnalysisMarkdown from './AnalysisMarkdown'
 import { inquiryReports } from './run-report'
 import { corpusInquiryDraft } from './corpus-inquiry'
@@ -420,12 +421,7 @@ function RunHistory({ runs }) {
             </div>
             {r.agents.some(a => a.tool_calls?.length) && <details>
               <summary>Actions and reasons</summary>
-              <ul className="tool-calls">{r.agents.flatMap(a => (a.tool_calls || []).map((c,i) =>
-                <li key={`${a.agent_id}:${i}`}>
-                  <div className="tc-head"><code>{c.tool}</code><span>{a.agent_id}</span></div>
-                  <p>{c.reason || 'Reason not recorded.'}</p>
-                  <small>{c.pending ? 'Outcome not recorded' : c.is_error ? 'Failed' : 'Completed'}</small>
-                </li>))}</ul>
+              <ActionList calls={r.agents.flatMap(a => (a.tool_calls || []).map(c => ({ ...c, agent_id: a.agent_id })))} label="Previous run actions" />
             </details>}
             {r.agents.filter(a => a.analysis).map(a => <details key={`analysis:${a.agent_id}`}><summary>AI interpretation · {a.model}</summary><AnalysisMarkdown>{a.analysis}</AnalysisMarkdown></details>)}
             {r.error && <p className="error small">{r.error}</p>}
@@ -688,20 +684,7 @@ function RunReport({ run, active }) {
           {a.tool_calls.length === 0 && !a.error && (
             <p className="hint small">No tool calls yet.</p>
           )}
-          <ul className="tool-calls">
-            {a.tool_calls.map((c, i) => (
-              <li key={i} className={c.is_error ? 'refused' : ''}>
-                <div className="tc-head">
-                  <code>{c.tool}</code>
-                  <span className={`badge ${c.is_error ? 'tc-refused' : 'tc-ok'}`}>
-                    {c.pending ? 'outcome not recorded' : c.is_error ? 'refused' : 'ok'}
-                  </span>
-                </div>
-                {c.reason && <p>{c.reason}</p>}
-                <details><summary>Inputs and result</summary><pre className="tc-result">{JSON.stringify({inputs:c.args,result:c.result},null,2)}</pre></details>
-              </li>
-            ))}
-          </ul>
+          <ActionList key={`${run.id}:${a.agent_id}`} calls={a.tool_calls} active={active} label={`Actions by ${a.agent_id}`} />
         </div>
       ))}
 

@@ -1,3 +1,4 @@
+import ActionList from './ActionList'
 import { analysisContext, analysisThreads, makeAnalysisInstructions } from './analysis-conversation'
 import AnalysisMarkdown from './AnalysisMarkdown'
 import { useEffect, useRef, useState } from 'react'
@@ -81,7 +82,7 @@ export default function AnalysisPanel({ view, scope }) {
           <h4>AI · {a.model}</h4>
           {a.error && <p className="error">{a.error}</p>}
           {a.analysis ? <AnalysisMarkdown>{a.analysis}</AnalysisMarkdown> : <p className="hint">{active?'Investigating…':'No final explanation was recorded. Inspect the actions below.'}</p>}
-          <AnalysisActions calls={a.tool_calls || []} />
+          <AnalysisActions key={`${run.id}:${a.agent_id}`} calls={a.tool_calls || []} active={active} />
         </div>)}
         <p className="hint small">AI interpretation, not a verification or researcher acceptance.</p>
       </>}
@@ -95,12 +96,8 @@ export default function AnalysisPanel({ view, scope }) {
   </div>
 }
 
-function AnalysisActions({calls}) {
-  return <details><summary>Actions and reasons ({calls.length})</summary>
-    <ol className="exploration-actions">{calls.map((c,i)=><li key={i}>
-      <strong>{c.tool}</strong><p>{c.reason || 'Reason not recorded.'}</p>
-      <small>{c.pending?'Outcome not recorded':c.is_error?'Failed':'Completed'}</small>
-      <details><summary>Inputs and result</summary><pre>{JSON.stringify({inputs:c.args,result:c.result},null,2)}</pre></details>
-    </li>)}</ol>
+function AnalysisActions({ calls, active = false }) {
+  return <details className="analysis-actions"><summary>Actions and reasons ({calls.length})</summary>
+    <ActionList calls={calls} active={active} label="Analysis actions" />
   </details>
 }
