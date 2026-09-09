@@ -270,10 +270,9 @@ export default function App() {
         </div>
       </header>
 
-      {data.truncated && (
+      {tab === 'graph' && data.truncated && (
         <div className="banner">
-          This view is truncated — some nodes are not shown, so the support
-          visible here is not the whole graph.
+          Loaded {data.nodes.length.toLocaleString()} graph records; more remain.
         </div>
       )}
 

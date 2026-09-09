@@ -22,7 +22,7 @@ const json = async (url, options) => {
 }
 
 export const getHealth = () => json('/api/health')
-export const getGraph = (limit = 500) => json(`/api/graph?limit=${limit}`)
+export const getGraph = (limit = 5000) => json(`/api/graph?limit=${limit}`)
 export const getNode = (id) => json(`/api/node?id=${encodeURIComponent(id)}`)
 export const getAgent = (id) => json(`/api/agent?id=${encodeURIComponent(id)}`)
 export const getRefusals = (limit = 100) => json(`/api/refusals?limit=${limit}`)
