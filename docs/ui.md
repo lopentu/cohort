@@ -373,3 +373,10 @@ view loads at most 4,000 characters from the beginning; it may not reach the
 search occurrence, so the search excerpt remains separately labelled. Selections
 survive another phrase search and can be removed or cleared. Comparing does not
 write graph records or launch an agent.
+
+For proposed claims and conjectures, the Graph inspector and Findings show the
+latest recorded review outcome separately from status. “No review recorded”
+does not imply an active or scheduled run. Citation-check failures, reviewer
+objections and inconclusive reviews remain distinct. A favourable review that
+cannot advance a conjecture without a test is shown as “Test missing.” The
+stored proposed/attested/accepted/rejected ladder is unchanged.

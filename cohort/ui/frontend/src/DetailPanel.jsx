@@ -96,6 +96,11 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
         <div className={`badge assurance lvl-${node.assurance}`}>{node.assurance}</div>
       </header>
 
+      {node.review_state && <div className="proposal-review-state" role="note">
+        <strong>{node.review_state.label}</strong>
+        <p>{node.review_state.explanation}</p>
+        {node.review_state.comment && <details><summary>Reviewer’s explanation</summary><p>{node.review_state.comment}</p></details>}
+      </div>}
       <h2>{['claim', 'conjecture'].includes(node.type) && node.payload?.text
         ? explainProfileCodes(node.payload.text) : nodeTitle(node)}</h2>
       {node.created_by && <p className="hint small">

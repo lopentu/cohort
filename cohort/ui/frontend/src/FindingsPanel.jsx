@@ -142,6 +142,7 @@ function Hypotheses({ findings, onSelect }) {
 
               <div className="hyp-marks">
                 <span className={`chip s-${f.status}`}>{f.status}</span>
+                {f.review_state && <span className="chip review-state" title={f.review_state.explanation}>{f.review_state.label}</span>}
                 <span className="chip">{f.assurance.replace(/_/g, ' ').toLowerCase()}</span>
                 <span
                   className={`chip ${

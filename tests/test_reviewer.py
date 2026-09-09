@@ -22,6 +22,7 @@ from cohort.schemas import (
     RESEARCHER,
     AgentKind,
     AgentProfile,
+    AssuranceLevel,
     ClaimPayload,
     ConjecturePayload,
     Dating,
@@ -30,12 +31,14 @@ from cohort.schemas import (
     NodeStatus,
     PassagePayload,
     QueryPayload,
+    VerificationMethod,
     VerificationResult,
     WitnessPayload,
 )
 from cohort.sources.local_reader import LocalReader
 from cohort.tools.find_attestations import FindAttestationsInput, find_attestations
 from cohort.tools.review_claim import ReviewClaimInput, review_claim
+from cohort.views import findings_json, node_json, proposal_review_state
 
 AUTHOR = "agent:author"
 REVIEWER = "agent:reviewer"
@@ -389,6 +392,7 @@ def test_a_conjecture_still_needs_its_tests_edge(graph, source):
         authored_by=REVIEWER,
     )
     assert report.attested is False
+    assert proposal_review_state(graph, graph.get_node(conjecture_id))["code"] == "test_missing"
     assert "UnattestableConjecture" in report.note or "tests edge" in report.note
     assert graph.get_node(conjecture_id).status == NodeStatus.PROPOSED
 
@@ -454,3 +458,41 @@ def test_pending_review_context_is_none_when_there_is_nothing(graph, source):
 
     _backed_claim(graph, source, author=REVIEWER)
     assert pending_review_context(graph, REVIEWER) is None
+
+
+@pytest.mark.parametrize(("verdict", "code"), [("unsound", "objected"), ("indeterminate", "inconclusive")])
+def test_completed_review_outcome_is_distinct_from_unreviewed(graph, source, verdict, code):
+    claim = _backed_claim(graph, source)
+    assert proposal_review_state(graph, graph.get_node(claim))["code"] == "unreviewed"
+    review_claim(graph, source, ReviewClaimInput(claim_id=claim, verdict=verdict, detail="A bounded review explanation"), authored_by=REVIEWER)
+    state = node_json(graph, graph.get_node(claim))["review_state"]
+    assert state["code"] == code
+    assert state["citation_result"] == "pass"
+    assert state["comment"] == "A bounded review explanation"
+    assert graph.get_node(claim).status == NodeStatus.PROPOSED
+    finding = next(f for f in findings_json(graph)["findings"] if f["id"] == claim)
+    assert finding["review_state"] == state
+
+
+def test_latest_review_failure_is_not_hidden_by_earlier_verdict_or_later_plain_check(graph, source):
+    claim = _backed_claim(graph, source)
+    review_claim(graph, source, ReviewClaimInput(claim_id=claim, verdict="unsound", detail="Not supported"), authored_by=REVIEWER)
+    graph.verify(claim, method=VerificationMethod.EXACT_SPAN, result=VerificationResult.FAIL,
+                 assurance_level=AssuranceLevel.A0_UNCHECKED, detail="Citation changed",
+                 limitations="reviewer verdict sound: The machine result must win", authored_by=REVIEWER)
+    graph.verify(claim, method=VerificationMethod.EXACT_SPAN, result=VerificationResult.PASS,
+                 assurance_level=AssuranceLevel.A2_EXACT_SPAN_MATCHED, detail="Standalone check",
+                 authored_by=REVIEWER)
+    assert proposal_review_state(graph, graph.get_node(claim))["code"] == "citation_failed"
+
+
+def test_missing_citations_are_a_completed_review_result(graph, source):
+    claim = graph.propose_claim(ClaimPayload(text="Uncited claim"), authored_by=AUTHOR)
+    review_claim(graph, source, ReviewClaimInput(claim_id=claim, verdict="indeterminate", detail="Nothing to inspect"), authored_by=REVIEWER)
+    assert proposal_review_state(graph, graph.get_node(claim))["code"] == "citations_missing"
+
+
+def test_attested_claim_does_not_keep_a_proposed_outcome(graph, source):
+    claim = _backed_claim(graph, source)
+    review_claim(graph, source, ReviewClaimInput(claim_id=claim, verdict="sound", detail="Supported"), authored_by=REVIEWER)
+    assert proposal_review_state(graph, graph.get_node(claim)) is None

@@ -266,7 +266,7 @@ function buildNodes(nodes, showAudit, p, contradicted) {
       // The assessment's own sentence rather than its state
       // word, because "unplaced" and "discarded" are easy to read as the
       // same kind of negative and are not.
-      title: `${n.type} · ${nodeStatusLabel(n)}${n.assurance ? ' · ' + n.assurance : ''}`
+      title: `${n.type} · ${nodeStatusLabel(n)}${n.review_state ? ' · ' + n.review_state.label : ''}${n.assurance ? ' · ' + n.assurance : ''}`
         + (n.assessment ? `\n${n.assessment.detail}` : ''),
     }
   })

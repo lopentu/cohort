@@ -15,7 +15,7 @@ from typing import Any
 
 from cohort.eventlog import read_events
 from cohort.graph import Graph
-from cohort.schemas import EdgeType, NodeType, VerificationMethod
+from cohort.schemas import EdgeType, NodeStatus, NodeType, VerificationMethod
 from cohort.sources.cbeta_refs import reader_url
 
 #: The two edge types that *discount* support rather than adding it: witnesses
@@ -32,6 +32,7 @@ def node_json(graph: Graph, node) -> dict[str, Any]:
         "status": node.status,
         "payload": node.payload,
         "rejected_reason": node.rejected_reason,
+        "review_state": proposal_review_state(graph, node),
         "authorship": [a.model_dump(mode="json") for a in node.authorship],
         "created_seq": node.created_seq,
         "updated_seq": node.updated_seq,
@@ -42,6 +43,54 @@ def node_json(graph: Graph, node) -> dict[str, Any]:
         # corpus browser cannot disagree about where a passage lives.
         "cbeta_url": reader_url(node.payload.get("canonical_ref") or ""),
     }
+
+
+def proposal_review_state(graph: Graph, node) -> dict[str, Any] | None:
+    """Explain non-attestation without changing the recorded status ladder.
+
+    The reviewer tool stores its verdict in a fixed limitations prefix. Other
+    exact-span checks and prospective tests are not reviewer decisions. Read
+    the latest matching review; never let an older pass hide a newer objection.
+    """
+    if node.type not in (NodeType.CLAIM, NodeType.CONJECTURE) or node.status != NodeStatus.PROPOSED:
+        return None
+    reviews = []
+    for verification in graph.verifications(node.id):
+        payload = verification.payload
+        limitations = payload.get("limitations") or ""
+        if payload.get("method") != VerificationMethod.EXACT_SPAN:
+            continue
+        for verdict in ("sound", "unsound", "indeterminate"):
+            prefix = f"reviewer verdict {verdict}: "
+            if limitations.startswith(prefix):
+                reviews.append((verification, verdict, limitations[len(prefix):]))
+                break
+    if not reviews:
+        return {"code": "unreviewed", "label": "No review recorded",
+                "explanation": "No completed reviewer decision is recorded for this proposal."}
+    verification, verdict, comment = max(reviews, key=lambda entry: entry[0].created_seq)
+    result = verification.payload["result"]
+    if result == "fail":
+        code, label = "citation_failed", "Citation check failed"
+        explanation = "The review could not re-verify every cited excerpt."
+    elif result == "indeterminate":
+        code, label = "citations_missing", "No citations to check"
+        explanation = "The review had no cited passages to verify."
+    elif verdict == "unsound":
+        code, label = "objected", "Reviewer objected"
+        explanation = "The cited excerpts were verified, but the reviewer did not find the proposal supported."
+    elif verdict == "indeterminate":
+        code, label = "inconclusive", "Inconclusive"
+        explanation = "The cited excerpts were verified, but the reviewer could not judge the proposal."
+    elif node.type == NodeType.CONJECTURE and not graph.edges(edge_type=EdgeType.TESTS, dst=node.id):
+        code, label = "test_missing", "Test missing"
+        explanation = "The review was favourable, but this conjecture has no recorded test."
+    else:
+        code, label = "not_attested", "Reviewed; not attested"
+        explanation = "A favourable review is recorded, but the proposal has not advanced to attested."
+    return {"code": code, "label": label, "explanation": explanation,
+            "verification_id": verification.id, "verdict": verdict,
+            "citation_result": result, "comment": comment}
 
 
 def edge_json(edge) -> dict[str, Any]:
@@ -274,6 +323,7 @@ def findings_json(graph: Graph, *, limit: int | None = None) -> dict[str, Any]:
                 "status": node.status,
                 "assurance": graph.assurance_for(node.id),
                 "assertion": node.payload.get("text"),
+                "review_state": proposal_review_state(graph, node),
                 "rejected_reason": node.rejected_reason,
                 "authors": sorted({a.author for a in node.authorship if a.action == "proposed"}),
                 "attesters": sorted({a.author for a in node.authorship if a.action == "attested"}),

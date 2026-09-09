@@ -2370,3 +2370,8 @@ a.cbeta-link.block:hover { color: var(--text); }
 @media (max-width:700px) { .exact-comparison-columns { grid-template-columns:1fr; } }
 
 .ev-next .ev-commentary-shortcut { color:var(--workspace-ink); border-color:var(--workspace-ink); background:var(--workspace-soft); }
+
+.proposal-review-state { margin:12px 0; padding:12px; border-left:3px solid var(--workspace-ink,var(--text-muted)); background:var(--fill-2); border-radius:4px; }
+.proposal-review-state > p { margin:4px 0; }
+.proposal-review-state details { margin-top:8px; }
+.chip.review-state { white-space:normal; }
