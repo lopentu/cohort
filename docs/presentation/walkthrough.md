@@ -309,6 +309,14 @@ For a conjecture, the tool records an earlier search under “prior art” and a
 
 The UI uses “hypothesis” as a heading for claims and conjectures. A conjecture is not a container assembled from claim nodes. Read its own citations, explanation and proposed test.
 
+## Evidence graph and future link prediction
+
+Cohort uses typed nodes and relationships, but its design deliberately calls it an evidence graph. It records proposals and their sources, checks and decisions; translator ascriptions remain open to scrutiny. The term distinguishes the application’s treatment of contested claims, not a rule that every knowledge graph must contain certain facts.
+
+For provenance work, the graph lets a researcher trace citations, inspect recorded relationships between sources, and retain who proposed, checked or accepted a record. Unrecorded dependencies remain a limitation. Repeated checks do not become independent source evidence.
+
+Link prediction is a common graph-learning task: suggest relationships missing from the recorded graph. See [Hogan et al., Knowledge Graphs](https://arxiv.org/abs/2003.02320) and [Daza et al., Inductive Entity Representations from Text via Link Prediction](https://arxiv.org/abs/2010.03496). For Cohort, a possible application would be suggesting a quotation or parallel for investigation. The proposal would need located passages and review. This feature is future work; the current passage embedder does not perform graph link prediction.
+
 ## Checks and researcher decisions
 
 | Status | Meaning |

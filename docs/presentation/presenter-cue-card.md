@@ -70,9 +70,9 @@ Follow links between sources, proposals and decisions.
 
 Supporting passages and investigation records are separate links. A grounding search saves a query and hit count but does not automatically make nodes for every result. A tests arrow records a planned test; check whether it ran.
 
-## 18. Checks and researcher decisions
+## 18. Why use an evidence graph?
 
-Finding a quotation at its source is one check. Whether it supports the interpretation requires reading. Accepting a passage does not accept every connected proposal.
+The graph helps us trace proposals back to sources, inspect recorded relationships between sources, and retain the history of checks and decisions. A possible next step is edge prediction: suggesting a relationship worth investigating. We have not implemented or evaluated that capability.
 
 ## 19. Cohort
 
