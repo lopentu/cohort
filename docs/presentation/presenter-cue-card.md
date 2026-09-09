@@ -6,7 +6,7 @@
 
 Cohort helps researchers find passages, compare them and keep a record of the investigation.
 
-## 2. Data and thanks
+## 2. Acknowledgement
 
 Thank you, Michael Radich, for sharing the texts, catalogue and string list. The groups come from catalogue labels; Cohort computes the comparisons.
 

@@ -6,7 +6,7 @@ Updated 9 September 2026. Use this walkthrough with the revised PNC slides. It r
 
 Use the [presenter cue card](presenter-cue-card.md) beside the slides. Each main slide has a **SAY** sentence and a **NEXT** cue in its speaker notes. Your route is **find → compare → inspect**. The longer notes below are background, not a script to recite.
 
-Thank Michael Radich on the **Data and thanks** slide for the corpus, catalogue labels and curated string list. Introduce the research questions as practical examples we want to explore with specialists, not as completed philological results.
+Thank Michael Radich on the **Acknowledgement** slide for the corpus, catalogue labels and curated string list. Introduce the research questions as practical examples we want to explore with specialists, not as completed philological results.
 
 ## Why you are presenting
 
