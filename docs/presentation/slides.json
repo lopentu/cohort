@@ -156,16 +156,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 285,
-        "w": 355,
-        "h": 240,
-        "fill": "E8F3FA",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Texts",
         "x": 75,
@@ -188,16 +178,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 460,
-        "y": 285,
-        "w": 355,
-        "h": 240,
-        "fill": "E8F4F1",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Catalogue",
         "x": 480,
@@ -218,16 +198,6 @@
         "size": 21,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 865,
-        "y": 285,
-        "w": 355,
-        "h": 240,
-        "fill": "FBF0DC",
-        "color": "80511B"
       },
       {
         "kind": "text",
@@ -325,16 +295,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 390,
-        "w": 1170,
-        "h": 210,
-        "fill": "E8F4F1",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Today’s presentation",
         "x": 78,
@@ -430,16 +390,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 295,
-        "w": 270,
-        "h": 180,
-        "fill": "E8F3FA",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Corpus retrieval",
         "x": 71,
@@ -460,16 +410,6 @@
         "size": 19,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 355,
-        "y": 295,
-        "w": 270,
-        "h": 180,
-        "fill": "E8F3FA",
-        "color": "155F88"
       },
       {
         "kind": "text",
@@ -494,16 +434,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 655,
-        "y": 295,
-        "w": 270,
-        "h": 180,
-        "fill": "FBF0DC",
-        "color": "80511B"
-      },
-      {
         "kind": "text",
         "text": "Alignment",
         "x": 671,
@@ -526,16 +456,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 955,
-        "y": 295,
-        "w": 270,
-        "h": 180,
-        "fill": "F0EBF8",
-        "color": "65439A"
-      },
-      {
         "kind": "text",
         "text": "Interpretation",
         "x": 971,
@@ -556,16 +476,6 @@
         "size": 19,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 524,
-        "w": 1170,
-        "h": 115,
-        "fill": "E8F4F1",
-        "color": "146C68"
       },
       {
         "kind": "text",
@@ -684,16 +594,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 200,
-        "w": 340,
-        "h": 73,
-        "fill": "E8F3FA",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Corpus",
         "x": 72,
@@ -714,16 +614,6 @@
         "size": 23,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 287,
-        "w": 340,
-        "h": 73,
-        "fill": "FBF0DC",
-        "color": "80511B"
       },
       {
         "kind": "text",
@@ -748,16 +638,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 374,
-        "w": 340,
-        "h": 73,
-        "fill": "F0EBF8",
-        "color": "65439A"
-      },
-      {
         "kind": "text",
         "text": "Inquiry",
         "x": 72,
@@ -780,16 +660,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 461,
-        "w": 340,
-        "h": 73,
-        "fill": "E8F4F1",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Findings",
         "x": 72,
@@ -810,16 +680,6 @@
         "size": 23,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 548,
-        "w": 340,
-        "h": 73,
-        "fill": "EDF1F5",
-        "color": "24384A"
       },
       {
         "kind": "text",
@@ -874,16 +734,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 210,
-        "w": 555,
-        "h": 310,
-        "fill": "E8F3FA",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Two Lotus translations",
         "x": 75,
@@ -904,16 +754,6 @@
         "size": 21,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 665,
-        "y": 210,
-        "w": 555,
-        "h": 310,
-        "fill": "FBF0DC",
-        "color": "80511B"
       },
       {
         "kind": "text",
@@ -1008,16 +848,6 @@
         "h": 489
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 204,
-        "w": 5,
-        "h": 105,
-        "fill": "155F88",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Find",
         "x": 984,
@@ -1040,16 +870,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 347,
-        "w": 5,
-        "h": 105,
-        "fill": "155F88",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Read",
         "x": 984,
@@ -1070,16 +890,6 @@
         "size": 18,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 490,
-        "w": 5,
-        "h": 105,
-        "fill": "155F88",
-        "color": "155F88"
       },
       {
         "kind": "text",
@@ -1177,16 +987,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 295,
-        "w": 355,
-        "h": 190,
-        "fill": "E8F3FA",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Selected passage",
         "x": 75,
@@ -1209,16 +1009,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 460,
-        "y": 295,
-        "w": 355,
-        "h": 190,
-        "fill": "E8F3FA",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Cosine similarity",
         "x": 480,
@@ -1239,16 +1029,6 @@
         "size": 21,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 865,
-        "y": 295,
-        "w": 355,
-        "h": 190,
-        "fill": "E8F3FA",
-        "color": "155F88"
       },
       {
         "kind": "text",
@@ -1362,16 +1142,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 210,
-        "w": 450,
-        "h": 205,
-        "fill": "E8F3FA",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "Earlier Lotus translation",
         "x": 75,
@@ -1392,16 +1162,6 @@
         "size": 21,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 775,
-        "y": 210,
-        "w": 450,
-        "h": 205,
-        "fill": "E8F3FA",
-        "color": "155F88"
       },
       {
         "kind": "text",
@@ -1443,16 +1203,6 @@
         "size": 25,
         "color": "155F88",
         "bold": true
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 470,
-        "w": 1170,
-        "h": 144,
-        "fill": "E8F4F1",
-        "color": "146C68"
       },
       {
         "kind": "text",
@@ -1528,16 +1278,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 205,
-        "w": 340,
-        "h": 180,
-        "fill": "FBF0DC",
-        "color": "80511B"
-      },
-      {
         "kind": "text",
         "text": "Vocabulary list",
         "x": 75,
@@ -1560,16 +1300,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 465,
-        "y": 205,
-        "w": 340,
-        "h": 180,
-        "fill": "FBF0DC",
-        "color": "80511B"
-      },
-      {
         "kind": "text",
         "text": "Target text",
         "x": 485,
@@ -1590,16 +1320,6 @@
         "size": 21,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 875,
-        "y": 205,
-        "w": 350,
-        "h": 180,
-        "fill": "FBF0DC",
-        "color": "80511B"
       },
       {
         "kind": "text",
@@ -1646,16 +1366,6 @@
         "w": 0,
         "h": 44,
         "color": "526778"
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 465,
-        "y": 460,
-        "w": 760,
-        "h": 105,
-        "fill": "FBF0DC",
-        "color": "80511B"
       },
       {
         "kind": "text",
@@ -1739,16 +1449,6 @@
         "h": 489
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 204,
-        "w": 5,
-        "h": 105,
-        "fill": "80511B",
-        "color": "80511B"
-      },
-      {
         "kind": "text",
         "text": "Rankings",
         "x": 984,
@@ -1771,16 +1471,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 347,
-        "w": 5,
-        "h": 105,
-        "fill": "80511B",
-        "color": "80511B"
-      },
-      {
         "kind": "text",
         "text": "Colours",
         "x": 984,
@@ -1801,16 +1491,6 @@
         "size": 18,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 490,
-        "w": 5,
-        "h": 105,
-        "fill": "80511B",
-        "color": "80511B"
       },
       {
         "kind": "text",
@@ -1897,16 +1577,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 210,
-        "w": 540,
-        "h": 286,
-        "fill": "FBF0DC",
-        "color": "80511B"
-      },
-      {
         "kind": "text",
         "text": "With T1694",
         "x": 75,
@@ -1927,16 +1597,6 @@
         "size": 21,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 685,
-        "y": 210,
-        "w": 540,
-        "h": 286,
-        "fill": "E8F4F1",
-        "color": "146C68"
       },
       {
         "kind": "text",
@@ -2050,16 +1710,6 @@
         "h": 489
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 204,
-        "w": 5,
-        "h": 105,
-        "fill": "65439A",
-        "color": "65439A"
-      },
-      {
         "kind": "text",
         "text": "Question",
         "x": 984,
@@ -2082,16 +1732,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 347,
-        "w": 5,
-        "h": 105,
-        "fill": "65439A",
-        "color": "65439A"
-      },
-      {
         "kind": "text",
         "text": "Instructions",
         "x": 984,
@@ -2112,16 +1752,6 @@
         "size": 18,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 490,
-        "w": 5,
-        "h": 105,
-        "fill": "65439A",
-        "color": "65439A"
       },
       {
         "kind": "text",
@@ -2208,16 +1838,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 220,
-        "w": 350,
-        "h": 275,
-        "fill": "F0EBF8",
-        "color": "65439A"
-      },
-      {
         "kind": "text",
         "text": "Worker",
         "x": 75,
@@ -2240,16 +1860,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 465,
-        "y": 220,
-        "w": 350,
-        "h": 275,
-        "fill": "E8F4F1",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Reviewer",
         "x": 485,
@@ -2270,16 +1880,6 @@
         "size": 21,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 875,
-        "y": 220,
-        "w": 350,
-        "h": 275,
-        "fill": "E8F3FA",
-        "color": "155F88"
       },
       {
         "kind": "text",
@@ -2374,16 +1974,6 @@
         "h": 489
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 204,
-        "w": 5,
-        "h": 105,
-        "fill": "146C68",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Proposal",
         "x": 984,
@@ -2406,16 +1996,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 347,
-        "w": 5,
-        "h": 105,
-        "fill": "146C68",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Sources",
         "x": 984,
@@ -2436,16 +2016,6 @@
         "size": 18,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 490,
-        "w": 5,
-        "h": 105,
-        "fill": "146C68",
-        "color": "146C68"
       },
       {
         "kind": "text",
@@ -2540,16 +2110,6 @@
         "h": 489
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 204,
-        "w": 5,
-        "h": 105,
-        "fill": "24384A",
-        "color": "24384A"
-      },
-      {
         "kind": "text",
         "text": "Records",
         "x": 984,
@@ -2572,16 +2132,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 347,
-        "w": 5,
-        "h": 105,
-        "fill": "24384A",
-        "color": "24384A"
-      },
-      {
         "kind": "text",
         "text": "Links",
         "x": 984,
@@ -2602,16 +2152,6 @@
         "size": 18,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 960,
-        "y": 490,
-        "w": 5,
-        "h": 105,
-        "fill": "24384A",
-        "color": "24384A"
       },
       {
         "kind": "text",
@@ -2751,12 +2291,12 @@
       },
       {
         "kind": "text",
-        "text": "Claim or\nconjecture",
-        "x": 875,
-        "y": 234,
-        "w": 183,
-        "h": 80,
-        "size": 19,
+        "text": "Claim /\nconjecture",
+        "x": 891,
+        "y": 237,
+        "w": 142,
+        "h": 70,
+        "size": 17,
         "color": "24384A",
         "bold": true
       },
@@ -2963,16 +2503,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 235,
-        "w": 355,
-        "h": 230,
-        "fill": "E8F4F1",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Span verified",
         "x": 75,
@@ -2995,16 +2525,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 460,
-        "y": 235,
-        "w": 355,
-        "h": 230,
-        "fill": "E8F4F1",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Review recorded",
         "x": 480,
@@ -3025,16 +2545,6 @@
         "size": 21,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 865,
-        "y": 235,
-        "w": 355,
-        "h": 230,
-        "fill": "E8F4F1",
-        "color": "146C68"
       },
       {
         "kind": "text",
@@ -3132,16 +2642,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "ellipse",
-        "x": 55,
-        "y": 220,
-        "w": 80,
-        "h": 80,
-        "fill": "FFFFFF",
-        "color": "155F88"
-      },
-      {
         "kind": "text",
         "text": "1",
         "x": 82,
@@ -3175,16 +2675,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "ellipse",
-        "x": 55,
-        "y": 352,
-        "w": 80,
-        "h": 80,
-        "fill": "FFFFFF",
-        "color": "80511B"
-      },
-      {
         "kind": "text",
         "text": "2",
         "x": 82,
@@ -3216,16 +2706,6 @@
         "size": 25,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "ellipse",
-        "x": 55,
-        "y": 484,
-        "w": 80,
-        "h": 80,
-        "fill": "FFFFFF",
-        "color": "146C68"
       },
       {
         "kind": "text",
@@ -3334,16 +2814,6 @@
         "bold": true
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 277,
-        "w": 5,
-        "h": 90,
-        "fill": "146C68",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Lotus: a related passage with\nlittle exact shared wording.",
         "x": 80,
@@ -3353,16 +2823,6 @@
         "size": 23,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 685,
-        "y": 277,
-        "w": 5,
-        "h": 90,
-        "fill": "80511B",
-        "color": "80511B"
       },
       {
         "kind": "text",
@@ -3376,16 +2836,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 400,
-        "w": 5,
-        "h": 90,
-        "fill": "146C68",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "T0603: exclusion exposes the\ncommentary’s effect on the ranking.",
         "x": 80,
@@ -3395,16 +2845,6 @@
         "size": 23,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 685,
-        "y": 400,
-        "w": 5,
-        "h": 90,
-        "fill": "80511B",
-        "color": "80511B"
       },
       {
         "kind": "text",
@@ -3418,16 +2858,6 @@
         "bold": false
       },
       {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 55,
-        "y": 523,
-        "w": 5,
-        "h": 90,
-        "fill": "146C68",
-        "color": "146C68"
-      },
-      {
         "kind": "text",
         "text": "Proposals, sources and checks\ncan be inspected together.",
         "x": 80,
@@ -3437,16 +2867,6 @@
         "size": 23,
         "color": "24384A",
         "bold": false
-      },
-      {
-        "kind": "shape",
-        "shape": "rect",
-        "x": 685,
-        "y": 523,
-        "w": 5,
-        "h": 90,
-        "fill": "80511B",
-        "color": "80511B"
       },
       {
         "kind": "text",
