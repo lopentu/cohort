@@ -369,10 +369,28 @@ export default function GraphView({ data, selectedId, onSelect, showAudit }) {
     const visNodes = buildNodes(data.nodes, showAudit, p, contradicted)
     idsRef.current = new Set(visNodes.map((n) => n.id))
     const visEdges = buildEdges(data.edges, idsRef.current, p)
-    nodesRef.current.clear()
-    edgesRef.current.clear()
-    nodesRef.current.add(visNodes)
-    edgesRef.current.add(visEdges)
+
+    // Diffed against what's already on the canvas, not `clear()` + `add()`
+    // for the whole set. Two reasons: a hidden question that drops nine
+    // witnesses out of a hundred-odd nodes has no business resetting the
+    // stabilized position of the other ninety, which a full clear does; and
+    // — the actual bug this replaced — `DataSet.clear()` did not reliably
+    // take some already-drawn nodes off the canvas at all, so a hidden
+    // question's own witnesses kept floating there with none of their edges
+    // (those correctly disappeared, since building edges only draws ones
+    // whose endpoints are both still present). `.remove()` for exactly the
+    // ids that are gone, `.update()` (an upsert: adds the new, replaces the
+    // existing) for everything still present, is the same end state reached
+    // the way vis-network's own docs recommend keeping a dataset in sync.
+    const keepNodeIds = idsRef.current
+    const staleNodeIds = nodesRef.current.getIds().filter((id) => !keepNodeIds.has(id))
+    const keepEdgeIds = new Set(visEdges.map((e) => e.id))
+    const staleEdgeIds = edgesRef.current.getIds().filter((id) => !keepEdgeIds.has(id))
+    if (staleNodeIds.length) nodesRef.current.remove(staleNodeIds)
+    if (staleEdgeIds.length) edgesRef.current.remove(staleEdgeIds)
+    nodesRef.current.update(visNodes)
+    edgesRef.current.update(visEdges)
+
     if (selectedRef.current && idsRef.current.has(selectedRef.current)) {
       networkRef.current.selectNodes([selectedRef.current])
     }
