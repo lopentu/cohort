@@ -3,7 +3,7 @@
     "title": "Agent-Based Infrastructures for\nDiachronic Digital Humanities",
     "topic": "",
     "minutes": 1,
-    "notes": "SAY: Cohort helps researchers find passages, compare them and keep a record of the investigation.\n\nNEXT: Thank Michael Radich and introduce the data.\n\nBACKGROUND\nOpening. Introduce yourself and your affiliation verbally. This is a presentation of working research tools, with a bounded example, not a claim to solve translator ascription.\n\nThe title is **Agent-Based Infrastructures for Diachronic Digital Humanities**. Present the software through the activities named in the abstract: retrieve corpus material, analyse it, align passages, develop interpretations, preserve provenance, and let researchers make decisions.\n\nA plain opening you can use:\n\n> Cohort lets a researcher ask agents to find and compare passages, then inspect their proposals and sources. I’ll show the tools, the records they produce, and the decisions the researcher can make. Our examples use early Chinese Buddhist texts and a question about translator ascriptions.\n\nAn **ascription** assigns a text to a translator. The broader research question is whether computational evidence can help assess those assignments. This presentation does not identify an unknown translator. It shows the operations available for investigating that question.\n\nMichael Radich supplied the corpus, working catalogue labels and curated string list used in the comparison. Acknowledge that contribution when introducing the material. The talk concerns Cohort’s infrastructure; it does not report a completed solution to his research programme.",
+    "notes": "SAY: Cohort helps researchers find passages, compare them and keep a record of the investigation.\n\nNEXT: Thank Michael Radich and introduce the data.\n\nBACKGROUND\nOpening. Authors: Shu-Kai Hsieh, Da-Chen Lian, Chunki Lim and Lang-Ching Yeh. All are affiliated with the Graduate Institute of Linguistics, National Taiwan University. Shu-Kai Hsieh and Da-Chen Lian also list the Humanistic-AI lab, College of Liberal Arts, National Taiwan University. Affiliations follow the supplied abstract; name spellings follow the presenter’s correction. This is a presentation of working research tools, with a bounded example, not a claim to solve translator ascription.\n\nThe title is **Agent-Based Infrastructures for Diachronic Digital Humanities**. Present the software through the activities named in the abstract: retrieve corpus material, analyse it, align passages, develop interpretations, preserve provenance, and let researchers make decisions.\n\nA plain opening you can use:\n\n> Cohort lets a researcher ask agents to find and compare passages, then inspect their proposals and sources. I’ll show the tools, the records they produce, and the decisions the researcher can make. Our examples use early Chinese Buddhist texts and a question about translator ascriptions.\n\nAn **ascription** assigns a text to a translator. The broader research question is whether computational evidence can help assess those assignments. This presentation does not identify an unknown translator. It shows the operations available for investigating that question.\n\nMichael Radich supplied the corpus, working catalogue labels and curated string list used in the comparison. Acknowledge that contribution when introducing the material. The talk concerns Cohort’s infrastructure; it does not report a completed solution to his research programme.",
     "items": [
       {
         "kind": "text",
@@ -73,13 +73,35 @@
       },
       {
         "kind": "text",
-        "text": "Chinese Buddhist texts · researcher-controlled investigation",
+        "text": "Shu-Kai Hsieh¹² · Da-Chen Lian¹² · Chunki Lim¹ · Lang-Ching Yeh¹",
         "x": 58,
-        "y": 568,
-        "w": 1100,
-        "h": 45,
-        "size": 21,
-        "color": "526778",
+        "y": 538,
+        "w": 1160,
+        "h": 35,
+        "size": 23,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "¹ Graduate Institute of Linguistics, National Taiwan University, Taipei, Taiwan",
+        "x": 58,
+        "y": 588,
+        "w": 1160,
+        "h": 35,
+        "size": 17,
+        "color": "24384A",
+        "bold": false
+      },
+      {
+        "kind": "text",
+        "text": "² Humanistic-AI lab, College of Liberal Arts, National Taiwan University, Taipei, Taiwan",
+        "x": 58,
+        "y": 617,
+        "w": 1160,
+        "h": 35,
+        "size": 17,
+        "color": "24384A",
         "bold": false
       }
     ],
