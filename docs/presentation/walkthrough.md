@@ -225,9 +225,11 @@ The three options are:
 
 | Option | How strings were selected | Limitation |
 |---|---|---|
-| Radich’s curated strings | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |
+| Radich’s list for the Dharmarakṣa dictionary | A list assembled for work on a Dharmarakṣa 竺法護 dictionary | Coverage differs across translators; it is not a neutral sample of everyone’s wording |
 | Frequent corpus strings | Frequent short strings from texts whose translator is uncertain, without consulting translator labels | Subject matter and stock expressions can drive resemblance |
 | Combined lists | The union of the two lists | Combining them does not remove either selection problem |
+
+For T0453, this list offers an exploratory vocabulary comparison, not a translator identification. Inspect the strings contributing to the leading groups and compare with the frequent-string list. Agreement would show stability across these two lists, not independent confirmation; disagreement would show sensitivity to vocabulary selection.
 
 Use the **curated list** for the checked T0603 before-and-after comparison. It is already the default. Frequent strings provide a different view worth investigating, not an automatically better answer. The numbers below belong only to the curated-list calculation.
 

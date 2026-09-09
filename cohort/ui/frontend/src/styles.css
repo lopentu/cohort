@@ -2341,3 +2341,5 @@ a.cbeta-link.block:hover { color: var(--text); }
 @media (max-width:600px) {
   .related-match-actions .related-investigate { flex-basis:100%; margin-left:0; }
 }
+
+.ev-features .btn { white-space:normal; height:auto; padding:8px 12px; }

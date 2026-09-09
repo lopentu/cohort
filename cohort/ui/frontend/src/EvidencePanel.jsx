@@ -24,7 +24,7 @@ import { profileName, textName } from './evidence-labels'
 // labels visible so automatic selection cannot masquerade as changed evidence.
 
 const FEATURE_LABEL = {
-  radich: "Radich's curated strings",
+  radich: "Radich's list for the Dharmarakṣa dictionary",
   generic: 'Frequent corpus strings',
   both: 'Combined lists',
 }
@@ -195,7 +195,7 @@ export default function EvidencePanel({ onSelection }) {
           ))}
         </div>
         <p className="hint small">{features === 'radich'
-          ? 'A scholar-selected list developed for a dictionary of Dharmarakṣa (竺法護). It covers some translators better than others, so it is not a neutral sample.'
+          ? 'Two-, three- and four-character strings selected for work on a Dharmarakṣa (竺法護) dictionary. They are not exclusive to his translations, and coverage differs across translators.'
           : features === 'generic'
           ? 'Frequent strings selected from texts whose translator is uncertain in this catalogue, without using translator labels. Common religious expressions can dominate.'
           : 'The union of both lists, with duplicate strings counted once in the list. Combining them does not remove their biases.'}</p>
@@ -208,7 +208,6 @@ export default function EvidencePanel({ onSelection }) {
       {data && !busy && (
         <Reading
           data={data}
-          sequence={units?.sequence || []}
           withhold={withhold}
           onWithhold={setWithhold}
           pair={pair}
@@ -252,7 +251,7 @@ function rgba(which, a) {
   return `rgba(var(--ev-${which}-rgb), ${Math.max(0, Math.min(a, ALPHA_CAP)).toFixed(2)})`
 }
 
-function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPair, onOffset }) {
+function Reading({ data, withhold, onWithhold, pair: pinnedPair, onPair, onOffset }) {
   const [withholdDraft, setWithholdDraft] = useState(withhold)
   useEffect(() => { setWithholdDraft(withhold) }, [withhold])
   const [pairDraft, setPairDraft] = useState(pinnedPair)
@@ -285,7 +284,6 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
   }, [data, scale])
 
   const bucketColour = (bk) => (bk ? rgba(bk[0], (parseInt(bk.slice(1), 10) / 6) * ALPHA_CAP) : 'transparent')
-  const seq = (lab) => { const i = sequence.indexOf(lab); return i >= 0 ? `#${i + 1} of ${sequence.length} in Radich's order` : '' }
   const excerptEnd = data.excerpt.end ?? (data.excerpt.start + Array.from(data.excerpt.text).length)
 
   return (
@@ -312,8 +310,8 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
         </div>
       ) : (
         <div className="ev-verdict">
-          <div><span className="hint small">Highest-ranked comparison group</span><b>{profileName(data.first)}</b><span className="hint small">{seq(data.first)}</span></div>
-          <div><span className="hint small">Next comparison group</span><b>{profileName(data.second)}</b><span className="hint small">{seq(data.second)}</span></div>
+          <div><span className="hint small">Highest-ranked comparison group</span><b>{profileName(data.first)}</b></div>
+          <div><span className="hint small">Next comparison group</span><b>{profileName(data.second)}</b></div>
           <div>
             <span className="hint small">Score difference</span>
             <b>{data.margin > 0 ? '+' : ''}{data.margin.toFixed(3)}</b>
