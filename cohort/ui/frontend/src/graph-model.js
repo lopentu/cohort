@@ -110,8 +110,23 @@ export const LEGEND_OUTCOMES = [
 //: missing from `COLUMNS` is invisible, and nothing said so.
 const COLUMN_TYPES = new Set(COLUMNS.flatMap((c) => c.types))
 
+// A rejected claim or conjecture stays on screen, struck and coloured red
+// (GraphView.jsx `nodeColorKey`) — design doc §8: "the graph records the
+// judgement calls, not only the findings", so a hypothesis the researcher
+// rejected is itself part of the scholarly record. That argument does not
+// carry for the other types: a rejected witness, passage, query,
+// verification, decision or question is not content being disproven, it is
+// plumbing the researcher has just said is wrong or irrelevant, so it drops
+// out of the default view entirely once rejected. Still on the record either
+// way — `graph.reject()` never deletes the row (`cohort rejected` /
+// `/api/rejected` still lists it, and `reopen` undoes this) — only the
+// default render changes.
+const STAYS_VISIBLE_WHEN_REJECTED = new Set(['claim', 'conjecture'])
+
 export function isVisible(node, showAudit) {
-  return COLUMN_TYPES.has(node.type) && (showAudit || !AUDIT_TYPES.has(node.type))
+  if (!COLUMN_TYPES.has(node.type)) return false
+  if (node.status === 'rejected' && !STAYS_VISIBLE_WHEN_REJECTED.has(node.type)) return false
+  return showAudit || !AUDIT_TYPES.has(node.type)
 }
 
 // A legend listing every edge type the vocabulary has explains, on most
