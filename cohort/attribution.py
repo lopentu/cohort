@@ -50,6 +50,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from cohort.sources.cbeta_refs import unit_reader_url
+
 CATALOGUE = "DhR tables FULL catalogue.txt"
 MARKERS = "Table 1 XML CANONICAL.xml"
 CORPUS_DIR = Path("corpus") / "T-stripped"
@@ -559,6 +561,7 @@ class AttributionIndex:
         counts = collections.Counter(g for _, g in occ)
         result: dict[str, Any] = {
             "uid": uid,
+            "cbeta_url": unit_reader_url(uid),
             "label": label,
             "work": work_of(uid),
             "features": features,

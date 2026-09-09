@@ -67,3 +67,13 @@ def reader_url(ref: str, *, lang: str = "zh") -> str | None:
         return None
     n = juan(ref)
     return f"{READER_BASE}/{lang}/{work}_{n:03d}" if n else f"{READER_BASE}/{lang}/{work}"
+
+
+def unit_reader_url(uid: str) -> str | None:
+    """Open a single Taishō catalogue unit's work, never guess online offsets.
+
+    Chapter/remainder suffixes identify local selections, not CBETA fascicles.
+    Composite and unfamiliar identifiers are deliberately left without a link.
+    """
+    match = re.fullmatch(r"(T\d{4})(?:-[A-Za-z0-9][A-Za-z0-9.-]*)?", uid)
+    return f"{READER_BASE}/zh/{match[1]}" if match else None

@@ -7,6 +7,7 @@ from typing import Any
 
 from cohort.attribution import AttributionIndex, work_of
 from cohort.embeddings import EmbeddingIndex
+from cohort.sources.cbeta_refs import unit_reader_url
 from cohort.tools.align_passages import _han_only
 
 
@@ -35,7 +36,7 @@ def _passage(index: AttributionIndex, uid: str, start: int, window: int) -> dict
         raise KeyError(f"No source text for {uid}")
     if start < 0 or start >= len(text):
         raise ValueError(f"Indexed position {start} is outside the current source for {uid}")
-    return {"uid": uid, "start": start, "end": min(start + window, len(text)),
+    return {"uid": uid, "cbeta_url": unit_reader_url(uid), "start": start, "end": min(start + window, len(text)),
             "text": text[start:start + window],
             "source_sha256": hashlib.sha256(text.encode()).hexdigest()}
 

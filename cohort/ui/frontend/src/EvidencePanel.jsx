@@ -1,3 +1,4 @@
+import CbetaLink from './CbetaLink'
 import { useEffect, useMemo, useState } from 'react'
 import { getEvidence, getEvidenceUnits } from './api'
 import { profileName, textName } from './evidence-labels'
@@ -291,6 +292,7 @@ function Reading({ data, sequence, withhold, onWithhold, pair: pinnedPair, onPai
     <div className="ev-reading">
       <div className="ev-head">
         <h3>{textName(data.uid)}</h3>
+        <CbetaLink url={data.cbeta_url} />
         <p className="ev-catalogue">Catalogue classification: <b>{profileName(data.label)}</b></p>
         <p className="hint small">
           {data.han_chars.toLocaleString()} Han characters ({data.code_points.toLocaleString()} code points)

@@ -27,6 +27,8 @@ def inputs(tmp_path):
 def test_related_excludes_sibling_and_locates_shared_wording(inputs):
     embeddings, corpus = inputs
     result = related_passages(embeddings, corpus, 'T0001-1', start=0, limit=3)
+    assert result['query']['cbeta_url'] == 'https://cbetaonline.dila.edu.tw/zh/T0001'
+    assert result['matches'][0]['cbeta_url'] == 'https://cbetaonline.dila.edu.tw/zh/T0002'
     assert [r['uid'] for r in result['matches']] == ['T0002', 'T0003']
     assert result['matches'][0]['cosine'] == .8
     run = result['matches'][0]['shared_runs'][0]

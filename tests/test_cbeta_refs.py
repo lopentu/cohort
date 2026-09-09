@@ -57,3 +57,17 @@ def test_language_is_selectable_and_defaults_to_chinese():
     ref = "Bookcase/CBETA/XML/T/T08/T08n0235_001.xml"
     assert reader_url(ref) == "https://cbetaonline.dila.edu.tw/zh/T0235_001"
     assert reader_url(ref, lang="en") == "https://cbetaonline.dila.edu.tw/en/T0235_001"
+
+
+@pytest.mark.parametrize('uid', ['T0603', 'T0263-rest', 'T0262-exDevadatta', 'T0125-48.3'])
+def test_catalogue_units_link_to_work_without_inventing_a_fascicle(uid):
+    from cohort.sources.cbeta_refs import unit_reader_url
+
+    assert unit_reader_url(uid) == f'https://cbetaonline.dila.edu.tw/zh/{uid[:5]}'
+
+
+@pytest.mark.parametrize('uid', ['poem-001', 'T12345', 'T0263+T0262', 'T0263/other', ''])
+def test_unrecognised_or_composite_unit_has_no_link(uid):
+    from cohort.sources.cbeta_refs import unit_reader_url
+
+    assert unit_reader_url(uid) is None

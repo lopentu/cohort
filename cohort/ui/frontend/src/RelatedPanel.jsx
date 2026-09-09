@@ -1,3 +1,4 @@
+import CbetaLink from './CbetaLink'
 import { useEffect, useRef, useState } from 'react'
 import { getRelated } from './api'
 import { textName } from './evidence-labels'
@@ -61,6 +62,7 @@ export default function RelatedPanel() {
       <section className="related-selected" aria-label="Selected passage" tabIndex="0">
       <h3>Selected passage · {textName(result.query.uid)}</h3>
       <p className="hint small">Source characters {result.query.start}–{result.query.end} (zero-based, end excluded)</p>
+      <CbetaLink url={result.query.cbeta_url} />
       <p className="related-text" lang="zh">{result.query.text}</p>
       <div className="related-navigation">
         <button className="btn tiny" disabled={result.positions.indexOf(start) <= 0}
@@ -76,6 +78,7 @@ export default function RelatedPanel() {
       {result.matches.map((m, i) => <article className="related-match" key={`${m.uid}:${m.start}`}>
         <h4>{i + 1}. {textName(m.uid)} <span className="hint small">Cosine {m.cosine.toFixed(3)}</span></h4>
         <p className="hint small">{m.uid} · Source characters {m.start}–{m.end}</p>
+        <CbetaLink url={m.cbeta_url} />
         <p className="related-text" lang="zh">{m.text}</p>
         <details><summary>Check shared wording</summary>
           <p>Longest shared sequence: {m.longest_shared_run} Chinese characters. Punctuation is ignored; only these two displayed passages are compared.</p>

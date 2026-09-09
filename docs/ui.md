@@ -139,6 +139,12 @@ Clicking an author in a node's provenance opens that agent's contribution
 counts. Counts, never a score: a reputation number would reward volume, so an
 agent proposing ten weak claims would outrank one proposing a single good one.
 
+## CBETA reading links
+
+Corpus exact-search results and the Graph inspector link to CBETA Online when the source reference is recognised. Related passages also links the selected text and each returned text, Vocabulary comparison links its target, and Findings links recognised cited sources. Links open in a new tab.
+
+Catalogue chapter/remainder units link to their whole Taishō work. Local character offsets are not online page or line locators. Composite or unfamiliar identifiers get no guessed link. Citation checks continue to read the local source files.
+
 ## Conjecture test queries
 
 A `tests` link connects a recorded query to a conjecture. Running the test searches the configured corpus and compares the returned count with the recorded prediction: at least or at most a stated number of matches. The result is pass, fail or indeterminate. Passing neither accepts the conjecture nor proves its interpretation.

@@ -227,6 +227,7 @@ def dossier_json(graph: Graph, node_id: str) -> dict[str, Any]:
             "excerpt": passage.payload.get("excerpt"),
             "locator": passage.payload.get("locator"),
             "canonical_ref": passage.payload.get("canonical_ref"),
+            "cbeta_url": reader_url(passage.payload.get("canonical_ref") or ""),
             "witness_id": witness,
             "assurance": graph.assurance_for(passage.id),
         })

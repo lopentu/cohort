@@ -1,3 +1,4 @@
+import CbetaLink from './CbetaLink'
 import ProposalFieldHelp, { proposalFieldLabel } from './ProposalFieldHelp'
 import { explainProfileCodes } from './evidence-labels'
 import { useCallback, useEffect, useState } from 'react'
@@ -242,6 +243,7 @@ function Dossier({ d, onSelect }) {
                 <button className="ev-ref" onClick={() => onSelect(e.passage_id)}>
                   <code>{e.canonical_ref}</code>
                 </button>
+                <CbetaLink url={e.cbeta_url} />
                 <span className="chip">{e.assurance.replace(/_/g, ' ').toLowerCase()}</span>
                 <p className="ev-excerpt">{e.excerpt}</p>
               </li>
