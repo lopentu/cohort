@@ -57,6 +57,8 @@ export default function RelatedPanel() {
       </div>
     </>}
     {result && <>
+      <div className="related-comparison">
+      <section className="related-selected" aria-label="Selected passage" tabIndex="0">
       <h3>Selected passage · {textName(result.query.uid)}</h3>
       <p className="hint small">Source characters {result.query.start}–{result.query.end} (zero-based, end excluded)</p>
       <p className="related-text" lang="zh">{result.query.text}</p>
@@ -66,6 +68,8 @@ export default function RelatedPanel() {
         <button className="btn tiny" disabled={result.positions.indexOf(start) >= result.positions.length - 1}
           onClick={() => search(uid, result.positions[result.positions.indexOf(start) + 1])}>Next passage</button>
       </div>
+      </section>
+      <section className="related-results" aria-label="Related passage results" tabIndex="0">
       <h3>Related passages</h3>
       <p className="hint small">Showing {result.matches.length} of {result.candidate_windows.toLocaleString()} candidate passages, ranked by cosine similarity.</p>
       {!result.matches.length && <p>No passages from other works are indexed.</p>}
@@ -81,6 +85,8 @@ export default function RelatedPanel() {
           </li>)}</ul> : <p>No shared sequence of four or more Chinese characters.</p>}
         </details>
       </article>)}
+      </section>
+      </div>
       <details><summary>Source checks and limits</summary>
         <p>{result.limitations}</p>
         <p>Positions refer to the local base texts, not CBETA page and line numbers. End positions are excluded. Source hashes below describe the files read for this result.</p>
