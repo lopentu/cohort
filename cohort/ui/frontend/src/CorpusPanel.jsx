@@ -1,3 +1,6 @@
+import { Button } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr } from './i18n'
 import { explainProfileCodes } from './evidence-labels'
 import { useEffect, useRef, useState } from 'react'
 import { fetchCorpus, searchCorpus } from './api'
@@ -27,6 +30,7 @@ import ExactComparison from './ExactComparison'
 // showing results for a phrase the user has already moved on from.
 
 export default function CorpusPanel({ onCite }) {
+  useTranslation()
   const [mode, setMode] = useState('exact')
   const [comparison, setComparison] = useState([])
   const [query, setQuery] = useState('')
@@ -96,34 +100,35 @@ export default function CorpusPanel({ onCite }) {
 
   return (
     <section className="corpus">
-      <h2>Corpus</h2>
-      <div className="corpus-modes" role="group" aria-label="Search method">
-        <button className="btn" aria-pressed={mode === 'exact'} onClick={() => setMode('exact')}>Exact phrase</button>
-        <button className="btn" aria-pressed={mode === 'related'} onClick={() => setMode('related')}>Related passages</button>
+      <h2>{tr("Corpus")}</h2>
+      <div className="corpus-modes" role="group" aria-label={tr("Search method")}>
+        <Button className="btn" aria-pressed={mode === 'exact'} onClick={() => setMode('exact')}>{tr("Exact phrase")}</Button>
+        <Button className="btn" aria-pressed={mode === 'related'} onClick={() => setMode('related')}>{tr("Related passages")}</Button>
       </div>
       {mode === 'related' ? <RelatedPanel onInvestigate={onCite} /> : <>
 
       <form className="corpus-form" onSubmit={(e) => { e.preventDefault(); run() }}>
         <input
           className="corpus-input"
-          placeholder="exact phrase, e.g. 色即是空"
+          aria-label={tr("Exact phrase")}
+          placeholder={tr("exact phrase, e.g. 色即是空")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <button className="btn" type="submit" disabled={!query.trim()}>
-          {busy ? 'Searching…' : 'Search'}
-        </button>
+        <Button className="btn" type="submit" disabled={!query.trim()}>
+          {busy ? tr("Searching…") : tr("Search")}
+        </Button>
       </form>
-      <div className="suggested-inputs" aria-label="Suggested corpus searches">
-        <span className="hint small">Try a search:</span>
+      <div className="suggested-inputs" aria-label={tr("Suggested corpus searches")}>
+        <span className="hint small">{tr("Try a search:")}</span>
         {[
-          ['如是我聞', 'Opening formula · 如是我聞'],
-          ['彌勒', 'Maitreya · 彌勒'],
-          ['多熱如是名遍', 'Phrase from T0603 · 多熱如是名遍'],
-        ].map(([phrase, label]) => <button className="btn tiny" type="button"
-          key={phrase} onClick={() => setQuery(phrase)}>{label}</button>)}
+          ['如是我聞', tr("Opening formula · 如是我聞")],
+          ['彌勒', tr("Maitreya · 彌勒")],
+          ['多熱如是名遍', tr("Phrase from T0603 · 多熱如是名遍")],
+        ].map(([phrase, label]) => <Button className="btn tiny" type="button"
+          key={phrase} onClick={() => setQuery(phrase)}>{label}</Button>)}
       </div>
-      <p className="hint small">Searches exact wording in the corpus, not a research question.</p>
+      <p className="hint small">{tr("Searches exact wording in the corpus, not a research question.")}</p>
 
       {error && <p className="error">{error}</p>}
 
@@ -134,61 +139,52 @@ export default function CorpusPanel({ onCite }) {
       {results && (
         <>
           <div className="corpus-meta">
-            <span><strong>{results.count}</strong> witnesses</span>
+            <span><strong>{results.count}</strong> {tr("witnesses")}</span>
             <span className="ordering">{results.ordering}</span>
           </div>
           {results.truncated && (
-            <p className="warn small">
-              Showing the first {results.count} matches in corpus order.
-              Narrow your search to see fewer results.
-            </p>
+            <p className="warn small">{tr("Showing the first")} {results.count} {tr("matches in corpus order. Narrow your search to see fewer results.")}</p>
           )}
           {results.count === 0 && (
-            <p className="hint">
-              No exact matches in this corpus.
-            </p>
+            <p className="hint">{tr("No exact matches in this corpus.")}</p>
           )}
           <ul className="corpus-list">
             {results.hits.map((h) => (
               <li key={h.ref} className={openRef === h.ref ? 'open' : ''}>
                 <div className="corpus-row">
-                  <button className="corpus-ref" onClick={() => open(h.ref)}>
+                  <Button className="corpus-ref" onClick={() => open(h.ref)}>
                     {h.title ? explainProfileCodes(h.title) : h.ref}
-                  </button>
+                  </Button>
                   {h.cbeta_url && (
                     <a
                       className="btn tiny cbeta-link"
                       href={h.cbeta_url}
                       target="_blank"
                       rel="noreferrer noopener"
-                      title="Read this text in CBETA Online"
-                    >
-                      CBETA ↗
-                    </a>
+                      title={tr("Read this text in CBETA Online")}
+                    >{tr("CBETA ↗")}</a>
                   )}
-                  <button className="btn tiny corpus-compare"
+                  <Button className="btn tiny corpus-compare"
                     aria-pressed={comparison.some(item => item.ref === h.ref)}
                     disabled={comparison.length === 2 && !comparison.some(item => item.ref === h.ref)}
                     onClick={() => setComparison(current => current.some(item => item.ref === h.ref)
                       ? current.filter(item => item.ref !== h.ref)
                       : current.length < 2 ? [...current, { ...h, phrase: results.query || query.trim() }] : current)}>
-                    {comparison.some(item => item.ref === h.ref) ? 'Selected for comparison' : 'Compare'}
-                  </button>
+                    {comparison.some(item => item.ref === h.ref) ? tr("Selected for comparison") : tr("Compare")}
+                  </Button>
                   {onCite && (
-                    <button
+                    <Button
                       className="btn tiny"
-                      title="Draft a research question about this passage"
+                      title={tr("Draft a research question about this passage")}
                       onClick={() => onCite({ phrase: results.query || query.trim(), ref: h.ref, title: h.title })}
-                    >
-                      Investigate this passage
-                    </button>
+                    >{tr("Investigate this passage")}</Button>
                   )}
                 </div>
                 {h.snippet && <p className="corpus-snippet">{h.snippet}</p>}
                 <Reveal open={openRef === h.ref}>
                   <div className="corpus-record">
                     {!record ? (
-                      <p className="hint">Loading…</p>
+                      <p className="hint">{tr("Loading…")}</p>
                     ) : (
                       <>
                         <div className="record-meta">
@@ -199,14 +195,12 @@ export default function CorpusPanel({ onCite }) {
                               ? `showing ${record.text.length} of ${record.total_chars} chars`
                               : `${record.total_chars} chars`}
                           </span>
-                          <button className="btn tiny" onClick={toggleMarkup}>
-                            {record.markup_stripped ? 'show TEI markup' : 'hide TEI markup'}
-                          </button>
+                          <Button className="btn tiny" onClick={toggleMarkup}>
+                            {record.markup_stripped ? tr("show TEI markup") : tr("hide TEI markup")}
+                          </Button>
                         </div>
                         {record.markup_stripped && (
-                          <p className="hint small">
-                            Markup hidden. Displayed positions differ from source positions.
-                      </p>
+                          <p className="hint small">{tr("Markup hidden. Displayed positions differ from source positions.")}</p>
                         )}
                         {/* The corpus is licensed; its terms travel with every
                             derived artifact, including this view. */}
@@ -215,9 +209,7 @@ export default function CorpusPanel({ onCite }) {
                         )}
                         <pre className="record-text">{record.text}</pre>
                         {record.truncated && (
-                          <p className="warn small">
-                            Partial text shown.
-                          </p>
+                          <p className="warn small">{tr("Partial text shown.")}</p>
                         )}
                       </>
                     )}

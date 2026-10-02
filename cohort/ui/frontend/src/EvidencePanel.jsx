@@ -1,3 +1,6 @@
+import { Button } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr, formatNumber, metadataLabel } from './i18n'
 import CbetaLink from './CbetaLink'
 import { useEffect, useMemo, useState } from 'react'
 import { getEvidence, getEvidenceUnits } from './api'
@@ -49,6 +52,7 @@ function writeHash(state) {
 }
 
 export default function EvidencePanel({ onSelection }) {
+  useTranslation()
   const initial = useMemo(readHash, [])
   const [units, setUnits] = useState(null)
   const [query, setQuery] = useState(initial.uid || '')
@@ -105,32 +109,30 @@ export default function EvidencePanel({ onSelection }) {
 
   return (
     <section className="evidence">
-      <h2>Compare a text's wording</h2>
-      <p className="ev-introduction">
-        Compare short-string counts across corpus groups.
-      </p>
+      <h2>{tr("Compare a text's wording")}</h2>
+      <p className="ev-introduction">{tr("Compare short-string counts across corpus groups.")}</p>
 
-      <div className="suggested-inputs" aria-label="Suggested evidence texts">
-        <span className="hint small">Try a text:</span>
+      <div className="suggested-inputs" aria-label={tr("Suggested evidence texts")}>
+        <span className="hint small">{tr("Try a text:")}</span>
         {[
-          ['T0263-rest', 'Lotus Sūtra · Dharmarakṣa'],
-          ['T0603', 'Yin chi ru jing 陰持入經 · T0603'],
-          ['T0453', 'Maitreya’s descent 彌勒下生經 · T0453'],
-        ].map(([id, label]) => <button type="button" className="btn tiny" key={id}
+          ['T0263-rest', tr("Lotus Sūtra · Dharmarakṣa")],
+          ['T0603', tr("Yin chi ru jing 陰持入經 · T0603")],
+          ['T0453', tr("Maitreya’s descent 彌勒下生經 · T0453")],
+        ].map(([id, label]) => <Button type="button" className="btn tiny" key={id}
           onClick={() => { choose(id); setQuery(id); setFeatures('radich'); setWithhold(''); setPair('') }}>
           {label}
-        </button>)}
+        </Button>)}
       </div>
-      <p className="hint small">Examples start with the curated strings and no additional exclusions.</p>
+      <p className="hint small">{tr("Examples start with the curated strings and no additional exclusions.")}</p>
 
       <details className="ev-options ev-chooser" open={!uid}>
-        <summary>{uid ? 'Change the selected text' : 'Choose a text to examine'}</summary>
+        <summary>{uid ? tr("Change the selected text") : tr("Choose a text to examine")}</summary>
       <div className="ev-controls">
         <label className="ev-filter">
-          <span>Choose a text</span>
+          <span>{tr("Choose a text")}</span>
           <input
             className="corpus-input"
-            placeholder="Search by title, catalogue ID or translator name"
+            placeholder={tr("Search by title, catalogue ID or translator name")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -143,33 +145,32 @@ export default function EvidencePanel({ onSelection }) {
           <ul className="ev-units">
             {matches.map((r) => (
               <li key={r.uid}>
-                <button
+                <Button
                   className={`ev-unit ${uid === r.uid ? 'on' : ''}`}
                   onClick={(e) => { choose(r.uid); e.currentTarget.closest('details').open = false }}
-                  title={`${r.uid} — ${r.profiled ? 'in the profiles; its whole work is withheld when judged' : 'not in the profiles'}`}
+                  title={`${r.uid} — ${r.profiled ? tr("in the profiles; its whole work is withheld when judged") : tr("not in the profiles")}`}
                 >
                   <span className="ev-uid">{textName(r.uid)}</span>
                   <span className={`ev-label ${r.label === 'grey' ? 'grey' : ''}`}>{profileName(r.label)}</span>
-                  <span className="ev-chars">{r.han_chars.toLocaleString()}</span>
-                </button>
+                  <span className="ev-chars">{formatNumber(r.han_chars)}</span>
+                </Button>
               </li>
             ))}
-            {matches.length === 60 && <li className="hint small">first 60 shown; narrow the filter</li>}
+            {matches.length === 60 && <li className="hint small">{tr("first 60 shown; narrow the filter")}</li>}
           </ul>
           <div className="ev-ledger">
-            <button className="btn tiny" onClick={() => setShowLedger((v) => !v)} aria-expanded={showLedger}>
-              {showLedger ? 'Hide' : 'Show'} corpus exclusions and counts
-            </button>
+            <Button className="btn tiny" onClick={() => setShowLedger((v) => !v)} aria-expanded={showLedger}>
+              {showLedger ? tr("Hide") : tr("Show")}{' '}{tr("corpus exclusions and counts")}</Button>
             {showLedger && (
               <table className="ev-table">
                 <tbody>
                   {Object.entries(units.ledger).map(([k, v]) => (
-                    <tr key={k}><td>{k}</td><td className="num">{v.toLocaleString()}</td></tr>
+                    <tr key={k}><td>{metadataLabel(k)}</td><td className="num">{formatNumber(v)}</td></tr>
                   ))}
                 </tbody>
               </table>
             )}
-            {showLedger && units.notes.map((n) => <p key={n} className="hint small">{n}</p>)}
+            {showLedger && units.notes.map((n) => <p key={n} className="hint small">{tr(n)}</p>)}
           </div>
         </div>
       )}
@@ -178,31 +179,31 @@ export default function EvidencePanel({ onSelection }) {
 
       <div aria-live="polite">
         {error && <p className="error">{error}</p>}
-        {busy && <p className="hint">Counting…</p>}
+        {busy && <p className="hint">{tr("Counting…")}</p>}
       </div>
       <details className="ev-options">
-        <summary>Vocabulary and method</summary>
-        <p>Here, “vocabulary” means a list of two-, three- and four-character sequences to count. They are not necessarily whole words.</p>
-        <div className="ev-features" role="radiogroup" aria-label="feature vocabulary">
+        <summary>{tr("Vocabulary and method")}</summary>
+        <p>{tr("Here, “vocabulary” means a list of two-, three- and four-character sequences to count. They are not necessarily whole words.")}</p>
+        <div className="ev-features" role="radiogroup" aria-label={tr("feature vocabulary")}>
           {Object.entries(FEATURE_LABEL).map(([k, label]) => (
-            <button
+            <Button
               key={k}
               role="radio"
               aria-checked={features === k}
               className={`btn tiny ${features === k ? 'on' : ''}`}
               onClick={() => setFeatures(k)}
-            >{label}</button>
+            >{tr(label)}</Button>
           ))}
         </div>
         <p className="hint small">{features === 'radich'
-          ? 'Two-, three- and four-character strings selected for work on a Dharmarakṣa (竺法護) dictionary. They are not exclusive to his translations, and coverage differs across translators.'
+          ? tr("Two-, three- and four-character strings selected for work on a Dharmarakṣa (竺法護) dictionary. They are not exclusive to his translations, and coverage differs across translators.")
           : features === 'generic'
-          ? 'Frequent strings selected from texts whose translator is uncertain in this catalogue, without using translator labels. Common religious expressions can dominate.'
-          : 'The union of both lists, with duplicate strings counted once in the list. Combining them does not remove their biases.'}</p>
-        <p>The calculation stays the same when you switch lists; you change which strings it counts.</p>
-        <button className="btn" onClick={() => setShowHow((v) => !v)} aria-expanded={showHow}>
-          {showHow ? 'Hide method explanation' : 'Explain the calculation and its limits'}
-        </button>
+          ? tr("Frequent strings selected from texts whose translator is uncertain in this catalogue, without using translator labels. Common religious expressions can dominate.")
+          : tr("The union of both lists, with duplicate strings counted once in the list. Combining them does not remove their biases.")}</p>
+        <p>{tr("The calculation stays the same when you switch lists; you change which strings it counts.")}</p>
+        <Button className="btn" onClick={() => setShowHow((v) => !v)} aria-expanded={showHow}>
+          {showHow ? tr("Hide method explanation") : tr("Explain the calculation and its limits")}
+        </Button>
         {showHow && <HowToRead />}
       </details>
       {data && !busy && (
@@ -220,29 +221,23 @@ export default function EvidencePanel({ onSelection }) {
 }
 
 function HowToRead() {
+  useTranslation()
   return (
     <div className="ev-how">
       <p>
-        <b>How the score is made.</b> Count the selected strings in your text. For each comparison group, use its relative string frequencies to score those matches. More frequent matches contribute more. The highest score determines the first-ranked group.
-        </p>
+        <b>{tr("How the score is made.")}</b>{tr("Count the selected strings in your text. For each comparison group, use its relative string frequencies to score those matches. More frequent matches contribute more. The highest score determines the first-ranked group.")}</p>
       <p>
-        <b>Score difference.</b> The highest score minus the next highest, divided by the number of distinct matched strings. Near zero means little separates those scores. It is not a probability, and there is no validated cutoff for assigning a translator.
-      </p>
+        <b>{tr("Score difference.")}</b>{tr("The highest score minus the next highest, divided by the number of distinct matched strings. Near zero means little separates those scores. It is not a probability, and there is no validated cutoff for assigning a translator.")}</p>
       <p>
-        <b>Colours.</b> Teal and rust show which group a string favours. Stronger colour means greater weight. Fix the group pair before switching string sets.
-      </p>
+        <b>{tr("Colours.")}</b>{tr("Teal and rust show which group a string favours. Stronger colour means greater weight. Fix the group pair before switching string sets.")}</p>
       <p>
-        <b>Text overview.</b> Click a cell to read that section. Colour changes may reflect subject, genre or textual history.
-      </p>
+        <b>{tr("Text overview.")}</b>{tr("Click a cell to read that section. Colour changes may reflect subject, genre or textual history.")}</p>
       <p>
-        <b>Exclusions.</b> All profiled chapters of the target work are excluded automatically. You can exclude additional texts to test dependence on repeated material.
-      </p>
+        <b>{tr("Exclusions.")}</b>{tr("All profiled chapters of the target work are excluded automatically. You can exclude additional texts to test dependence on repeated material.")}</p>
       <p>
-        <b>String sets.</b> The curated list was developed for a Dharmarakṣa dictionary and covers An Shigao poorly. The alternative uses frequent strings from uncertain texts without consulting translator labels.
-      </p>
+        <b>{tr("String sets.")}</b>{tr("The curated list was developed for a Dharmarakṣa dictionary and covers An Shigao poorly. The alternative uses frequent strings from uncertain texts without consulting translator labels.")}</p>
       <p>
-        <b>Limits.</b> No matching strings means no ranking. Similar scores do not establish an attribution. Texts composed in Chinese may have no translator.
-      </p>
+        <b>{tr("Limits.")}</b>{tr("No matching strings means no ranking. Similar scores do not establish an attribution. Texts composed in Chinese may have no translator.")}</p>
     </div>
   )
 }
@@ -252,6 +247,7 @@ function rgba(which, a) {
 }
 
 function Reading({ data, withhold, onWithhold, pair: pinnedPair, onPair, onOffset }) {
+  useTranslation()
   const [withholdDraft, setWithholdDraft] = useState(withhold)
   useEffect(() => { setWithholdDraft(withhold) }, [withhold])
   const [pairDraft, setPairDraft] = useState(pinnedPair)
@@ -291,59 +287,55 @@ function Reading({ data, withhold, onWithhold, pair: pinnedPair, onPair, onOffse
       <div className="ev-head">
         <h3>{textName(data.uid)}</h3>
         <CbetaLink url={data.cbeta_url} />
-        <p className="ev-catalogue">Catalogue classification: <b>{profileName(data.label)}</b></p>
+        <p className="ev-catalogue">{tr("Catalogue classification:")} <b>{profileName(data.label)}</b></p>
         <p className="hint small">
-          {data.han_chars.toLocaleString()} Han characters ({data.code_points.toLocaleString()} code points)
-          · {data.hits.toLocaleString()} matched string occurrences · {data.distinct.toLocaleString()} different strings
-          · vocabulary: {FEATURE_LABEL[data.features]} ({data.n_features.toLocaleString()} strings)
-          {data.withheld_units > 0 && (
-            <> · <b>{data.withheld_units} unit{data.withheld_units > 1 ? 's' : ''} withheld</b> from the profiles
-              {data.withheld_extra.length > 0 && <> (incl. {data.withheld_extra.join(', ')})</>}</>
+          {formatNumber(data.han_chars)} {tr("Han characters (")}{formatNumber(data.code_points)} {tr("code points) ·")} {formatNumber(data.hits)} {tr("matched string occurrences ·")} {formatNumber(data.distinct)} {tr("different strings · vocabulary:")} {tr(FEATURE_LABEL[data.features])} ({formatNumber(data.n_features)} {tr("strings)")}{data.withheld_units > 0 && (
+            <> · <b>{data.withheld_units} {tr("unit")}{data.withheld_units > 1 ? 's' : ''} {tr("withheld")}</b> {tr("from the profiles")}{data.withheld_extra.length > 0 && <> {tr("(incl.")} {data.withheld_extra.join(', ')})</>}</>
           )}
         </p>
       </div>
 
       {data.verdict === 'no evidence' ? (
         <div className="ev-verdict">
-          <div><b className="warn">no evidence</b>
-            <span className="hint small"> not one string of this vocabulary occurs in the text; nothing is ranked</span></div>
+          <div><b className="warn">{tr("no evidence")}</b>
+            <span className="hint small"> {tr("not one string of this vocabulary occurs in the text; nothing is ranked")}</span></div>
         </div>
       ) : (
         <div className="ev-verdict">
-          <div><span className="hint small">Highest-ranked comparison group</span><b>{profileName(data.first)}</b></div>
-          <div><span className="hint small">Next comparison group</span><b>{profileName(data.second)}</b></div>
+          <div><span className="hint small">{tr("Highest-ranked comparison group")}</span><b>{profileName(data.first)}</b></div>
+          <div><span className="hint small">{tr("Next comparison group")}</span><b>{profileName(data.second)}</b></div>
           <div>
-            <span className="hint small">Score difference</span>
+            <span className="hint small">{tr("Score difference")}</span>
             <b>{data.margin > 0 ? '+' : ''}{data.margin.toFixed(3)}</b>
-            <span className="hint small">log-odds per distinct string; not comparable across texts</span>
+            <span className="hint small">{tr("log-odds per distinct string; not comparable across texts")}</span>
           </div>
           {data.verdict === 'low evidence' && (
-            <div><b className="warn">low evidence</b><span className="hint small">fewer than 10 distinct strings</span></div>
+            <div><b className="warn">{tr("low evidence")}</b><span className="hint small">{tr("fewer than 10 distinct strings")}</span></div>
           )}
         </div>
       )}
 
       {data.verdict !== 'no evidence' && (
-        <section className="ev-ranking" aria-label="Full group ranking">
-          <h4>All {data.ranking.length} groups, ranked</h4>
-          <p className="hint small">The leader is 0. Negative scores fall below it; more negative means further behind. These are total score differences, not the per-string margin above or probabilities.</p>
-          <div className="ev-comparison-scroll">
+        <section className="ev-ranking" aria-label={tr("Full group ranking")}>
+          <h4>{tr("All")} {data.ranking.length} {tr("groups, ranked")}</h4>
+          <p className="hint small">{tr("The leader is 0. Negative scores fall below it; more negative means further behind. These are total score differences, not the per-string margin above or probabilities.")}</p>
+          <div className="ev-comparison-scroll" tabIndex={0} role="region" aria-label={tr("Full group ranking")}>
           <table className="ev-table">
-            <thead><tr><th>Rank</th><th className="g">Group</th><th>Score relative to leader</th><th>Texts/chapters used</th></tr></thead>
+            <thead><tr><th>{tr("Rank")}</th><th className="g">{tr("Group")}</th><th>{tr("Score relative to leader")}</th><th>{tr("Texts/chapters used")}</th></tr></thead>
             <tbody>
               {data.ranking.map((r, index) => {
                 const p = data.profiles[r.label] || {}
                 return (
                   <tr key={r.label} className={p.thin ? 'thin' : ''}>
                     <td className="num">{index + 1}</td>
-                    <td className="g">{profileName(r.label)}{p.thin && <span className="warn small"> thin</span>}</td>
-                    <td className="num">{r.delta.toLocaleString(undefined, { maximumFractionDigits: 1 })}</td>
-                    <td className="num">{p.units} of {p.units_before_withholding}</td>
+                    <td className="g">{profileName(r.label)}{p.thin && <span className="warn small"> {tr("thin")}</span>}</td>
+                    <td className="num">{formatNumber(r.delta, { maximumFractionDigits: 1 })}</td>
+                    <td className="num">{p.units} {tr("of")} {p.units_before_withholding}</td>
                   </tr>
                 )
               })}
               {data.no_profile.map((n) => (
-                <tr key={n.label}><td>—</td><td className="g">{profileName(n.label)}</td><td colSpan="2" className="hint small">not judged: {n.reason}</td></tr>
+                <tr key={n.label}><td>—</td><td className="g">{profileName(n.label)}</td><td colSpan="2" className="hint small">{tr("not judged:")} {tr(n.reason)}</td></tr>
               ))}
             </tbody>
           </table>
@@ -352,98 +344,87 @@ function Reading({ data, withhold, onWithhold, pair: pinnedPair, onPair, onOffse
       )}
 
       {(data.first === 'pre-Dhr-other' || data.second === 'pre-Dhr-other') && (
-        <p className="hint small">“Other material before Dharmarakṣa 竺法護” is a mixed corpus group, not a single translator.</p>
+        <p className="hint small">{tr("“Other material before Dharmarakṣa 竺法護” is a mixed corpus group, not a single translator.")}</p>
       )}
-      <p className="ev-limits">
-        Similarity does not establish translator identity. Scores are not probabilities; repeated passages and genre formulae can affect them.
-        </p>
+      <p className="ev-limits">{tr("Similarity does not establish translator identity. Scores are not probabilities; repeated passages and genre formulae can affect them.")}</p>
       <div className="ev-next">
-      <h3>Does the result depend on another text?</h3>
-      <p>Exclude a suspected source of repeated wording from the comparison groups. Your target text stays unchanged.</p>
-      <p className="hint small">Use exact IDs from the picker. For chaptered works, list each chapter ID separately.</p>
+      <h3>{tr("Does the result depend on another text?")}</h3>
+      <p>{tr("Exclude a suspected source of repeated wording from the comparison groups. Your target text stays unchanged.")}</p>
+      <p className="hint small">{tr("Use exact IDs from the picker. For chaptered works, list each chapter ID separately.")}</p>
       <form
         className="ev-withhold"
         onSubmit={(e) => { e.preventDefault(); onWithhold(withholdDraft.trim()) }}
       >
         <label>
-          <span className="hint small">Exclude additional texts (exact corpus unit IDs, separated by commas)</span>
+          <span className="hint small">{tr("Exclude additional texts (exact corpus unit IDs, separated by commas)")}</span>
           <input
             className="corpus-input"
             value={withholdDraft}
-            placeholder="e.g. T1694"
+            placeholder={tr("e.g. T1694")}
             onChange={(e) => setWithholdDraft(e.target.value)}
           />
         </label>
-        {data.uid === 'T0603' && <button className="btn tiny ev-commentary-shortcut" type="button"
+        {data.uid === 'T0603' && <Button className="btn tiny ev-commentary-shortcut" type="button"
           disabled={withhold.split(',').some(id => id.trim() === 'T1694')}
           onClick={() => {
             const ids = [...new Set([...withholdDraft.split(',').map(id => id.trim()).filter(Boolean), 'T1694'])].join(',')
             setWithholdDraft(ids)
             onWithhold(ids)
           }}>
-          {withhold.split(',').some(id => id.trim() === 'T1694') ? 'T1694 commentary excluded' : 'Exclude T1694 commentary'}
-        </button>}
-        <button className="btn tiny" type="submit">Repeat comparison</button>
-        {withhold && <button className="btn tiny" type="button" onClick={() => onWithhold('')}>Restore these texts</button>}
+          {withhold.split(',').some(id => id.trim() === 'T1694') ? tr("T1694 commentary excluded") : tr("Exclude T1694 commentary")}
+        </Button>}
+        <Button className="btn tiny" type="submit">{tr("Repeat comparison")}</Button>
+        {withhold && <Button className="btn tiny" type="button" onClick={() => onWithhold('')}>{tr("Restore these texts")}</Button>}
         {withholdDraft.trim() && <p className="ev-exclusion-names">
           {withholdDraft.split(',').map((id) => textName(id.trim())).join('; ')}
       </p>}
       </form>
-      <p className="hint small">Applies to this calculation only. Sources and graph records are unchanged.</p>
+      <p className="hint small">{tr("Applies to this calculation only. Sources and graph records are unchanged.")}</p>
       {data.withheld_extra.length > 0 && <ExclusionComparison key={`${data.uid}:${data.features}:${data.withheld_extra.join(',')}`} data={data} />}
       </div>
       <details className="ev-options">
-      <summary>Highlighting groups</summary>
-      <p>Sets the highlight colours; the overall ranking is unchanged.</p>
+      <summary>{tr("Highlighting groups")}</summary>
+      <p>{tr("Sets the highlight colours; the overall ranking is unchanged.")}</p>
 
       <form
         className="ev-withhold"
         onSubmit={(e) => { e.preventDefault(); onPair(pairDraft.replace(/\s+/g, '')) }}
       >
         <label>
-          <span className="hint small">Group codes for colours A and B (comma-separated; leave empty for automatic selection)</span>
+          <span className="hint small">{tr("Group codes for colours A and B (comma-separated; leave empty for automatic selection)")}</span>
           <input
             className="corpus-input"
             value={pairDraft}
-            placeholder="e.g. Dhr,ZFn"
+            placeholder={tr("e.g. Dhr,ZFn")}
             onChange={(e) => setPairDraft(e.target.value)}
           />
         </label>
-        <button className="btn tiny" type="submit">Update highlighting</button>
-        {pinnedPair && <button className="btn tiny" type="button" onClick={() => onPair('')}>clear</button>}
+        <Button className="btn tiny" type="submit">{tr("Update highlighting")}</Button>
+        {pinnedPair && <Button className="btn tiny" type="button" onClick={() => onPair('')}>{tr("clear")}</Button>}
       </form>
       </details>
 
 
       {pair && (
-        <p className="hint small">
-          Text highlighting: <b className="ev-a">{profileName(a)}</b> (A) vs <b className="ev-b">{profileName(b)}</b> (B)
-          {pair.pinned ? '. Groups selected manually' : a === data.label ? '. A is the catalogue group; B is the highest-scoring other group' : '. A and B are the two highest-scoring groups'}.
-          Selected-string occurrences in the reference texts: A {data.profiles[a].feature_tokens.toLocaleString()}; B {data.profiles[b].feature_tokens.toLocaleString()} (including repeats).
-      </p>
+        <p className="hint small">{tr("Text highlighting:")} <b className="ev-a">{profileName(a)}</b> {tr("(A) vs")} <b className="ev-b">{profileName(b)}</b>{tr("(B)")}{pair.pinned ? tr(". Groups selected manually") : a === data.label ? tr(". A is the catalogue group; B is the highest-scoring other group") : tr(". A and B are the two highest-scoring groups")}{tr(". Selected-string occurrences in the reference texts: A")} {formatNumber(data.profiles[a].feature_tokens)}{tr("; B")} {formatNumber(data.profiles[b].feature_tokens)} {tr("(including repeats).")}</p>
       )}
 
-      <p className="hint small">
-        Whole text, one cell per {data.strip_cell.toLocaleString()} characters. Click a cell to read that part.
-      </p>
-      <div className="ev-strip" role="group" aria-label="evidence across the whole text">
+      <p className="hint small">{tr("Whole text, one cell per {{count}} characters. Click a cell to read that part.", { count: formatNumber(data.strip_cell) })}</p>
+      <div className="ev-strip" role="group" aria-label={tr("evidence across the whole text")}>
         {data.strip.map((c) => (
-          <button
+          <Button
             key={c.start}
             type="button"
             className={`ev-cell ${c.start <= data.excerpt.start && data.excerpt.start < c.end ? 'here' : ''}`}
-            title={`characters ${c.start.toLocaleString()}–${c.end.toLocaleString()}: ${c.mean > 0 ? 'toward ' + a : c.mean < 0 ? 'toward ' + b : 'nothing'} (${c.mean > 0 ? '+' : ''}${c.mean.toFixed(3)})`}
-            aria-label={`characters ${c.start} to ${c.end}`}
+            title={tr('Characters {{start}}–{{end}}: {{direction}} ({{weight}})', { start: formatNumber(c.start), end: formatNumber(c.end), direction: c.mean ? tr('Toward {{group}}', { group: profileName(c.mean > 0 ? a : b) }) : tr('nothing'), weight: c.mean.toFixed(3) })}
+            aria-label={tr('Characters {{start}} to {{end}}', { start: c.start, end: c.end })}
             style={{ background: c.mean ? rgba(c.mean > 0 ? 'a' : 'b', Math.abs(c.mean) / stripScale * ALPHA_CAP) : 'transparent' }}
             onClick={() => onOffset(c.start)}
           />
         ))}
       </div>
 
-      <p className="hint small">
-        Characters {data.excerpt.start.toLocaleString()}–{excerptEnd.toLocaleString()}.
-        Saturation is capped at the 95th percentile of evidence weight.
-        {data.excerpt.start > 0 && <> <button className="btn tiny" type="button" onClick={() => onOffset(0)}>back to the start</button></>}
+      <p className="hint small">{tr("Characters")} {formatNumber(data.excerpt.start)}–{formatNumber(excerptEnd)}{tr(". Saturation is capped at the 95th percentile of evidence weight.")}{data.excerpt.start > 0 && <> <Button className="btn tiny" type="button" onClick={() => onOffset(0)}>{tr("back to the start")}</Button></>}
       </p>
       <div className="ev-text" lang="zh-Hant">
         {spans.map(([bk, s], i) => bk
@@ -452,24 +433,21 @@ function Reading({ data, withhold, onWithhold, pair: pinnedPair, onPair, onOffse
       </div>
 
       <details className="ev-options">
-      <summary>String counts and weights</summary>
+      <summary>{tr("String counts and weights")}</summary>
       {pair && (
         <div className="ev-cols">
-          <EvidenceTable title={`Toward ${profileName(a)}`} rows={data.for} a={profileName(a)} b={profileName(b)} />
-          <EvidenceTable title={`Toward ${profileName(b)}`} rows={data.against} a={profileName(a)} b={profileName(b)} />
+          <EvidenceTable title={tr('Toward {{group}}', { group: profileName(a) })} rows={data.for} a={profileName(a)} b={profileName(b)} />
+          <EvidenceTable title={tr('Toward {{group}}', { group: profileName(b) })} rows={data.against} a={profileName(a)} b={profileName(b)} />
         </div>
       )}
-      <p className="hint small">
-        Weight = hits × log-odds, with add-half smoothing. Rates are per 100,000
-        string hits, not characters. Overlapping strings are counted separately;
-        weights are not confidence estimates. Strings absent from both profiles are omitted.
-      </p>
+      <p className="hint small">{tr("Weight = hits × log-odds, with add-half smoothing. Rates are per 100,000 string hits, not characters. Overlapping strings are counted separately; weights are not confidence estimates. Strings absent from both profiles are omitted.")}</p>
       </details>
     </div>
   )
 }
 
 function ExclusionComparison({ data }) {
+  useTranslation()
   const [before, setBefore] = useState(null)
   const [error, setError] = useState(false)
   useEffect(() => {
@@ -478,35 +456,34 @@ function ExclusionComparison({ data }) {
       .catch(() => { if (live) setError(true) })
     return () => { live = false }
   }, [data.uid, data.features])
-  if (error) return <p className="hint">The comparison without additional exclusions could not be loaded.</p>
-  if (!before) return <p className="hint">Loading the comparison without additional exclusions…</p>
-  const rows = [['Before', before], [`Without ${data.withheld_extra.join(', ')}`, data]]
+  if (error) return <p className="hint">{tr("The comparison without additional exclusions could not be loaded.")}</p>
+  if (!before) return <p className="hint">{tr("Loading the comparison without additional exclusions…")}</p>
+  const rows = [[tr('Before'), before], [tr('Without {{texts}}', { texts: data.withheld_extra.join(', ') }), data]]
   return <div className="ev-comparison">
-    <h4>Effect of exclusion</h4>
-    <div className="ev-comparison-scroll"><table className="ev-table">
-      <thead><tr><th>Setup</th><th>First</th><th>Second</th><th>Margin</th></tr></thead>
+    <h4>{tr("Effect of exclusion")}</h4>
+    <div className="ev-comparison-scroll" tabIndex={0} role="region" aria-label={tr("Effect of exclusion")}><table className="ev-table">
+      <thead><tr><th>{tr("Setup")}</th><th>{tr("Leading group")}</th><th>{tr("Second-ranked group")}</th><th>{tr("Margin")}</th></tr></thead>
       <tbody>{rows.map(([label,r]) => <tr key={label}><td>{label}</td>
-        <td>{r.first ? profileName(r.first, false) : 'No ranking'}</td>
+        <td>{r.first ? profileName(r.first, false) : tr("No ranking")}</td>
         <td>{r.second ? profileName(r.second, false) : '—'}</td>
         <td>{Number.isFinite(r.margin) ? r.margin.toFixed(3) : '—'}</td>
       </tr>)}</tbody>
     </table></div>
-    {data.uid === 'T0603' && data.withheld_extra.includes('T1694') && <p className="hint small">
-      T1694 is T0603’s commentary. Its wording contributes to the mixed group.
-    </p>}
+    {data.uid === 'T0603' && data.withheld_extra.includes('T1694') && <p className="hint small">{tr("T1694 is T0603’s commentary. Its wording contributes to the mixed group.")}</p>}
   </div>
 }
 
 function EvidenceTable({ title, rows, a, b }) {
+  useTranslation()
   return (
     <div>
       <table className="ev-table">
         <thead>
           <tr>
-            <th className="g">{title}</th><th>hits</th>
-            <th title="raw count, and per 100,000 feature tokens in that profile">{a} n · /100k</th>
-            <th title="raw count, and per 100,000 feature tokens in that profile">{b} n · /100k</th>
-            <th>weight</th>
+            <th className="g">{title}</th><th>{tr("hits")}</th>
+            <th title={tr("raw count, and per 100,000 feature tokens in that profile")}>{a} {tr("n · /100k")}</th>
+            <th title={tr("raw count, and per 100,000 feature tokens in that profile")}>{b} {tr("n · /100k")}</th>
+            <th>{tr("weight")}</th>
           </tr>
         </thead>
         <tbody>
@@ -519,7 +496,7 @@ function EvidenceTable({ title, rows, a, b }) {
               <td className="num">{r.weight > 0 ? '+' : ''}{r.weight.toFixed(1)}</td>
             </tr>
           ))}
-          {!rows.length && <tr><td colSpan="5" className="hint small">No matching strings</td></tr>}
+          {!rows.length && <tr><td colSpan="5" className="hint small">{tr("No matching strings")}</td></tr>}
         </tbody>
       </table>
     </div>

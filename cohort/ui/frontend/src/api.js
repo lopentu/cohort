@@ -1,25 +1,7 @@
 // Node and agent ids are opaque and routinely contain `#` (a passage's ref is
 // `{witness}#{excerpt}`), so they travel as encoded query parameters, never as
 // path segments — see cohort/ui/api.py's `/api/node` docstring.
-const json = async (url, options) => {
-  const res = await fetch(url, options)
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}))
-    const detail = body.detail
-    // A refused write answers with {rule, message}: the rule is the whole
-    // point (it names the commitment that declined), so it must survive into
-    // the message the researcher reads rather than being flattened to a code.
-    const err = new Error(
-      typeof detail === 'object' && detail !== null
-        ? `${detail.rule}: ${detail.message}`
-        : detail || `${res.status} ${res.statusText}`,
-    )
-    err.status = res.status
-    err.rule = typeof detail === 'object' && detail !== null ? detail.rule : null
-    throw err
-  }
-  return res.json()
-}
+import { request as json } from './request'
 
 export const getHealth = () => json('/api/health')
 export const getGraph = (limit = 5000) => json(`/api/graph?limit=${limit}`)

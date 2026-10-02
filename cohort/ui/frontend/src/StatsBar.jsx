@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
-import { usePresence } from './motion'
+import { Button, Popover } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr } from './i18n'
 
 // The node/edge counts, collapsed behind a disclosure.
 //
@@ -19,25 +20,9 @@ const TYPE_ORDER = [
 ]
 
 export default function StatsBar({ health, open, onToggle }) {
-  const wrapRef = useRef(null)
-  // Kept mounted through its exit animation — see Settings for the pattern.
-  const pop = usePresence(open, 150)
+  useTranslation()
 
-  useEffect(() => {
-    if (!open) return undefined
-    const onDown = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) onToggle(false)
-    }
-    const onKey = (e) => {
-      if (e.key === 'Escape') { e.stopPropagation(); onToggle(false) }
-    }
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey, true)
-    return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('keydown', onKey, true)
-    }
-  }, [open, onToggle])
+
 
   if (!health) return null
 
@@ -50,44 +35,34 @@ export default function StatsBar({ health, open, onToggle }) {
   ]
 
   return (
-    <div className="stats-wrap" ref={wrapRef}>
-      <button
+    <Popover open={open} onOpenChange={onToggle} label={tr("Graph contents")} className="stats-pop" trigger={
+      <Button
         className={`stats-btn ${open ? 'on' : ''}`}
-        onClick={() => onToggle(!open)}
         aria-expanded={open}
-        title="Node and edge counts"
+        title={tr("Node and edge counts")}
       >
-        <span><strong>{total}</strong> nodes</span>
+        <span><strong>{total}</strong> {tr("nodes")}</span>
         <span className="stats-sep" />
-        <span><strong>{health.edges}</strong> edges</span>
+        <span><strong>{health.edges}</strong> {tr("edges")}</span>
         <Chevron open={open} />
-      </button>
-
-      {pop.mounted && (
-        <div
-          className={`stats-pop ${pop.closing ? 'closing' : ''}`}
-          role="dialog"
-          aria-label="Graph contents"
-        >
-          <h3>Graph contents</h3>
+      </Button>
+    }>
+          <h3>{tr("Graph contents")}</h3>
           <ul className="stats-list">
             {ordered.map(([type, n]) => (
               <li key={type}>
                 <i className={`stats-dot t-${type}`} />
-                <span className="stats-type">{type}</span>
+                <span className="stats-type">{tr(type)}</span>
                 <span className="stats-n">{n}</span>
               </li>
             ))}
           </ul>
           <div className="stats-foot">
-            <span>edges</span><span className="stats-n">{health.edges}</span>
+            <span>{tr("edges")}</span><span className="stats-n">{health.edges}</span>
           </div>
-          <p className="hint small">
-            Counts include audit records. Repeated passage checks are grouped in the inspector.
-          </p>
-        </div>
-      )}
-    </div>
+          <p className="hint small">{tr("Counts include audit records. Repeated passage checks are grouped in the inspector.")}</p>
+
+    </Popover>
   )
 }
 

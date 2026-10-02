@@ -1,3 +1,8 @@
+import { tr, formatNumber } from './i18n'
+import { useTranslation } from 'react-i18next'
+import { Button, TabsRoot, TabNavigation, TabPanel } from './components/ui'
+import SessionControls from './auth/SessionControls'
+import QuickStartTour from './onboarding/QuickStartTour'
 import AnalysisPanel from './AnalysisPanel'
 import { explorationFor } from './exploration'
 import ExplorationDetail from './ExplorationDetail'
@@ -18,6 +23,7 @@ import { EDGE_STYLE, hiddenIdsForQuestions, legendFor } from './graph-model'
 import { usePresence, useSlidingIndicator } from './motion'
 
 export default function App() {
+  const { t } = useTranslation()
   const [data, setData] = useState(null)
   const [health, setHealth] = useState(null)
   const [refusals, setRefusals] = useState(null)
@@ -187,42 +193,38 @@ export default function App() {
   if (error) {
     return (
       <div className="boot error">
-        <h1>COHORT</h1>
+        <h1>{tr("COHORT")}</h1>
         <p>{error}</p>
-        <p className="hint">
-          Check the server configuration and reload this page.
-        </p>
+        <p className="hint">{tr("Check the server configuration and reload this page.")}</p>
       </div>
     )
   }
-  if (!data) return <div className="boot"><h1>COHORT</h1><p className="hint">Loading…</p></div>
+  if (!data) return <div className="boot"><h1>{tr("COHORT")}</h1><p className="hint">{tr("Loading…")}</p></div>
 
   return (
-    <div className="app">
+    <TabsRoot value={tab} onValueChange={goTab} activationMode="manual" className="app">
       <header className="topbar">
         <div className="brand">
-          <h1>COHORT</h1>
-          <span className="tag">beta</span>
+          <h1>{tr("COHORT")}</h1>
+          <span className="tag">{tr("beta")}</span>
         </div>
         <div className={`graph-controls ${tab === 'graph' ? '' : 'off'}`}>
           {/* Refusals are an output of this system, not a debug view
               (docs/design.md §15), so the count is always on screen while the
               graph is — a zero is itself a fact worth showing. */}
-          <button
+          <Button
             className={`refusal-tab ${showRefusals ? 'on' : ''}`}
             onClick={() => setShowRefusals((v) => !v)}
             disabled={!refusals?.available}
             title={
               refusals?.available
-                ? 'Writes this graph refused, and which rule refused them'
-                : 'No event log beside this projection, so refusals cannot be read'
+                ? tr('Writes this graph refused, and which rule refused them')
+                : tr('No event log beside this projection, so refusals cannot be read')
             }
-          >
-            refused writes
-            <span className="refusal-count">
+          >{tr("refused writes")}<span className="refusal-count">
               {refusals?.available ? refusals.total : '—'}
             </span>
-          </button>
+          </Button>
           <StatsBar
             health={health}
             open={statsOpen}
@@ -232,23 +234,11 @@ export default function App() {
             }}
           />
         </div>
-        <nav className="tabs" data-view={tab} ref={tabTrackRef}>
-          {/* One raised surface that slides between segments, rather than a
-              background switching off here and on there: the tab bar is a
-              macOS segmented control (styles.css), and that control moves. */}
-          <span {...tabThumbProps} />
-          {tabs.map(([key, label]) => (
-            <button
-              key={key}
-              className={`tab ${tab === key ? 'on' : ''}`}
-              data-view={key}
-              data-seg-on={tab === key}
-              onClick={() => goTab(key)}
-            >{label}</button>
-          ))}
-        </nav>
+        <TabNavigation value={tab} items={tabs.map(([key, label]) => [key, t(label)])} label={t('Research tools')} listRef={tabTrackRef} thumbProps={tabThumbProps} />
 
         <div className="topbar-controls">
+          <SessionControls />
+          <QuickStartTour availableTabs={tabs.map(([key]) => key)} onNavigate={goTab} />
           <TabIntro
             tab={tab}
             open={introOpen}
@@ -272,9 +262,7 @@ export default function App() {
       </header>
 
       {tab === 'graph' && data.truncated && (
-        <div className="banner">
-          Loaded {data.nodes.length.toLocaleString()} graph records; more remain.
-        </div>
+        <div className="banner">{tr("Loaded {{count}} graph records; more remain.", { count: formatNumber(data.nodes.length) })}</div>
       )}
 
       <div className="body">
@@ -292,16 +280,16 @@ export default function App() {
               thumb sliding in the tab bar above. The panel — not `main` — is
               the scroller, so the graph and the refusals list share one
               scrollable column exactly as they did when `main` held them. */}
-          <div className="tab-panel" key={tab} data-view={tab} data-dir={tabDir}>
+          <TabPanel value={tab} className="tab-panel" key={tab} data-view={tab} data-dir={tabDir}>
             {tab === 'graph' && (
               <>
                 <QuestionFilter nodes={data.nodes} hidden={hiddenQuestions}
                   onToggle={toggleHiddenQuestion} onShow={showQuestions} />
                 <div className="exploration-control">
-                  <label><input type="checkbox" checked={showExploration} onChange={e => { setShowExploration(e.target.checked); setSelectedId(null) }} /> Show exploration</label>
-                  {showExploration && <span className="hint small">Dashed outlines and links show activity, not support. Select a work for details.</span>}
+                  <label><input type="checkbox" checked={showExploration} onChange={e => { setShowExploration(e.target.checked); setSelectedId(null) }} />{tr("Show exploration")}</label>
+                  {showExploration && <span className="hint small">{tr("Dashed outlines and links show activity, not support. Select a work for details.")}</span>}
                 </div>
-                {showExploration && <p className="hint small exploration-note">{activityError || (!runActivity ? 'Loading exploration…' : !exploration.nodes.length ? 'No detailed activity available for the selected questions.' : 'Showing recorded activity. Older runs may lack action history.')}</p>}
+                {showExploration && <p className="hint small exploration-note">{activityError ? tr(activityError) : tr(!runActivity ? 'Loading exploration…' : !exploration.nodes.length ? 'No detailed activity available for the selected questions.' : 'Showing recorded activity. Older runs may lack action history.')}</p>}
                 <Legend data={graphData} showAudit={showAudit} />
                 <GraphView
                   data={graphData}
@@ -336,7 +324,7 @@ export default function App() {
                 onToggleHiddenQuestion={toggleHiddenQuestion}
               />
             )}
-          </div>
+          </TabPanel>
         </main>
         {/* Floating inspector, and only over the graph: it is the graph's
             detail view, so overlaying the corpus or run panels with it would
@@ -352,11 +340,12 @@ export default function App() {
           />
         )}
       </div>
-    </div>
+    </TabsRoot>
   )
 }
 
 function Legend({ data, showAudit }) {
+  useTranslation()
   // Edge key describes *this* graph (`legendFor` keeps only drawn edges); the
   // node key explains the fill colours. A hypothesis (claim or conjecture,
   // drawn as a diamond either way) reads grey/blue/yellow/green/red for
@@ -371,32 +360,32 @@ function Legend({ data, showAudit }) {
   const nodeKey = nodeLegendFor(data.nodes, showAudit)
 
   return (
-    <div className="legend" aria-label="Graph key">
-      <strong className="legend-title">Graph key</strong>
+    <div className="legend" aria-label={tr("Graph key")}>
+      <strong className="legend-title">{tr("Graph key")}</strong>
       {edges.map((e) => (
         <span className="li" key={e.key}>
-          <i className={`swatch ${e.klass}`} /> {emphasise(e.text, e.strong)}
+          <i className={`swatch ${e.klass}`} /> {emphasise(tr(e.text), e.strong ? tr(e.strong) : undefined)}
         </span>
       ))}
       {!!edges.length && !!nodeKey.length && <span className="sep" />}
       {nodeKey.map((n) => (
         <span className="li" key={n.key}>
-          <NodeKeyShape shape={n.types ? TYPE_SHAPE[n.types[0]] : 'diamond'} color={n.color} /> {n.key}
+          <NodeKeyShape shape={n.types ? TYPE_SHAPE[n.types[0]] : 'diamond'} color={n.color} /> {tr(n.key)}
         </span>
       ))}
       <details className="legend-explainer">
-        <summary>What do these links mean?</summary>
+        <summary>{tr("What do these links mean?")}</summary>
         <dl>
-          <dt><i className="swatch e-attests" /> Attests</dt>
-          <dd>A passage supports a claim or conjecture. For example, a quoted passage is evidence for a claim about its wording. The link records support; it does not prove the claim.</dd>
-          <dt><i className="swatch e-addresses" /> Addresses</dt>
-          <dd>A claim or conjecture responds to a research question. It tells you which question the proposal concerns, not whether the proposal answers it successfully.</dd>
-          <dt>Claim / conjecture</dt>
-          <dd>Both appear under “Hypotheses.” A claim states what the sources support; a conjecture proposes an explanation to test. A hypothesis is not a collection of claims.</dd>
-          <dt>Other links</dt>
-          <dd>Tests connects a query to a conjecture. Parallel and descent links mark related sources whose support may not be independent.</dd>
+          <dt><i className="swatch e-attests" />{tr("Attests")}</dt>
+          <dd>{tr("A passage supports a claim or conjecture. For example, a quoted passage is evidence for a claim about its wording. The link records support; it does not prove the claim.")}</dd>
+          <dt><i className="swatch e-addresses" />{tr("Addresses")}</dt>
+          <dd>{tr("A claim or conjecture responds to a research question. It tells you which question the proposal concerns, not whether the proposal answers it successfully.")}</dd>
+          <dt>{tr("Claim / conjecture")}</dt>
+          <dd>{tr("Both appear under “Hypotheses.” A claim states what the sources support; a conjecture proposes an explanation to test. A hypothesis is not a collection of claims.")}</dd>
+          <dt>{tr("Other links")}</dt>
+          <dd>{tr("Tests connects a query to a conjecture. Parallel and descent links mark related sources whose support may not be independent.")}</dd>
         </dl>
-        <a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">Open the illustrated graph guide</a>
+        <a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">{tr("Open the illustrated graph guide")}</a>
       </details>
     </div>
   )
@@ -429,20 +418,21 @@ function NodeKeyShape({ shape, color }) {
 }
 
 function QuestionFilter({ nodes, hidden, onToggle, onShow }) {
+  useTranslation()
   const questions = nodes.filter((n) => n.type === 'question').sort((a, b) => b.created_seq - a.created_seq)
   if (!questions.length) return null
   const shown = questions.filter((n) => !hidden.has(n.id)).length
   return <details className="question-filter">
-    <summary>Research questions · {shown} of {questions.length} shown</summary>
+    <summary>{tr("Research questions · {{shown}} of {{total}} shown", { shown: formatNumber(shown), total: formatNumber(questions.length) })}</summary>
     <div className="question-filter-actions">
-      <button className="btn tiny" onClick={() => onShow(questions.map((q) => q.id))}>Show all</button>
-      <button className="btn tiny" onClick={() => onShow([])}>Hide all questions</button>
+      <Button className="btn tiny" onClick={() => onShow(questions.map((q) => q.id))}>{tr("Show all")}</Button>
+      <Button className="btn tiny" onClick={() => onShow([])}>{tr("Hide all questions")}</Button>
     </div>
     {questions.map((q) => <div className="question-filter-row" key={q.id}>
       <label><input type="checkbox" checked={!hidden.has(q.id)} onChange={() => onToggle(q.id)} />
         <span>{q.payload?.text || q.id}</span></label>
-      <button className="btn tiny" onClick={() => onShow([q.id])}>Only this</button>
+      <Button className="btn tiny" onClick={() => onShow([q.id])}>{tr("Only this")}</Button>
     </div>)}
-    <p className="hint small">Filters this graph view. Shared evidence and records with no question link remain visible.</p>
+    <p className="hint small">{tr("Filters this graph view. Shared evidence and records with no question link remain visible.")}</p>
   </details>
 }

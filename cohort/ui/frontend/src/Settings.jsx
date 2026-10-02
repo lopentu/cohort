@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
-import { usePresence, useSlidingIndicator } from './motion'
+import { Button, Popover, SegmentedControl } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr } from './i18n'
 
 // The settings popover: a gear in the top bar, a floating panel under it.
 //
@@ -44,92 +45,42 @@ export function applyTheme(theme) {
 export default function Settings({
   open, onToggle, theme, onTheme, showAudit, onShowAudit,
 }) {
-  const wrapRef = useRef(null)
-  // Held on screen while its exit animation plays, and marked `closing` while
-  // it does; `pointer-events: none` in styles.css keeps the fading panel from
-  // catching the click that dismissed it.
-  const pop = usePresence(open, 150)
-  const { trackRef, thumbProps } = useSlidingIndicator(theme, THEMES.length, pop.mounted)
+  useTranslation()
 
-  // Dismiss on outside click and on Escape — the two gestures a popover owes
-  // its reader. Bound only while open, so the app is not listening to every
-  // click on the page for no reason.
-  useEffect(() => {
-    if (!open) return undefined
-    const onDown = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) onToggle(false)
-    }
-    const onKey = (e) => {
-      if (e.key === 'Escape') { e.stopPropagation(); onToggle(false) }
-    }
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey, true)
-    return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('keydown', onKey, true)
-    }
-  }, [open, onToggle])
+
+
 
   return (
-    <div className="settings-wrap" ref={wrapRef}>
-      <button
+    <Popover open={open} onOpenChange={onToggle} label={tr("Settings")} className="settings-pop" trigger={
+      <Button
         className={`icon-btn ${open ? 'on' : ''}`}
-        onClick={() => onToggle(!open)}
-        aria-label="Settings"
+        aria-label={tr("Settings")}
         aria-expanded={open}
-        title="Settings"
+        title={tr("Settings")}
       >
         <GearIcon />
-      </button>
+      </Button>
+    }>
+          <h3>{tr("Appearance")}</h3>
+          <SegmentedControl value={theme} onValueChange={onTheme} items={THEMES.map(([key, label]) => [key, tr(label)])} label={tr("Theme")} />
+          <p className="hint small">{tr("System uses your device’s appearance setting.")}</p>
 
-      {pop.mounted && (
-        <div
-          className={`settings-pop ${pop.closing ? 'closing' : ''}`}
-          role="dialog"
-          aria-label="Settings"
-        >
-          <h3>Appearance</h3>
-          <div className="seg" role="radiogroup" aria-label="Theme" ref={trackRef}>
-            {/* Same sliding thumb as the tab bar, because styles.css makes the
-                two the same control — a segmented picker whose selection
-                travels rather than teleports. */}
-            <span {...thumbProps} />
-            {THEMES.map(([key, label]) => (
-              <button
-                key={key}
-                role="radio"
-                aria-checked={theme === key}
-                className={`seg-item ${theme === key ? 'on' : ''}`}
-                data-seg-on={theme === key}
-                onClick={() => onTheme(key)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <p className="hint small">
-            System uses your device’s appearance setting.
-          </p>
-
-          <h3>Graph</h3>
+          <h3>{tr("Graph")}</h3>
           <label className="setting-row">
             <input
               type="checkbox"
               checked={showAudit}
               onChange={(e) => onShowAudit(e.target.checked)}
             />
-            <span>
-              Show audit nodes
-              {/* Not hidden because they are unimportant, but because the
+            <span>{tr("Show audit nodes")}{/* Not hidden because they are unimportant, but because the
                   evidence chain has to stay legible. Saying which nodes these
                   are matters: a reader who thinks the graph is complete would
                   overestimate how checked it is. */}
-              <small>Verifications and decisions — bookkeeping, not evidence.</small>
+              <small>{tr("Verifications and decisions — bookkeeping, not evidence.")}</small>
             </span>
           </label>
-        </div>
-      )}
-    </div>
+
+    </Popover>
   )
 }
 

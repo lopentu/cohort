@@ -1,3 +1,4 @@
+import { tr } from './i18n.js'
 // Layout and visual encoding.
 //
 // docs/design.md §10 is explicit that a naive rendering of this graph "flattens
@@ -334,12 +335,12 @@ export function nodeTitle(node) {
   const p = node.payload || {}
   if (node.type === 'query') {
     const grounding = /^grounding: (['"])(.*)\1 \((\d+) hits\)$/s.exec(p.text || '')
-    if (grounding) return `Search: ${grounding[2]} · ${grounding[3]} ${grounding[3] === '1' ? 'match' : 'matches'}`
+    if (grounding) return tr('Search: {{phrase}} · {{count}} matches', { phrase: grounding[2], count: Number(grounding[3]) })
   }
   if (node.type === 'witness') return p.label || p.canonical_ref || node.id
   if (node.type === 'passage') return p.excerpt || p.canonical_ref || node.id
-  if (node.type === 'verification') return `${p.method || 'verification'} · ${p.result || ''}`
-  if (node.type === 'decision') return p.action || 'decision'
+  if (node.type === 'verification') return `${tr(p.method || 'verification')} · ${tr(p.result || '')}`
+  if (node.type === 'decision') return tr(p.action || 'decision')
   return p.text || node.id
 }
 

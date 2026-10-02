@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+import { tr, formatDate } from './i18n'
 // The refused writes.
 //
 // This is an output surface, not a log viewer. docs/design.md §15 claims the
@@ -37,6 +39,7 @@ const RULE_NOTE = {
 }
 
 export default function RefusalsPanel({ refusals, closing }) {
+  useTranslation()
   // `closing` is set while the panel is on its way out (see motion.js): the
   // pill that opens it is a toggle, and a toggled surface that vanishes on a
   // frame reads as a glitch rather than a dismissal.
@@ -45,10 +48,8 @@ export default function RefusalsPanel({ refusals, closing }) {
   if (!refusals?.available) {
     return (
       <section className={cls}>
-        <h2>Refused writes</h2>
-        <p className="hint">
-          Event log unavailable. Refusal history cannot be loaded.
-        </p>
+        <h2>{tr("Refused writes")}</h2>
+        <p className="hint">{tr("Event log unavailable. Refusal history cannot be loaded.")}</p>
       </section>
     )
   }
@@ -63,17 +64,12 @@ export default function RefusalsPanel({ refusals, closing }) {
 
   return (
     <section className={cls}>
-      <h2>
-        Refused writes <span className="refusal-total">{refusals.total}</span>
+      <h2>{tr("Refused writes")}<span className="refusal-total">{refusals.total}</span>
       </h2>
-      <p className="hint">
-        Blocked changes and the rules they violated.
-      </p>
+      <p className="hint">{tr("Blocked changes and the rules they violated.")}</p>
 
       {rows.length === 0 ? (
-        <p className="hint">
-          No refused writes recorded.
-        </p>
+        <p className="hint">{tr("No refused writes recorded.")}</p>
       ) : (
         <>
           {census && (
@@ -83,8 +79,8 @@ export default function RefusalsPanel({ refusals, closing }) {
                 .map(([name, n]) => (
                   <li key={name} className={`refusal-cat cat-${name}`}>
                     <span className="cat-n">{n}</span>
-                    <span className="cat-name">{name}</span>
-                    <span className="cat-note">{CATEGORY_NOTE[name]}</span>
+                    <span className="cat-name">{tr(name)}</span>
+                    <span className="cat-note">{tr(CATEGORY_NOTE[name])}</span>
                   </li>
                 ))}
             </ul>
@@ -101,32 +97,27 @@ export default function RefusalsPanel({ refusals, closing }) {
           {streaks.length > 0 && (
             <div className="streaks">
               <h3>
-                {streaks.length} streak{streaks.length > 1 ? 's' : ''}
+                {tr('{{count}} streaks', { count: streaks.length })}
                 <span className="streak-share">
-                  {census.streaked_count} of {census.total} refusals
-                </span>
+                  {census.streaked_count} {tr("of")} {census.total}{tr("refusals")}</span>
               </h3>
-              <p className="hint small">
-                Consecutive refusals for the same agent and rule. Inspect the attempts to identify a recurring problem.
-              </p>
+              <p className="hint small">{tr("Consecutive refusals for the same agent and rule. Inspect the attempts to identify a recurring problem.")}</p>
               <ul className="streak-list">
                 {streaks.map((s) => (
                   <li key={`${s.authored_by}-${s.first_seq}`} className="streak-item">
                     <div className="streak-head">
                       <span className="streak-count">{s.count}&times;</span>
                       <span className="refusal-rule">{s.rule}</span>
-                      <span className={`cat-tag cat-${s.category}`}>{s.category}</span>
+                      <span className={`cat-tag cat-${s.category}`}>{tr(s.category)}</span>
                       <span className="refusal-author">{s.authored_by}</span>
                       <code className="refusal-attempted">{s.attempted.join(', ')}</code>
                     </div>
                     {s.node_ids.length > 0 && (
-                      <p className="streak-ids">
-                        tried {s.node_ids.length} id
-                        {s.node_ids.length > 1 ? 's' : ''}:{' '}
+                      <p className="streak-ids">{tr('Tried {{count}} IDs', { count: s.node_ids.length })}:{' '}
                         {s.node_ids.slice(0, 3).map((id) => (
                           <code key={id}>{id}</code>
                         ))}
-                        {s.node_ids.length > 3 && ` +${s.node_ids.length - 3} more`}
+                        {s.node_ids.length > 3 && tr(' +{{count}} more', { count: s.node_ids.length - 3 })}
                       </p>
                     )}
                   </li>
@@ -136,8 +127,7 @@ export default function RefusalsPanel({ refusals, closing }) {
           )}
 
           {refusals.truncated && (
-            <p className="hint small">
-              Showing the most recent {rows.length} of {refusals.total}.
+            <p className="hint small">{tr("Showing the most recent")} {rows.length} {tr("of")} {refusals.total}.
             </p>
           )}
 
@@ -148,16 +138,16 @@ export default function RefusalsPanel({ refusals, closing }) {
                   <span className="refusal-rule">{r.rule}</span>
                   <code className="refusal-attempted">{r.attempted}</code>
                   <span className="refusal-author">{r.authored_by}</span>
-                  <time>{r.at}</time>
+                  <time dateTime={r.at}>{formatDate(r.at, { dateStyle: "medium", timeStyle: "short" })}</time>
                 </div>
                 <p className="refusal-message">{r.message}</p>
                 {RULE_NOTE[r.rule] && (
-                  <p className="refusal-note">{RULE_NOTE[r.rule]}</p>
+                  <p className="refusal-note">{tr(RULE_NOTE[r.rule])}</p>
                 )}
                 <div className="refusal-meta">
                   {r.node_id && <code>{r.node_id}</code>}
                   {r.model_call_id !== null && r.model_call_id !== undefined && (
-                    <span className="chip">model call #{r.model_call_id}</span>
+                    <span className="chip">{tr("model call #")}{r.model_call_id}</span>
                   )}
                 </div>
               </li>

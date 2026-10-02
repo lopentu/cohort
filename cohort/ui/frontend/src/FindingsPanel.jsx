@@ -1,3 +1,6 @@
+import { Button, Badge } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr } from './i18n'
 import CbetaLink from './CbetaLink'
 import ProposalFieldHelp, { proposalFieldLabel } from './ProposalFieldHelp'
 import { explainProfileCodes } from './evidence-labels'
@@ -27,6 +30,7 @@ import {
 // a crash, so nothing here runs on a timer.
 
 export default function FindingsPanel({ onSelect }) {
+  useTranslation()
   const [citable, setCitable] = useState(null)
   const [rejected, setRejected] = useState(null)
   const [findings, setFindings] = useState(null)
@@ -51,18 +55,16 @@ export default function FindingsPanel({ onSelect }) {
       <Hypotheses findings={findings} onSelect={onSelect} />
 
       <details className="inquiry-details">
-        <summary>Record integrity checks</summary>
+        <summary>{tr("Record integrity checks")}</summary>
         <IntegrityStrip />
       </details>
 
       <details className="inquiry-details">
-      <summary>Researcher decisions: accepted and rejected records</summary>
+      <summary>{tr("Researcher decisions: accepted and rejected records")}</summary>
       <div className="findings-cols">
         <div>
-          <h2>Researcher-approved</h2>
-          <p className="hint small">
-            Records approved by the researcher.
-          </p>
+          <h2>{tr("Researcher-approved")}</h2>
+          <p className="hint small">{tr("Records approved by the researcher.")}</p>
           <NodeList
             nodes={citable}
             onSelect={onSelect}
@@ -71,10 +73,8 @@ export default function FindingsPanel({ onSelect }) {
         </div>
 
         <div>
-          <h2>Rejected</h2>
-          <p className="hint small">
-            Researcher rejections and their reasons.
-          </p>
+          <h2>{tr("Rejected")}</h2>
+          <p className="hint small">{tr("Researcher rejections and their reasons.")}</p>
           <NodeList
             nodes={rejected}
             onSelect={onSelect}
@@ -108,6 +108,7 @@ export default function FindingsPanel({ onSelect }) {
 // a confidence ranking wearing a different hat, which is the habit this whole
 // system exists to break.
 function Hypotheses({ findings, onSelect }) {
+  useTranslation()
   const [open, setOpen] = useState(null)
   const [dossier, setDossier] = useState(null)
 
@@ -118,31 +119,28 @@ function Hypotheses({ findings, onSelect }) {
     getDossier(id).then(setDossier).catch(() => setDossier(null))
   }
 
-  if (!findings) return <p className="hint">Loading…</p>
+  if (!findings) return <p className="hint">{tr("Loading…")}</p>
 
   return (
     <div className="hypotheses">
-      <h2>
-        Hypotheses <span className="refusal-total">{findings.count}</span>
+      <h2>{tr("Hypotheses")}<span className="refusal-total">{findings.count}</span>
       </h2>
-      <p className="hint small">
-        Claims and conjectures, newest first. Not ranked by confidence.
-      </p>
+      <p className="hint small">{tr("Claims and conjectures, newest first. Not ranked by confidence.")}</p>
 
       {findings.findings.length === 0 ? (
-        <p className="hint small">Nothing has been proposed yet.</p>
+        <p className="hint small">{tr("Nothing has been proposed yet.")}</p>
       ) : (
         <ul className="hyp-list">
           {findings.findings.map((f) => (
             <li key={f.id} className={`hyp ${open === f.id ? 'open' : ''}`}>
-              <button className="hyp-head" onClick={() => toggle(f.id)}>
-                <span className={`badge t-${f.type}`}>{f.type}</span>
+              <Button className="hyp-head" onClick={() => toggle(f.id)}>
+                <Badge className={`badge t-${f.type}`}>{tr(f.type)}</Badge>
                 <span className="hyp-text">{f.assertion ? explainProfileCodes(f.assertion) : f.id}</span>
-              </button>
+              </Button>
 
               <div className="hyp-marks">
-                <span className={`chip s-${f.status}`}>{f.status}</span>
-                {f.review_state && <span className="chip review-state" title={f.review_state.explanation}>{f.review_state.label}</span>}
+                <span className={`chip s-${f.status}`}>{tr(f.status)}</span>
+                {f.review_state && <span className="chip review-state" title={tr(f.review_state.explanation)}>{tr(f.review_state.label)}</span>}
                 <span className="chip">{f.assurance.replace(/_/g, ' ').toLowerCase()}</span>
                 <span
                   className={`chip ${
@@ -150,37 +148,31 @@ function Hypotheses({ findings, onSelect }) {
                   }`}
                 >
                   {f.support.vacuous ? (
-                    'nothing attests it yet'
+                    tr("nothing attests it yet")
                   ) : (
                     <>
-                      {f.support.attesting_count} attesting ·{' '}
-                      {f.support.distinct_witnesses} witness
-                      {f.support.distinct_witnesses === 1 ? '' : 'es'} ·{' '}
-                      {f.support.independent ? 'independent' : 'shared descent'}
+                      {f.support.attesting_count} {tr("attesting ·")}{' '}
+                      {tr('{{count}} witnesses', { count: f.support.distinct_witnesses })} ·{' '}
+                      {f.support.independent ? tr('independent') : tr('shared descent')}
                     </>
                   )}
                 </span>
                 {f.prospective_result && (
-                  <span className={`chip r-${f.prospective_result}`}>
-                    prospective test: {f.prospective_result}
+                  <span className={`chip r-${f.prospective_result}`}>{tr("prospective test:")}{tr(f.prospective_result)}
                   </span>
                 )}
                 {!f.prospective_result && f.has_prospective_query && (
-                  <span className="chip">prospective query not yet run</span>
+                  <span className="chip">{tr("prospective query not yet run")}</span>
                 )}
-                {f.has_dossier && <span className="chip">dossier</span>}
+                {f.has_dossier && <span className="chip">{tr("dossier")}</span>}
               </div>
 
               {f.support.vacuous && (
-                <p className="hint small discount-note">
-                  No supporting passage is recorded.
-        </p>
+                <p className="hint small discount-note">{tr("No supporting passage is recorded.")}</p>
               )}
 
               {!f.support.vacuous && !f.support.independent && (
-                <p className="hint small discount-note">
-                  Related source texts support this proposal; their support is not independent.
-                </p>
+                <p className="hint small discount-note">{tr("Related source texts support this proposal; their support is not independent.")}</p>
               )}
 
               {open === f.id && <Dossier d={dossier} onSelect={onSelect} />}
@@ -193,7 +185,8 @@ function Hypotheses({ findings, onSelect }) {
 }
 
 function Dossier({ d, onSelect }) {
-  if (!d) return <p className="hint small">Loading the dossier…</p>
+  useTranslation()
+  if (!d) return <p className="hint small">{tr("Loading the dossier…")}</p>
   const fields = Object.entries(d.dossier || {})
   const test = d.prospective_test
   return (
@@ -210,22 +203,19 @@ function Dossier({ d, onSelect }) {
       )}
 
       {d.prior_art?.length > 0 && (
-        <p className="hint small">
-          Searches before proposal: {d.prior_art.map((q) => q.text).join('; ')}
+        <p className="hint small">{tr("Searches before proposal:")}{d.prior_art.map((q) => q.text).join('; ')}
         </p>
       )}
 
       {d.prospective_queries?.map((q) => (
         <div className="prospective" key={q.id}>
-          <h4>Prospective test</h4>
+          <h4>{tr("Prospective test")}</h4>
           <p className="prospective-q"><code>{q.text}</code></p>
           {q.expectation ? (
-            <p className="prospective-pred">
-              Predicted <strong>{q.expectation === 'at_most' ? 'at most' : 'at least'}{' '}
-              {q.expected_hits}</strong> — saved with the proposal. This may reuse an earlier search.
-          </p>
+            <p className="prospective-pred">{tr("Predicted")}<strong>{q.expectation === 'at_most' ? tr('at most') : tr('at least')}{' '}
+              {q.expected_hits}</strong>{tr("— saved with the proposal. This may reuse an earlier search.")}</p>
           ) : (
-            <p className="hint small">No prediction was recorded for this query.</p>
+            <p className="hint small">{tr("No prediction was recorded for this query.")}</p>
           )}
           {test && (
             <p className={`prospective-result r-${test.payload.result}`}>
@@ -237,15 +227,15 @@ function Dossier({ d, onSelect }) {
 
       {d.evidence?.length > 0 && (
         <div className="dossier-evidence">
-          <h4>Evidence ({d.evidence.length})</h4>
+          <h4>{tr("Evidence (")}{d.evidence.length})</h4>
           <ul>
             {d.evidence.map((e) => (
               <li key={e.passage_id}>
-                <button className="ev-ref" onClick={() => onSelect(e.passage_id)}>
+                <Button className="ev-ref" onClick={() => onSelect(e.passage_id)}>
                   <code>{e.canonical_ref}</code>
-                </button>
+                </Button>
                 <CbetaLink url={e.cbeta_url} />
-                <span className="chip">{e.assurance.replace(/_/g, ' ').toLowerCase()}</span>
+                <span className="chip">{tr(e.assurance.replace(/_/g, ' ').toLowerCase())}</span>
                 <p className="ev-excerpt">{e.excerpt}</p>
               </li>
             ))}
@@ -255,19 +245,17 @@ function Dossier({ d, onSelect }) {
 
       {d.latest_verifications?.length > 0 && (
         <div className="dossier-verifications">
-          <h4>Verifications</h4>
-          <p className="hint small">
-            Latest check for each method. Mechanical results and reviewer comments are shown separately.
-                </p>
+          <h4>{tr("Verifications")}</h4>
+          <p className="hint small">{tr("Latest check for each method. Mechanical results and reviewer comments are shown separately.")}</p>
           {d.latest_verifications.map((v) => (
             <div key={v.id} className="verification">
               <div className="verification-head">
-                <span className={`badge r-${v.payload.result}`}>{v.payload.result}</span>
-                <span>{v.payload.method.replace(/_/g, ' ')}</span>
+                <Badge className={`badge r-${v.payload.result}`}>{tr(v.payload.result)}</Badge>
+                <span>{tr(v.payload.method)}</span>
               </div>
-              <p className="v-detail"><strong>Machine:</strong> {v.payload.detail}</p>
+              <p className="v-detail"><strong>{tr("Machine:")}</strong> {v.payload.detail}</p>
               {v.payload.limitations && (
-                <p className="v-limits"><strong>Does not establish:</strong>{' '}
+                <p className="v-limits"><strong>{tr("Does not establish:")}</strong>{' '}
                   {v.payload.limitations}</p>
               )}
             </div>
@@ -279,19 +267,20 @@ function Dossier({ d, onSelect }) {
 }
 
 function NodeList({ nodes, onSelect, reason, empty }) {
-  if (!nodes) return <p className="hint">Loading…</p>
+  useTranslation()
+  if (!nodes) return <p className="hint">{tr("Loading…")}</p>
   if (!nodes.length) return <p className="hint small">{empty}</p>
   return (
     <ul className="finding-list">
       {nodes.map((n) => (
         <li key={n.id}>
-          <button className="finding-row" onClick={() => onSelect(n.id)}>
-            <span className={`badge t-${n.type}`}>{n.type}</span>
+          <Button className="finding-row" onClick={() => onSelect(n.id)}>
+            <Badge className={`badge t-${n.type}`}>{tr(n.type)}</Badge>
             <code>{n.id}</code>
-          </button>
+          </Button>
           {reason && (
             <p className="finding-reason">
-              {n.rejected_reason || <em>no reason recorded</em>}
+              {n.rejected_reason || <em>{tr("no reason recorded")}</em>}
             </p>
           )}
         </li>
@@ -301,6 +290,7 @@ function NodeList({ nodes, onSelect, reason, empty }) {
 }
 
 function IntegrityStrip() {
+  useTranslation()
   const [rebuild, setRebuild] = useState(null)
   const [integrity, setIntegrity] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -318,29 +308,29 @@ function IntegrityStrip() {
   return (
     <div className="integrity">
       <div className="integrity-head">
-        <h2>Integrity</h2>
-        <button className="btn" onClick={check} disabled={busy}>
-          {busy ? 'Checking…' : 'Re-check'}
-        </button>
+        <h2>{tr("Integrity")}</h2>
+        <Button className="btn" onClick={check} disabled={busy}>
+          {busy ? tr("Checking…") : tr("Re-check")}
+        </Button>
       </div>
 
       <div className="integrity-rows">
         <Check
-          label="Rebuild from the log"
+          label={tr('Rebuild from the log')}
           detail={
-            rebuild == null ? 'not run'
-              : !rebuild.available ? 'no event log beside this projection'
+            rebuild == null ? tr('not run')
+              : !rebuild.available ? tr('no event log beside this projection')
                 : rebuild.ok
-                  ? `replayed ${rebuild.events_replayed} events to ${rebuild.nodes} nodes / ${rebuild.edges} edges, matching`
-                  : 'the projection disagrees with the log'
+                  ? tr('Replayed {{events}} events to {{nodes}} nodes / {{edges}} edges, matching', { events: rebuild.events_replayed, nodes: rebuild.nodes, edges: rebuild.edges })
+                  : tr('the projection disagrees with the log')
           }
           state={rebuild == null || !rebuild.available ? 'unknown' : rebuild.ok ? 'pass' : 'fail'}
         />
         <Check
-          label="Payload hashes"
+          label={tr('Payload hashes')}
           detail={
-            integrity == null ? 'not run'
-              : `${integrity.checked} checked · ${integrity.mismatched.length} mismatched · ${integrity.unhashed.length} unhashed`
+            integrity == null ? tr('not run')
+              : tr('{{checked}} checked · {{mismatched}} mismatched · {{unhashed}} unhashed', { checked: integrity.checked, mismatched: integrity.mismatched.length, unhashed: integrity.unhashed.length })
           }
           state={
             integrity == null ? 'unknown'
@@ -353,9 +343,7 @@ function IntegrityStrip() {
         <pre className="integrity-diff">{rebuild.mismatch}</pre>
       )}
 
-      <p className="hint small">
-        Checks whether the database matches the event log.
-      </p>
+      <p className="hint small">{tr("Checks whether the database matches the event log.")}</p>
     </div>
   )
 }
@@ -363,9 +351,9 @@ function IntegrityStrip() {
 function Check({ label, detail, state }) {
   return (
     <div className={`integrity-row r-${state}`}>
-      <span className={`badge r-${state}`}>
-        {state === 'pass' ? 'pass' : state === 'fail' ? 'fail' : '—'}
-      </span>
+      <Badge className={`badge r-${state}`}>
+        {state === 'pass' ? tr('pass') : state === 'fail' ? tr('fail') : '—'}
+      </Badge>
       <span className="integrity-label">{label}</span>
       <span className="integrity-detail">{detail}</span>
     </div>

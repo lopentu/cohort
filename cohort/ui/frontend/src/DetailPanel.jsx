@@ -1,3 +1,6 @@
+import { Badge, Button } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr } from './i18n'
 import ProposalFieldHelp, { proposalFieldLabel } from './ProposalFieldHelp'
 import { spanVerification } from './span-verification'
 import { explainProfileCodes } from './evidence-labels'
@@ -11,6 +14,7 @@ import { usePresence } from './motion'
 import Reveal from './Reveal'
 
 export default function DetailPanel({ nodeId, onSelect, onClose, canWrite, onChanged }) {
+  useTranslation()
   const [node, setNode] = useState(null)
   const [error, setError] = useState(null)
   const cardRef = useRef(null)
@@ -52,8 +56,7 @@ export default function DetailPanel({ nodeId, onSelect, onClose, canWrite, onCha
           already `pointer-events: none`, so an invisible one is never in the
           way of the graph. */}
       <aside className={`panel empty ${nodeId ? 'gone' : ''}`} aria-hidden={!!nodeId}>
-        <p className="hint">Select a record to inspect its sources, checks and decisions.
-      </p>
+        <p className="hint">{tr("Select a record to inspect its sources, checks and decisions.")}</p>
       </aside>
 
       {card.mounted && (
@@ -63,7 +66,7 @@ export default function DetailPanel({ nodeId, onSelect, onClose, canWrite, onCha
         >
           <CloseButton onClose={onClose} />
           {error && <p className="error">{error}</p>}
-          {!error && !node && <p className="hint">Loading…</p>}
+          {!error && !node && <p className="hint">{tr("Loading…")}</p>}
           {/* Keyed by node, so moving between nodes crossfades the contents of
               a card that stays put — the card itself only animates when it
               opens or closes. */}
@@ -84,31 +87,32 @@ export default function DetailPanel({ nodeId, onSelect, onClose, canWrite, onCha
 }
 
 function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
+  useTranslation()
   const support = node.independent_support
 
   return (
     <div className="panel-body">
       <header className="panel-head">
-        <div className={`badge t-${node.type}`}>{node.type}</div>
-        <div className={`badge s-${node.status}`}>{nodeStatusLabel(node)}</div>
+        <Badge className={`badge t-${node.type}`}>{tr(node.type)}</Badge>
+        <Badge className={`badge s-${node.status}`}>{tr(nodeStatusLabel(node))}</Badge>
         {/* the level travels as a class too, so CSS can single out A0 —
             "nothing has been verified" is the one value not to skim past */}
-        <div className={`badge assurance lvl-${node.assurance}`}>{node.assurance}</div>
+        <Badge className={`badge assurance lvl-${node.assurance}`}>{node.assurance}</Badge>
       </header>
 
       {node.review_state && <div className="proposal-review-state" role="note">
-        <strong>{node.review_state.label}</strong>
-        <p>{node.review_state.explanation}</p>
-        {node.review_state.comment && <details><summary>Reviewer’s explanation</summary><p>{node.review_state.comment}</p></details>}
+        <strong>{tr(node.review_state.label)}</strong>
+        <p>{tr(node.review_state.explanation)}</p>
+        {node.review_state.comment && <details><summary>{tr("Reviewer’s explanation")}</summary><p>{node.review_state.comment}</p></details>}
       </div>}
       <h2>{['claim', 'conjecture'].includes(node.type) && node.payload?.text
         ? explainProfileCodes(node.payload.text) : nodeTitle(node)}</h2>
       {node.created_by && <p className="hint small">
-        {node.created_by.role === 'worker' ? 'Worker' : node.created_by.role === 'reviewer' ? 'Reviewer' : 'Author'}: {node.created_by.author}
-        {' · '}{node.created_by.model || 'Model not recorded'}
+        {node.created_by.role === 'worker' ? tr("Worker") : node.created_by.role === 'reviewer' ? tr("Reviewer") : tr("Author")}: {node.created_by.author}
+        {' · '}{node.created_by.model || tr("Model not recorded")}
       </p>}
-      {node.created_by?.reason && <p><strong>Worker’s reason:</strong> {node.created_by.reason}</p>}
-      {node.type === 'query' && <p className="hint small">Search record. Matches do not establish a claim.</p>}
+      {node.created_by?.reason && <p><strong>{tr("Worker’s reason:")}</strong> {node.created_by.reason}</p>}
+      {node.type === 'query' && <p className="hint small">{tr("Search record. Matches do not establish a claim.")}</p>}
       <code className="node-id">{node.id}</code>
 
       {/* Where this text is published, for a reader who wants to see the
@@ -120,9 +124,7 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
           href={node.cbeta_url}
           target="_blank"
           rel="noreferrer noopener"
-        >
-          Read in CBETA Online ↗
-        </a>
+        >{tr("Read in CBETA Online ↗")}</a>
       )}
 
       {node.type === 'passage' && <PassageContext passageId={node.id} />}
@@ -135,41 +137,39 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
       )}
 
       {node.rejected_reason && (
-        <Section title="Rejected because">
+        <Section title={tr("Rejected because")}>
           <p className="reason">{node.rejected_reason}</p>
         </Section>
       )}
 
       {support && (
-        <Section title="Independent support">
+        <Section title={tr("Independent support")}>
           <div className={`support ${support.independent ? 'ok' : 'discounted'}`}>
             <div className="support-row">
-              <span>attesting passages</span><strong>{support.attesting_count}</strong>
+              <span>{tr("attesting passages")}</span><strong>{support.attesting_count}</strong>
             </div>
             <div className="support-row">
-              <span>distinct witnesses</span><strong>{support.distinct_witnesses}</strong>
+              <span>{tr("distinct witnesses")}</span><strong>{support.distinct_witnesses}</strong>
             </div>
             <div className="support-row">
-              <span>independent</span>
-              <strong>{support.independent ? 'yes' : 'no'}</strong>
+              <span>{tr("independent")}</span>
+              <strong>{support.independent ? tr('yes') : tr('no')}</strong>
             </div>
           </div>
           {!support.independent && (
-            <p className="note">
-              These source texts are related; their support is not independent.
-          </p>
+            <p className="note">{tr("These source texts are related; their support is not independent.")}</p>
           )}
           {support.non_independent_pairs.map(([a, b]) => (
             <div className="pair" key={`${a}|${b}`}>
-              <button onClick={() => onSelect(a)}>{short(a)}</button>
+              <Button onClick={() => onSelect(a)}>{short(a)}</Button>
               <span>↔</span>
-              <button onClick={() => onSelect(b)}>{short(b)}</button>
+              <Button onClick={() => onSelect(b)}>{short(b)}</Button>
             </div>
           ))}
         </Section>
       )}
 
-      <Section title="Recorded details">
+      <Section title={tr("Recorded details")}>
         <dl className="kv">
           {Object.entries(node.payload || {}).map(([k, v]) => (
             <div key={k}>
@@ -183,33 +183,33 @@ function NodeCard({ node, onSelect, canWrite, reload, onGraphChanged }) {
       {node.type === 'passage' && <PassageSpan checks={node.verifications} />}
 
       {node.type !== 'passage' && node.verifications?.length > 0 && (
-        <Section title={`Verifications (${node.verifications.length})`}>
+        <Section title={tr('Verifications ({{count}})', { count: node.verifications.length })}>
           {node.verifications.map((v) => (
             <div className={`verification r-${v.payload.result}`} key={v.id}>
               <div className="v-head">
-                <strong>{v.payload.method}</strong>
-                <span className={`badge r-${v.payload.result}`}>{v.payload.result}</span>
-                <span className={`badge assurance lvl-${v.payload.assurance_level}`}>
+                <strong>{tr(v.payload.method)}</strong>
+                <Badge className={`badge r-${v.payload.result}`}>{tr(v.payload.result)}</Badge>
+                <Badge className={`badge assurance lvl-${v.payload.assurance_level}`}>
                   {v.payload.assurance_level}
-                </span>
+                </Badge>
               </div>
               <p>{v.payload.detail}</p>
               {v.payload.limitations && (
-                <p className="limitations"><em>Limitations:</em> {v.payload.limitations}</p>
+                <p className="limitations"><em>{tr("Limitations:")}</em> {v.payload.limitations}</p>
               )}
             </div>
           ))}
         </Section>
       )}
 
-      <EdgeList title="Outgoing" edges={node.edges_out} field="dst" onSelect={onSelect}
+      <EdgeList title={tr("Outgoing")} edges={node.edges_out} field="dst" onSelect={onSelect}
                 canWrite={canWrite} onChanged={reload} />
-      <EdgeList title="Incoming" edges={node.type === 'passage'
+      <EdgeList title={tr("Incoming")} edges={node.type === 'passage'
         ? node.edges_in.filter((e) => !node.verifications?.some((v) => v.id === e.src && v.payload?.method === 'exact_span'))
         : node.edges_in} field="src" onSelect={onSelect}
                 canWrite={canWrite} onChanged={reload} />
 
-      <Section title="Authorship">
+      <Section title={tr("Authorship")}>
         <ul className="authorship">
           {node.authorship.map((a, i) => (
             <li key={i}>
@@ -251,7 +251,7 @@ function PassageContext({ passageId }) {
 
   if (unavailable || !ctx) return null
   return (
-    <p className="passage-context" title={`located by ${ctx.location}`}>
+    <p className="passage-context" title={tr('Located by {{method}}', { method: tr(ctx.location) })}>
       {ctx.has_more_before && <span className="ctx-ellipsis">…</span>}
       {ctx.before}
       <mark>{ctx.excerpt}</mark>
@@ -268,6 +268,7 @@ function PassageContext({ passageId }) {
 // an agent that proposes ten weak claims would outrank one that proposes a
 // single good one — which is why docs/design.md §9 rules it out.
 function AuthorLink({ author }) {
+  useTranslation()
   const [report, setReport] = useState(null)
   const [open, setOpen] = useState(false)
 
@@ -282,21 +283,21 @@ function AuthorLink({ author }) {
   // sets `display` explicitly.
   return (
     <div className="author-wrap">
-      <button className={`author link ${open ? 'on' : ''}`} onClick={toggle} title="Contribution history">
+      <Button className={`author link ${open ? 'on' : ''}`} onClick={toggle} title={tr("Contribution history")}>
         {author}
-      </button>
+      </Button>
       <Reveal open={open}>
         <div className="author-report">
-          {report === false && <em>no report available</em>}
-          {report === null && <em>loading…</em>}
+          {report === false && <em>{tr("no report available")}</em>}
+          {report === null && <em>{tr("loading…")}</em>}
           {report && (
             <>
               {Object.entries(report)
                 .filter(([, v]) => typeof v === 'number')
                 .map(([k, v]) => (
-                  <span key={k}><b>{v}</b> {k.replace(/_/g, ' ')}</span>
+                  <span key={k}><b>{v}</b> {tr(k.replace(/_/g, ' '))}</span>
                 ))}
-              <span className="hint small">counts, not a score</span>
+              <span className="hint small">{tr("counts, not a score")}</span>
             </>
           )}
         </div>
@@ -306,12 +307,13 @@ function AuthorLink({ author }) {
 }
 
 function CloseButton({ onClose }) {
+  useTranslation()
   if (!onClose) return null
   return (
-    <button className="panel-close" onClick={onClose} aria-label="Close inspector"
-            title="Close (Esc)">
+    <Button className="panel-close" onClick={onClose} aria-label={tr("Close inspector")}
+            title={tr("Close (Esc)")}>
       <CloseIcon />
-    </button>
+    </Button>
   )
 }
 
@@ -359,6 +361,7 @@ function EdgeList({ title, edges, field, onSelect, canWrite, onChanged }) {
 // "the researcher withdrew this" and "this was never asserted" are different
 // facts about the record, and only one of them is worth reading.
 function EdgeRow({ edge: e, field, onSelect, canWrite, onChanged }) {
+  useTranslation()
   const [open, setOpen] = useState(false)
   const [reason, setReason] = useState('')
   const [busy, setBusy] = useState(false)
@@ -366,7 +369,7 @@ function EdgeRow({ edge: e, field, onSelect, canWrite, onChanged }) {
 
   const act = async () => {
     if (!reason.trim()) {
-      setRefusal({ rule: 'MissingRejectionReason', message: 'a reason is required' })
+      setRefusal({ rule: 'MissingRejectionReason', message: tr('A reason is required.') })
       return
     }
     setBusy(true)
@@ -386,14 +389,14 @@ function EdgeRow({ edge: e, field, onSelect, canWrite, onChanged }) {
   return (
     <div className={`edge-row ${e.discounts ? 'discount' : ''} ${e.retracted ? 'retracted' : ''}`}>
       <div className="edge-line">
-        <span className="edge-type">{EDGE_STYLE[e.type]?.label || e.type}</span>
-        {e.discounts && !e.retracted && <span className="chip">discounts</span>}
-        {e.retracted && <span className="chip withdrawn">withdrawn</span>}
-        <button onClick={() => onSelect(e[field])}>{short(e[field])}</button>
+        <span className="edge-type">{tr(EDGE_STYLE[e.type]?.label || e.type)}</span>
+        {e.discounts && !e.retracted && <span className="chip">{tr("discounts")}</span>}
+        {e.retracted && <span className="chip withdrawn">{tr("withdrawn")}</span>}
+        <Button onClick={() => onSelect(e[field])}>{short(e[field])}</Button>
         {canWrite && (
-          <button className="edge-act" onClick={() => setOpen((v) => !v)} disabled={busy}>
+          <Button className="edge-act" onClick={() => setOpen((v) => !v)} disabled={busy}>
             {e.retracted ? 'restore' : 'retract'}
-          </button>
+          </Button>
         )}
       </div>
       {/* A contradicts edge is drawn as heavily as evidence, so the grounds
@@ -401,21 +404,20 @@ function EdgeRow({ edge: e, field, onSelect, canWrite, onChanged }) {
           this prominently is worse than none. */}
       {e.reason && <p className="edge-reason">{e.reason}</p>}
       {e.retracted && e.retracted_reason && (
-        <p className="edge-reason withdrawn">withdrawn: {e.retracted_reason}</p>
+        <p className="edge-reason withdrawn">{tr("withdrawn:")} {e.retracted_reason}</p>
       )}
       <Reveal open={open}>
         <div className="edge-verdict">
           <textarea
             rows={2} className="reason-input"
-            placeholder={e.retracted ? 'Why restore it?' : 'Why withdraw it?'}
+            aria-label={e.retracted ? tr("Why restore it?") : tr("Why withdraw it?")}
+            placeholder={e.retracted ? tr("Why restore it?") : tr("Why withdraw it?")}
             value={reason} onChange={(ev) => setReason(ev.target.value)}
           />
-          <button className={`btn ${e.retracted ? 'accept' : 'reject'}`} disabled={busy} onClick={act}>
-            {e.retracted ? 'Restore edge' : 'Retract edge'}
-          </button>
-          <p className="hint small">
-            Withdrawn edges remain in the audit history and no longer affect independence checks.
-        </p>
+          <Button className={`btn ${e.retracted ? 'accept' : 'reject'}`} disabled={busy} onClick={act}>
+            {e.retracted ? tr("Restore edge") : tr("Retract edge")}
+          </Button>
+          <p className="hint small">{tr("Withdrawn edges remain in the audit history and no longer affect independence checks.")}</p>
           <Reveal open={!!refusal}>
             <div className="refusal">
               {refusal?.rule && <strong>{refusal.rule}</strong>}
@@ -433,6 +435,7 @@ function EdgeRow({ edge: e, field, onSelect, canWrite, onChanged }) {
 // makes accept/reject the one thing agents may never do, so the interface for
 // it should look like an authority being exercised, not a form being filled.
 function Verdict({ node, onDone }) {
+  useTranslation()
   const [reason, setReason] = useState('')
   const [busy, setBusy] = useState(false)
   const [refusal, setRefusal] = useState(null)
@@ -441,7 +444,7 @@ function Verdict({ node, onDone }) {
     if (needsReason && !reason.trim()) {
       // Mirrors MissingRejectionReason locally so the researcher gets the
       // answer immediately; the server enforces it regardless.
-      setRefusal({ rule: 'MissingRejectionReason', message: 'a reason is required' })
+      setRefusal({ rule: 'MissingRejectionReason', message: tr('A reason is required.') })
       return
     }
     setBusy(true)
@@ -466,46 +469,47 @@ function Verdict({ node, onDone }) {
 
   return (
     <section className="verdict">
-      <h3>Researcher decision</h3>
+      <h3>{tr("Researcher decision")}</h3>
       {!isRejected && (
         <p className="hint small">
           {canAccept
-            ? 'Accept to mark this record as researcher-approved.'
+            ? tr("Accept to mark this record as researcher-approved.")
             : canAttest
-              ? 'Attest to record the required checks. Acceptance is a separate decision.'
-              : `Review required before acceptance. Current status: ${node.status}.`}
+              ? tr("Attest to record the required checks. Acceptance is a separate decision.")
+              : tr('Review required before acceptance. Current status: {{status}}.', { status: tr(node.status) })}
               </p>
       )}
       <textarea
         className="reason-input"
-        placeholder={isRejected ? 'Why reopen it?' : 'Reason (required to reject)'}
+        aria-label={isRejected ? tr("Why reopen it?") : tr("Reason (required to reject)")}
+        placeholder={isRejected ? tr("Why reopen it?") : tr("Reason (required to reject)")}
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         rows={2}
       />
       <div className="verdict-actions">
         {isRejected ? (
-          <button
+          <Button
             className="btn reopen" disabled={busy}
             onClick={() => act(() => reopenNode(node.id, reason), true)}
-          >Reopen</button>
+          >{tr("Reopen")}</Button>
         ) : (
           <>
             {canAttest && (
-              <button
+              <Button
                 className="btn attest" disabled={busy}
                 onClick={() => act(() => attestNode(node.id), false)}
-                title="Run the mechanical check: do this node's citations resolve?"
-              >Attest</button>
+                title={tr("Run the mechanical check: do this node's citations resolve?")}
+              >{tr("Attest")}</Button>
             )}
-            <button
+            <Button
               className="btn accept" disabled={busy || !canAccept}
               onClick={() => act(() => acceptNode(node.id), false)}
-            >Accept</button>
-            <button
+            >{tr("Accept")}</Button>
+            <Button
               className="btn reject" disabled={busy}
               onClick={() => act(() => rejectNode(node.id, reason), true)}
-            >Reject</button>
+            >{tr("Reject")}</Button>
           </>
         )}
       </div>
@@ -517,7 +521,7 @@ function Verdict({ node, onDone }) {
           {refusal?.rule && <strong>{refusal.rule}</strong>}
           <p>{refusal?.message}</p>
           {refusal?.status === 409 && (
-            <p className="small">Single-writer discipline: nothing was changed.</p>
+            <p className="small">{tr("Single-writer discipline: nothing was changed.")}</p>
           )}
         </div>
       </Reveal>
@@ -540,17 +544,18 @@ const short = (id) => {
 }
 
 function PassageSpan({ checks = [] }) {
+  useTranslation()
   const { verified, latest } = spanVerification(checks)
-  return <Section title="Source verification">
+  return <Section title={tr("Source verification")}>
     <p className={`verification r-${verified ? 'pass' : 'indeterminate'}`}>
-      <strong>{verified ? 'Verified with an exact span' : 'Not verified with an exact span'}</strong>
+      <strong>{verified ? tr("Verified with an exact span") : tr("Not verified with an exact span")}</strong>
             </p>
     {latest && !verified && <p>{latest.payload.detail}</p>}
-    {verified && <p className="hint small">Quotation located in source. Interpretation still requires review.</p>}
+    {verified && <p className="hint small">{tr("Quotation located in source. Interpretation still requires review.")}</p>}
     {checks.length > 0 && <details>
-      <summary>Verification history</summary>
+      <summary>{tr("Verification history")}</summary>
       {checks.map((v) => <div className={`verification r-${v.payload.result}`} key={v.id}>
-        <strong>{v.payload.method} · {v.payload.result}</strong>
+        <strong>{tr(v.payload.method)} · {tr(v.payload.result)}</strong>
         <p>{v.payload.detail}</p>
         {v.payload.limitations && <p>{v.payload.limitations}</p>}
       </div>)}

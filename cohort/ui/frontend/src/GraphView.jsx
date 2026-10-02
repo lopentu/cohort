@@ -1,3 +1,6 @@
+import { Button } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr } from './i18n'
 import { useEffect, useRef } from 'react'
 import { DataSet, Network } from 'vis-network/standalone'
 import { EDGE_STYLE, isVisible, nodeTitle, nodeStatusLabel } from './graph-model'
@@ -266,7 +269,7 @@ function buildNodes(nodes, showAudit, p, contradicted) {
       // The assessment's own sentence rather than its state
       // word, because "unplaced" and "discarded" are easy to read as the
       // same kind of negative and are not.
-      title: `${n.type} · ${nodeStatusLabel(n)}${n.review_state ? ' · ' + n.review_state.label : ''}${n.assurance ? ' · ' + n.assurance : ''}`
+      title: `${tr(n.type)} · ${tr(nodeStatusLabel(n))}${n.review_state ? ' · ' + tr(n.review_state.label) : ''}${n.assurance ? ' · ' + n.assurance : ''}`
         + (n.assessment ? `\n${n.assessment.detail}` : ''),
     }
   })
@@ -300,12 +303,13 @@ function buildEdges(edges, visibleIds, p) {
             ? { from: { enabled: true, scaleFactor: 0.55 } }
             : { to: { enabled: true, scaleFactor: 0.55 } },
         smooth: { enabled: true, type: 'dynamic' },
-        title: label + (e.discounts ? ' — discounts support' : ''),
+        title: tr(label) + (e.discounts ? ' — ' + tr('discounts support') : ''),
       }
     })
 }
 
 export default function GraphView({ data, selectedId, onSelect, showAudit, exploration }) {
+  const { i18n } = useTranslation()
   const containerRef = useRef(null)
   const networkRef = useRef(null)
   const nodesRef = useRef(null)
@@ -373,17 +377,17 @@ export default function GraphView({ data, selectedId, onSelect, showAudit, explo
     const contradicted = contradictedIds(data.edges)
     const visNodes = buildNodes(data.nodes, showAudit, p, contradicted)
     for (const item of exploration?.nodes || []) visNodes.push({
-      id:item.id, label:item.label, shape:'box',
+      id:item.id, label:item.label === 'Worker exploration' ? tr(item.label) : item.label, shape:'box',
       color:{background:p.surface,border:p.textDim}, font:{color:p.text,size:13},
       shapeProperties:{borderDashes:[3,5]}, margin:9,
-      title:'Exploration activity — click for actions and worker',
+      title:tr('Exploration activity — click for actions and worker'),
     })
     idsRef.current = new Set(visNodes.map((n) => n.id))
     const visEdges = buildEdges(data.edges, idsRef.current, p)
     for (const edge of exploration?.edges || []) {
       if (idsRef.current.has(edge.from) && idsRef.current.has(edge.to)) visEdges.push({
         ...edge, dashes:[3,5], arrows:'', color:{color:p.textDim}, width:1,
-        title:'Exploration activity, not evidential support',
+        title:tr('Exploration activity, not evidential support'),
       })
     }
     const net = networkRef.current
@@ -438,7 +442,7 @@ export default function GraphView({ data, selectedId, onSelect, showAudit, explo
     if (selectedRef.current && idsRef.current.has(selectedRef.current)) {
       networkRef.current.selectNodes([selectedRef.current])
     }
-  }, [data, showAudit, exploration])
+  }, [data, showAudit, exploration, i18n.resolvedLanguage])
 
   // reflect a selection made elsewhere (e.g. the Findings tab) onto the canvas
   useEffect(() => {
@@ -456,13 +460,13 @@ export default function GraphView({ data, selectedId, onSelect, showAudit, explo
 
   return (
     <div className="graph-scroll">
-      <button className="btn tiny" style={{ margin: '8px 18px' }}
-        onClick={() => networkRef.current?.fit({ animation: false })}>Fit graph</button>
+      <Button className="btn tiny" style={{ margin: '8px 18px' }}
+        onClick={() => networkRef.current?.fit({ animation: false })}>{tr("Fit graph")}</Button>
       <div
         ref={containerRef}
         className="graph-canvas"
         role="img"
-        aria-label="Evidence graph (draggable)"
+        aria-label={tr("Evidence graph (draggable)")}
         style={{ width: '100%', height: 'calc(100vh - 150px)', minHeight: '420px' }}
       />
     </div>

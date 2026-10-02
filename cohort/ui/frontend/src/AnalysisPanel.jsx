@@ -1,3 +1,6 @@
+import { Button } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr } from './i18n'
 import ActionList from './ActionList'
 import { analysisContext, analysisThreads, makeAnalysisInstructions } from './analysis-conversation'
 import AnalysisMarkdown from './AnalysisMarkdown'
@@ -5,6 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { getRunConfig, getRuns, startRun, stopRun } from './api'
 
 export default function AnalysisPanel({ view, scope }) {
+  useTranslation()
   const trigger = useRef(null)
   const closeButton = useRef(null)
   const close = () => { setOpen(false); trigger.current?.focus() }
@@ -52,52 +56,53 @@ export default function AnalysisPanel({ view, scope }) {
   }
   if (!config?.analysis_enabled) return null
   return <div className="analysis-control">
-    {['graph','evidence'].includes(view) && <button ref={trigger} className="btn tiny" onClick={()=>setOpen(v=>!v)} aria-expanded={open} aria-controls="ai-analysis-panel">Analyze this view</button>}
-    {open && <section id="ai-analysis-panel" className="analysis-panel" aria-label="AI analysis">
-      <div className="tc-head analysis-header"><h3>AI analysis</h3><button ref={closeButton} className="link" onClick={close}>Close</button></div>
+    {['graph','evidence'].includes(view) && <Button ref={trigger} className="btn tiny" onClick={()=>setOpen(v=>!v)} aria-expanded={open} aria-controls="ai-analysis-panel">{tr("Analyze this view")}</Button>}
+    {open && <section id="ai-analysis-panel" className="analysis-panel" aria-label={tr("AI analysis")}>
+      <div className="tc-head analysis-header"><h3>{tr("AI analysis")}</h3><Button ref={closeButton} className="link" onClick={close}>{tr("Close")}</Button></div>
       <div className="analysis-body">
-      <p className="hint small">Ask about this view or investigate further. Graph records stay unchanged.</p>
+      <p className="hint small">{tr("Ask about this view or investigate further. Graph records stay unchanged.")}</p>
       <div className="analysis-inputs">
-        <label>Model<input className="corpus-input" value={model} onChange={e=>setModel(e.target.value)} /></label>
-        <button className="btn" disabled={pending || active || otherActive || !config.model_configured || !config.corpus_available || !scope || !model.trim() || !['graph','evidence'].includes(view)} onClick={()=>start(false)}>{pending?'Starting…':run?'New analysis':'Start analysis'}</button>
-        {active && <button className="btn tiny" onClick={()=>stopRun().catch(e=>setError(e.message))}>Stop analysis</button>}
+        <label>{tr("Model")}<input className="corpus-input" value={model} onChange={e=>setModel(e.target.value)} /></label>
+        <Button className="btn" disabled={pending || active || otherActive || !config.model_configured || !config.corpus_available || !scope || !model.trim() || !['graph','evidence'].includes(view)} onClick={()=>start(false)}>{pending?tr("Starting…"):run?tr("New analysis"):tr("Start analysis")}</Button>
+        {active && <Button className="btn tiny" onClick={()=>stopRun().catch(e=>setError(e.message))}>{tr("Stop analysis")}</Button>}
       </div>
-      {otherActive && <p className="hint small">Another run is active. Wait for it to finish.</p>}
-      {available.size>0 && <label>Saved analyses<select value={runId || ''} onChange={e=>setRunId(e.target.value || null)}>
-        <option value="">Choose an analysis</option>
-        {threads.map(r=><option key={r.id} value={r.id}>{r.agents.find(a=>a.role==='analyst')?.method_label || 'Analysis'} · {r.id}</option>)}
+      {otherActive && <p className="hint small">{tr("Another run is active. Wait for it to finish.")}</p>}
+      {available.size>0 && <label>{tr("Saved analyses")}<select value={runId || ''} onChange={e=>setRunId(e.target.value || null)}>
+        <option value="">{tr("Choose an analysis")}</option>
+        {threads.map(r=><option key={r.id} value={r.id}>{r.agents.find(a=>a.role==='analyst')?.method_label || tr("Analysis")} · {r.id}</option>)}
       </select></label>}
       {error && <p className="error">{error}</p>}
       {run && <>
-        <p className="hint small">{run.state || 'Open'} · {run.agents.find(a=>a.role==='analyst')?.model} · Original view: {context.view}.</p>
+        <p className="hint small">{tr(run.state || "Open")} · {run.agents.find(a=>a.role==='analyst')?.model} {tr("· Original view:")} {tr(({ graph: "Graph", evidence: "Vocabulary comparison", corpus: "Corpus", findings: "Findings", run: "Inquiry" })[context.view] || context.view)}.</p>
         {run.stopped_early && <p className="warn">{run.stopped_early}</p>}
         {run.error && <p className="error">{run.error}</p>}
         {context.messages.map((m,i)=><div className={`analysis-message ${m.role}`} key={i}>
-          <h4>{m.role==='user'?'You':`AI · ${m.model || 'Model not recorded'}`}</h4>
+          <h4>{m.role==='user'?tr("You"):`AI · ${m.model || tr("Model not recorded")}`}</h4>
           <AnalysisMarkdown>{m.content}</AnalysisMarkdown>
           {m.actions?.length>0 && <AnalysisActions calls={m.actions} />}
         </div>)}
-        <div className="analysis-message user"><h4>You</h4><p>{context.request}</p></div>
+        <div className="analysis-message user"><h4>{tr("You")}</h4><p>{context.request}</p></div>
         {run.agents.filter(a=>a.role==='analyst').map(a=><div className="analysis-message assistant" key={a.agent_id}>
-          <h4>AI · {a.model}</h4>
+          <h4>{tr("AI ·")} {a.model}</h4>
           {a.error && <p className="error">{a.error}</p>}
-          {a.analysis ? <AnalysisMarkdown>{a.analysis}</AnalysisMarkdown> : <p className="hint">{active?'Investigating…':'No final explanation was recorded. Inspect the actions below.'}</p>}
+          {a.analysis ? <AnalysisMarkdown>{a.analysis}</AnalysisMarkdown> : <p className="hint">{active?tr("Investigating…"):tr("No final explanation was recorded. Inspect the actions below.")}</p>}
           <AnalysisActions key={`${run.id}:${a.agent_id}`} calls={a.tool_calls || []} active={active} />
         </div>)}
-        <p className="hint small">AI interpretation, not a verification or researcher acceptance.</p>
+        <p className="hint small">{tr("AI interpretation, not a verification or researcher acceptance.")}</p>
       </>}
       </div>
       {run && <form className="analysis-composer" onSubmit={e=>{e.preventDefault();start(true)}}>
-        <label htmlFor="analysis-followup">Follow-up question</label>
-        <textarea id="analysis-followup" value={message} onChange={e=>setMessage(e.target.value)} rows={2} placeholder="Ask about the answer or request another check…" />
-        <button className="btn" type="submit" disabled={pending || active || otherActive || !message.trim() || !model.trim() || !config.model_configured || !config.corpus_available}>Send</button>
+        <label htmlFor="analysis-followup">{tr("Follow-up question")}</label>
+        <textarea id="analysis-followup" value={message} onChange={e=>setMessage(e.target.value)} rows={2} placeholder={tr("Ask about the answer or request another check…")} />
+        <Button className="btn" type="submit" disabled={pending || active || otherActive || !message.trim() || !model.trim() || !config.model_configured || !config.corpus_available}>{tr("Send")}</Button>
       </form>}
     </section>}
   </div>
 }
 
 function AnalysisActions({ calls, active = false }) {
-  return <details className="analysis-actions"><summary>Actions and reasons ({calls.length})</summary>
+  useTranslation()
+  return <details className="analysis-actions"><summary>{tr("Actions and reasons (")}{calls.length})</summary>
     <ActionList calls={calls} active={active} label="Analysis actions" />
   </details>
 }

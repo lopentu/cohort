@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
-import { usePresence } from './motion'
+import { Button, Popover } from './components/ui'
+import { useTranslation } from 'react-i18next'
+import { tr } from './i18n'
+import { useEffect, useState } from 'react'
 
 const INTROS = {
   graph: {
@@ -59,9 +61,8 @@ function seen(tab) {
 }
 
 export default function TabIntro({ tab, open, onToggle }) {
+  useTranslation()
   const intro = INTROS[tab]
-  const wrapRef = useRef(null)
-  const pop = usePresence(open, 150)
   const [unseen, setUnseen] = useState(() => !seen(tab))
 
   // The dot is per tab, so switching tabs re-asks the question.
@@ -75,60 +76,36 @@ export default function TabIntro({ tab, open, onToggle }) {
     try { window.localStorage.setItem(key(tab), 'closed') } catch { /* unavailable */ }
   }, [open, tab])
 
-  // Dismiss on outside click and on Escape — the two gestures a popover owes
-  // its reader, and the same two Settings binds. Bound only while open.
-  useEffect(() => {
-    if (!open) return undefined
-    const onDown = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) onToggle(false)
-    }
-    const onKey = (e) => {
-      if (e.key === 'Escape') { e.stopPropagation(); onToggle(false) }
-    }
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey, true)
-    return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('keydown', onKey, true)
-    }
-  }, [open, onToggle])
+
 
   // A tab with nothing written about it hides the control rather than offering
   // an empty panel.
   if (!intro) return null
 
   return (
-    <div className="settings-wrap" ref={wrapRef}>
-      <button
+    <Popover open={open} onOpenChange={onToggle} label={tr(intro.title)} className="settings-pop intro-pop" trigger={
+      <Button
         className={`icon-btn help ${open ? 'on' : ''} ${unseen ? 'unseen' : ''}`}
-        onClick={() => onToggle(!open)}
-        aria-label={`${intro.title} help`}
+        aria-label={tr('{{title}} help', { title: tr(intro.title) })}
         aria-expanded={open}
-        title={intro.title}
+        title={tr(intro.title)}
       >
         <QuestionIcon />
-      </button>
-
-      {pop.mounted && (
-        <div
-          className={`settings-pop intro-pop ${pop.closing ? 'closing' : ''}`}
-          role="dialog"
-          aria-label={intro.title}
-        >
-          <h3>{intro.title}</h3>
-          <p><a href={`/assets/ui-guide.html#${tab === 'run' ? 'inquiry' : tab}`} target="_blank" rel="noopener noreferrer">Controls, outputs and getting started</a></p>
-          {tab === 'graph' && <p><a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">How to read the graph — illustrated guide</a></p>}
+      </Button>
+    }>
+          <h3>{tr(intro.title)}</h3>
+          <p><a href={`/assets/ui-guide.html#${tab === 'run' ? 'inquiry' : tab}`} target="_blank" rel="noopener noreferrer">{tr("Controls, outputs and getting started")}</a></p>
+          {tab === 'graph' && <p><a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">{tr("How to read the graph — illustrated guide")}</a></p>}
           <dl className="tab-intro-body">
             {intro.body.map(([term, text]) => (
               <div key={term}>
-                <dt>{term}</dt>
-                <dd>{text}</dd>
+                <dt>{tr(term)}</dt>
+                <dd>{tr(text)}</dd>
               </div>
             ))}
           </dl>
-        </div>
-      )}
-    </div>
+
+    </Popover>
   )
 }
 

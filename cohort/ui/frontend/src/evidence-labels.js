@@ -1,3 +1,4 @@
+import { tr } from './i18n.js'
 // Display names only: preserve the catalogue codes in API requests and URLs.
 // These example text titles are catalogue metadata, not inferred ascriptions.
 const PROFILES = {
@@ -25,13 +26,13 @@ const TEXTS = {
   T0125: 'Ekottarikāgama 增壹阿含經',
 }
 export function profileName(code, showCode = true) {
-  return PROFILES[code] ? PROFILES[code] + (showCode ? ` (${code})` : '') : code
+  return PROFILES[code] ? tr(PROFILES[code]) + (showCode ? ` (${code})` : '') : code
 }
 export function textName(uid) {
-  return TEXTS[uid] ? `${TEXTS[uid]} · ${uid}` : uid
+  return TEXTS[uid] ? `${tr(TEXTS[uid])} · ${uid}` : uid
 }
 
 export function explainProfileCodes(text) {
   // Longest first prevents Dhr inside pre-Dhr-other being expanded separately.
-  return text.replace(/(?<![\p{L}\p{N}_:/#-])(?:pre-Dhr-other|Dhkṣ|ASg|Dhr|ZFn|ZQ)(?![\p{L}\p{N}_:/#-])/gu, profileName)
+  return text.replace(/(?<![\p{L}\p{N}_:/#-])(?:pre-Dhr-other|Dhkṣ|ASg|Dhr|ZFn|ZQ)(?![\p{L}\p{N}_:/#-])/gu, code => PROFILES[code] ? `${PROFILES[code]} (${code})` : code)
 }
