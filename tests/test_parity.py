@@ -66,9 +66,9 @@ ROUTE_TO_COMMAND = {
 #: Capabilities deliberately on one side only. Each needs a reason, not just an
 #: entry — an exemption without one is the drift this test exists to catch.
 EXEMPT: dict[str, str] = {
-    # Nothing yet. Corpus index building and the parser scan are scripts rather
-    # than CLI commands, but they are not web capabilities either, so they are
-    # symmetric by absence and need no exemption here.
+    "GET /api/auth/session": "Browser cookie sessions do not apply to the local CLI.",
+    "POST /api/auth/login": "Browser cookie sessions do not apply to the local CLI.",
+    "POST /api/auth/logout": "Browser cookie sessions do not apply to the local CLI.",
 }
 
 
@@ -117,7 +117,7 @@ def cli_commands() -> set[str]:
 
 def test_every_http_route_has_a_cli_command(app_routes):
     """A capability in the browser that the terminal cannot reach."""
-    unmapped = sorted(r for r in app_routes if r not in ROUTE_TO_COMMAND)
+    unmapped = sorted(r for r in app_routes if r not in ROUTE_TO_COMMAND and f"{r[0]} {r[1]}" not in EXEMPT)
     assert not unmapped, (
         f"HTTP routes with no CLI equivalent: {unmapped}. Add the command to "
         f"cohort/cli.py and map it in ROUTE_TO_COMMAND, or record why it is "

@@ -156,8 +156,11 @@ def test_agent_report_includes_declared_scope(client):
 
 def test_api_exposes_no_mutating_routes(client):
     """Accept/reject are writes and are deliberately absent: a writing UI
-    would need the exclusive lock for as long as a tab is open."""
-    methods = {m for r in client.app.routes for m in getattr(r, "methods", set())}
+    would need write-lock handling. Browser login/logout change session state
+    only; they do not mutate the evidence graph."""
+    methods = {m for r in client.app.routes
+               if not getattr(r, "path", "").startswith("/api/auth/")
+               for m in getattr(r, "methods", set())}
     assert methods <= {"GET", "HEAD", "OPTIONS"}
 
 

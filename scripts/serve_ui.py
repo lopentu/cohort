@@ -62,6 +62,10 @@ def main() -> None:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--reload", action="store_true")
+    parser.add_argument("--auth-file", type=Path, default=REPO_ROOT / "data/ui-auth.json",
+                        help="owner-only researcher credentials created by setup_ui_auth.py")
+    parser.add_argument("--no-auth", action="store_true",
+                        help="disable login for controlled localhost development only")
     parser.add_argument(
         "--allow-writes", action="store_true",
         help="mount the researcher's accept/reject/reopen endpoints (acts as RESEARCHER)",
@@ -95,6 +99,17 @@ def main() -> None:
         help="disable the monetary stopping threshold; retain cost accounting",
     )
     args = parser.parse_args()
+    if args.host not in ("127.0.0.1", "localhost", "::1"):
+        parser.error("the researcher UI must bind to localhost; use SSH port forwarding")
+    from cohort.ui.auth import AuthManager
+
+    auth = None
+    if not args.no_auth:
+        try:
+            auth = AuthManager.from_file(args.auth_file, allow_local_http=True)
+        except (OSError, ValueError):
+            parser.error("valid owner-only credentials are required; run scripts/setup_ui_auth.py "
+                         "or use --no-auth for controlled localhost development")
 
     try:
         import uvicorn
@@ -168,13 +183,6 @@ def main() -> None:
             file=sys.stderr,
         )
 
-    if args.host not in ("127.0.0.1", "localhost"):
-        print(
-            f"warning: binding {args.host} exposes a CC BY-NC-SA-licensed corpus "
-            "view beyond this machine",
-            file=sys.stderr,
-        )
-
     modes = ["read-only"]
     if args.allow_writes:
         modes.append("researcher writes")
@@ -206,8 +214,9 @@ def main() -> None:
         create_app(
             db_path, args.log, allow_writes=args.allow_writes,
             source=source, run_manager=run_manager, attribution=attribution, embeddings=embeddings,
+            auth=auth,
         ),
-        host=args.host, port=args.port,
+        host=args.host, port=args.port, proxy_headers=False,
     )
 
 

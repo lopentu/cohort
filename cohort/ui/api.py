@@ -58,6 +58,7 @@ from cohort.schemas import RESEARCHER, EdgeType, NodeType, QuestionPayload
 from cohort.sources.base import Source
 from cohort.sources.cbeta_markup import strip_markup_for_display
 from cohort.sources.cbeta_refs import reader_url
+from cohort.ui.auth import AuthManager, mount_auth
 from cohort.views import (
     DISCOUNTING_EDGE_TYPES,
     dossier_json,
@@ -85,6 +86,7 @@ def create_app(
     run_manager: RunManager | None = None,
     attribution: AttributionIndex | None = None,
     embeddings: EmbeddingIndex | None = None,
+    auth: AuthManager | None = None,
 ) -> FastAPI:
     """Build the app around one projection path.
 
@@ -994,4 +996,5 @@ def create_app(
             # stale bundle after every rebuild (seen live, 2026-09-06).
             return FileResponse(FRONTEND_DIR / "index.html", headers={"Cache-Control": "no-cache"})
 
+    mount_auth(app, auth)
     return app
