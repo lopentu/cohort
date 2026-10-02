@@ -6,10 +6,11 @@ tool by researchers who don't.
 
     .venv/bin/pip install -e '.[ui]'
     cd cohort/ui/frontend && npm install && npm run build && cd -
+    .venv/bin/python scripts/setup_ui_auth.py           # create the local account
     .venv/bin/python scripts/seed_demo_graph.py          # needs the corpus
     .venv/bin/python scripts/serve_ui.py --db demo_graph.sqlite
 
-Open <http://127.0.0.1:8000>.
+Open <http://127.0.0.1:8000> and sign in. The toolbar provides English / 繁體中文 and a replayable Quick start tour. See [account setup and session behavior](ui-access.md) for password changes, session limits and the explicit local-development opt-out.
 
 ## Capabilities are opt-in separately
 

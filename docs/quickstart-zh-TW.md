@@ -1,6 +1,6 @@
 # Cohort 快速上手與中文示範指南
 
-這份指南對應 `feat/pnc-presentation-ready` 分支。`main` 尚未包含這個版本的完整介面，請先確認分支。介面目前使用英文，下面保留按鈕名稱，方便對照。
+這份指南對應 `feat/auth-i18n-tour` 分支。`main` 尚未包含這個版本的完整介面，請先確認分支。介面可切換英文與繁體中文；下面保留英文按鈕名稱，方便對照。
 
 Cohort 可以查找佛典段落、比較用語，並讓 AI 提出有來源可查的解釋。研究者可以回頭看它搜尋了什麼、引用了哪一段，再決定是否接受。這次要展示的是這些操作怎麼幫助研究；譯者歸屬仍需要研究者判斷。
 
@@ -21,6 +21,14 @@ uv sync --extra dev --extra ui --extra evidence
 cp -n ../../.env .env
 ```
 
+第一次啟動前，先設定研究者帳號。依提示輸入使用者名稱，以及至少十二個字元的密碼；密碼不會顯示在終端機，也不放進 Git：
+
+```sh
+uv run python scripts/setup_ui_auth.py
+```
+
+帳號設定存在這個工作目錄的 `data/ui-auth.json`，只允許檔案擁有者讀寫。已有帳號時不會覆蓋；要更換密碼，明確加上 `--overwrite`，完成後重新啟動服務。
+
 指定已經準備好的語料與段落向量，再啟動：
 
 ```sh
@@ -35,7 +43,7 @@ uv run python scripts/serve_ui.py \
   --host 127.0.0.1 --port 18766
 ```
 
-等終端機完成載入後，開啟 **http://127.0.0.1:18766/**。初次建立用語比較快取可能需要等一下。終端機要保持開著。
+等終端機完成載入後，開啟 **http://127.0.0.1:18766/**，輸入剛設定的帳密。登入頁與頂端工具列都可以切換 English／繁體中文。第一次進入會開啟快速導覽，可以略過；之後按「快速上手」可重開。導覽不會執行 AI 或新增研究紀錄。初次建立用語比較快取可能需要等一下。終端機要保持開著。
 
 這會開啟先前儲存的研究紀錄。Graph 和 Findings 已有內容，是因為讀取同一份資料庫，沒有重新執行 AI。
 
@@ -56,13 +64,13 @@ ssh -N -L 18766:127.0.0.1:18766 USER@SERVER
 需要 Git、uv、Python 3.11 以上，以及另外取得授權的 Radich 資料和段落向量檔。這些資料不在 Git 裡。若要重建介面，還需要 Node.js 與 npm。
 
 ```sh
-git clone --branch feat/pnc-presentation-ready https://github.com/lopentu/cohort.git
+git clone --branch feat/auth-i18n-tour https://github.com/lopentu/cohort.git
 cd cohort
 uv sync --extra dev --extra ui --extra evidence
 cp .env.example .env
 ```
 
-編輯 `.env`，設定以下項目；路徑要換成新機器上的位置：
+先用 `uv run python scripts/setup_ui_auth.py` 設定本機帳號，再編輯 `.env`，設定以下項目；路徑要換成新機器上的位置：
 
 ```dotenv
 OPENROUTER_API_KEY=填入自己的金鑰
@@ -235,4 +243,4 @@ Related passages 使用預先算好的段落向量，以 cosine similarity 排�
 
 若沒有 Related passages，先檢查 `EVIDENCE_EMBEDDINGS_PATH`；若沒有用語比較，檢查 `--radich` 和 `evidence` 套件；若 Inquiry 不能開始，檢查金鑰、語料及 `--allow-runs`。如果頁面顯示舊介面，確認啟動目錄與分支，再重建前端並重新整理。
 
-語料、向量檔、`.env` 和研究資料庫都不隨程式碼推送。要帶到另一台機器，另外準備有授權的資料；停止服務時按 `Ctrl+C`，保留 `.sqlite` 與 `.jsonl`，下次才能開啟同一份研究。
+語料、向量檔、`.env`、帳號設定和研究資料庫都不隨程式碼推送。登入保護的是應用程式入口；目前共用同一份研究紀錄，尚無多使用者權限或語料授權管理。要帶到另一台機器，另外準備有授權的資料；停止服務時按 `Ctrl+C`，保留 `.sqlite` 與 `.jsonl`，下次才能開啟同一份研究。
