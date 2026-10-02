@@ -18,6 +18,8 @@ document answers which question. If you're picking this project up fresh, read
 
 ## Quickstart
 
+繁體中文：[快速上手與示範指南](docs/quickstart-zh-TW.md)，包含啟動方式、分頁功能、限制與三十分鐘操作流程。
+
 No corpus, no API key, no network needed:
 
     python -m venv .venv && .venv/bin/pip install -e '.[dev]'

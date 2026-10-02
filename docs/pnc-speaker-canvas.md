@@ -6,7 +6,7 @@ For rehearsal, use the shorter [demo cue sheet](pnc-demo-cue-sheet.md). This
 document is the supporting audit, not the script to read on stage.
 
 Draft, 7 September 2026. A new working document, not a transcription of the
-private Claude explainer. The locally downloaded explainer (HTML kept outside version control) is now
+private Claude explainer. The [locally downloaded explainer](saved_resource.html) is now
 readable and its section 0 and sections 12–14 have been compared with the code;
 adjacent sections were read for context. The original download named
 `The Translator Question, From Zero.html` is only the surrounding page shell.

@@ -4,10 +4,13 @@
 
 The current scope wording describes exact search, embedding-based passage retrieval, shared-wording alignment, agent proposals and source-linked review. It does not claim full semantic analysis or textual-variant collation.
 
-Downloads: [PowerPoint](cohort-pnc-2026.pptx) · [PDF](cohort-pnc-2026.pdf) · [Presenter cue card](presenter-cue-card.md)
+Downloads: [Current PowerPoint](cohort-pnc-2026-main.pptx) · [Taiwan Mandarin quickstart and presentation guide](../quickstart-zh-TW.md) · [Presenter cue card](presenter-cue-card.md)
 
-The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 20 slides in one main sequence: twenty minutes of slides and ten minutes in the application, with no scheduled audience Q&A.
+The older `cohort-pnc-2026.pptx` and PDF are retained as earlier versions.
 
+The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 21 slides in one main sequence: twenty minutes of slides and ten minutes in the application, with no scheduled audience Q&A.
+
+- [Earlier notes and downloaded explainer](earlier-notes.md): archived preparation sources; current instructions take precedence.
 - [Walkthrough](walkthrough.md): current controls, speaking guidance and background explanations.
 - [Researcher review](researcher-review.md): usefulness, limitations and inspection of the Q3 branches.
 - `slides.json`: editable text, geometry and speaker notes for all slides.
@@ -26,6 +29,6 @@ The PDF is rendered from the shared HTML layout. PowerPoint text and shapes are 
 
 Related-passage examples are reproduced by `scripts/check_method_examples.py`; `method-examples.json` contains aggregate measurements only.
 
-In the current PowerPoint, slides 7, 11, 13, 15 and 18 show the five tabs, each beside a workflow diagram. Source-passage text is hidden where applicable; Inquiry shows an unsent draft. Screenshot images can be replaced in PowerPoint. Slide 3 states the purpose; slide 4 introduces the abstract. Open the application at slide 19 and return to slide 20 for results and limits.
+In the current PowerPoint, slides 7, 10, 13, 15 and 18 show the five tabs, each beside a workflow diagram. Source-passage text is hidden where applicable; Inquiry shows an unsent draft. Screenshot images can be replaced in PowerPoint. Slide 3 states the purpose; slide 4 introduces the abstract. Open the application at slide 19 and return to slide 20 for results and limits.
 
 Current tab order: Corpus → Vocabulary comparison → Inquiry → Graph → Findings. Slides 15–17 cover Graph, relationships and provenance; slide 18 presents Findings. These are two views of the same saved investigation.

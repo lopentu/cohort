@@ -7,6 +7,7 @@ multi-agent textual research.*
 
 | I want to know… | Read |
 |---|---|
+| 如何啟動、操作與用中文介紹？ | [快速上手與中文示範指南](quickstart-zh-TW.md) |
 | What is this and why does it exist? | [design.md](design.md) — the spec |
 | What's true right now? What's left? | [handoff.md](handoff.md) |
 | How does it actually work inside? | [architecture.md](architecture.md) |
