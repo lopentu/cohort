@@ -8,8 +8,8 @@
 
 - [x] Add failing tests for prefixed requests/assets and hosted login origin/cookie behavior; implement shared path handling and explicit launch settings.
 - [x] Prepare canonical Compose/config/nginx artifacts and a discovery service contract; record catalog, ownership, data-access and backup gates.
-- [ ] Verify synthetic HTTPS proxy/browser workflows, restore and restart behavior, Python/frontend suites, ruff, ty, and service validators. Obtain an independent review and publish the preparation branch.
+- [x] Verify synthetic HTTPS proxy/browser workflows, restore and restart behavior, Python/frontend suites, ruff, ty, and service validators. Obtain an independent review and publish the preparation branch.
 
 Canonical boundaries: `/opt/lope/services/cohort` (code), `/etc/lope/services/cohort` (configuration), `/etc/lope/secrets/cohort` (credentials), `/srv/lope/services/cohort` (state). Service ID: `service.cohort`.
 
-Application and synthetic deployment checks passed. Independent deployment review and branch publication remain pending. The service contract is structurally valid; catalog binding fails because `service.cohort` has not been registered. This plan does not authorize activation or waive that gate.
+Application and synthetic deployment checks passed. Independent application and deployment reviews passed after correcting the snapshot lock and durability findings. Publish the reviewed preparation as stacked draft PRs; do not merge or activate the service as part of this preparation. The service contract is structurally valid; catalog binding fails because `service.cohort` has not been registered. This plan does not authorize activation or waive that gate.
