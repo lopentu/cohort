@@ -304,3 +304,78 @@ def test_forwarded_client_addresses_cannot_bypass_attempt_limit(protected):
                                headers={"X-Forwarded-For": f"192.0.2.{attempt}"})
         assert response.status_code == 401
     assert login(client, headers={"X-Forwarded-For": "192.0.2.254"}).status_code == 429
+
+
+def test_hosted_login_uses_secure_path_cookie_and_fixed_origin(protected):
+    _client, manager = protected
+    manager.root_path = '/cohort'
+    manager.public_origin = 'https://lopen.linguistics.ntu.edu.tw'
+    hosted = TestClient(create_app('unused.sqlite', auth=manager, root_path='/cohort'),
+                        base_url='https://lopen.linguistics.ntu.edu.tw')
+    response = login(hosted, headers={'Origin': 'https://lopen.linguistics.ntu.edu.tw'})
+    assert response.status_code == 200
+    cookie = response.headers['set-cookie']
+    assert '__Secure-cohort_session=' in cookie
+    assert 'Path=/cohort/' in cookie and 'Secure' in cookie and 'HttpOnly' in cookie
+    # A stolen cookie must not silently downgrade login protection on HTTP.
+    insecure = TestClient(hosted.app, base_url='http://lopen.linguistics.ntu.edu.tw')
+    assert login(insecure).status_code == 403
+    wrong_host = TestClient(hosted.app, base_url='https://other.example')
+    assert login(wrong_host).status_code == 403
+
+
+def test_prefixed_routes_stay_protected_and_cookie_is_removed_on_logout(protected):
+    _client, manager = protected
+    manager.root_path = '/cohort'
+    manager.public_origin = 'https://lopen.linguistics.ntu.edu.tw'
+    hosted = TestClient(create_app('unused.sqlite', auth=manager, root_path='/cohort'),
+                        base_url='https://lopen.linguistics.ntu.edu.tw')
+    assert hosted.get('/cohort/api/graph').status_code == 401
+    assert hosted.get('/cohort/api/auth/session').json()['authenticated'] is False
+    response = hosted.post('/cohort/api/auth/login', json={
+        'username': 'researcher', 'password': 'synthetic-test-password',
+    })
+    assert response.status_code == 200
+    csrf = response.json()['csrf_token']
+    assert hosted.get('/cohort/api/auth/session').json()['authenticated'] is True
+    response = hosted.post('/cohort/api/auth/logout', headers={'X-CSRF-Token': csrf})
+    assert response.status_code == 200
+    assert 'Path=/cohort/' in response.headers['set-cookie']
+    assert hosted.get('/cohort/api/auth/session').json()['authenticated'] is False
+
+
+def test_hosted_launcher_refuses_disabling_auth(tmp_path, monkeypatch, capsys):
+    main = runpy.run_path(str(Path(__file__).resolve().parents[1] / 'scripts/serve_ui.py'))['main']
+    monkeypatch.setattr('sys.argv', ['serve_ui.py', '--no-auth', '--public-origin',
+                                   'https://lopen.linguistics.ntu.edu.tw', '--trusted-proxy-ips', '127.0.0.1'])
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 2
+    assert 'public hosting cannot disable authentication' in capsys.readouterr().err
+
+
+def test_hosted_login_trusts_headers_only_from_explicit_proxy(protected):
+    from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+    _client, manager = protected
+    manager.public_origin = 'https://lopen.linguistics.ntu.edu.tw'
+    manager.allow_local_http = False
+    app = ProxyHeadersMiddleware(create_app('unused.sqlite', auth=manager), trusted_hosts=['127.0.0.1'])
+    headers = {'X-Forwarded-Proto': 'https', 'Origin': manager.public_origin}
+    trusted = TestClient(app, base_url='http://lopen.linguistics.ntu.edu.tw', client=('127.0.0.1', 9000))
+    assert login(trusted, headers=headers).status_code == 200
+    untrusted = TestClient(app, base_url='http://lopen.linguistics.ntu.edu.tw', client=('192.0.2.1', 9000))
+    assert login(untrusted, headers=headers).status_code == 403
+
+
+def test_zero_port_origin_does_not_match_default_port(protected):
+    client, _manager = protected
+    assert login(client, headers={'Origin': 'http://localhost:0'}).status_code == 403
+
+
+def test_zero_port_host_does_not_match_hosted_origin(protected):
+    _client, manager = protected
+    manager.public_origin = 'https://lopen.linguistics.ntu.edu.tw'
+    hosted = TestClient(create_app('unused.sqlite', auth=manager),
+                        base_url='https://lopen.linguistics.ntu.edu.tw:0')
+    assert login(hosted).status_code == 403

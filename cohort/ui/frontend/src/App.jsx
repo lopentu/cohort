@@ -1,4 +1,5 @@
 import { tr, formatNumber } from './i18n'
+import { applicationPath } from './request'
 import { useTranslation } from 'react-i18next'
 import { Button, TabsRoot, TabNavigation, TabPanel } from './components/ui'
 import SessionControls from './auth/SessionControls'
@@ -385,7 +386,7 @@ function Legend({ data, showAudit }) {
           <dt>{tr("Other links")}</dt>
           <dd>{tr("Tests connects a query to a conjecture. Parallel and descent links mark related sources whose support may not be independent.")}</dd>
         </dl>
-        <a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">{tr("Open the illustrated graph guide")}</a>
+        <a href={applicationPath('/assets/graph-guide.html')} target="_blank" rel="noopener noreferrer">{tr("Open the illustrated graph guide")}</a>
       </details>
     </div>
   )

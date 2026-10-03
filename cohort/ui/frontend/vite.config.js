@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 // server proxies /api to the FastAPI process so `npm run dev` and the built
 // bundle behave identically.
 export default defineConfig({
+  base: './',
   plugins: [react()],
   build: {
     outDir: '../static',
