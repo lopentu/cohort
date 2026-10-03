@@ -36,6 +36,10 @@ The normal server explicitly permits localhost HTTP for this arrangement and ign
 
 `--no-auth` is an explicit opt-out for controlled localhost development. It is not the recommended way to start a research session. Programmatic callers of `create_app` must provide `auth=AuthManager.from_file(...)` to enable the same protection; the factory's default remains compatible with existing local tests and scripts.
 
+For a same-host HTTPS reverse proxy, the launcher also accepts `--root-path /cohort`, `--public-origin https://lopen.linguistics.ntu.edu.tw` and `--trusted-proxy-ips 127.0.0.1`. All three describe the intended deployment; the origin has no path or trailing slash. The proxy strips `/cohort`, preserves the public Host and overwrites the forwarding headers. Only explicitly configured loopback proxies are trusted. Public mode refuses `--no-auth` and non-HTTPS or wrong-host sign-in, and uses a `__Secure-cohort_session` cookie scoped to `/cohort/`. Local startup defaults remain unchanged.
+
+Cookie paths separate ordinary delivery between applications, but are not a security boundary between applications on the same origin. A compromised sibling application on the public hostname can make same-origin requests to Cohort. All applications on that hostname must be trusted; a separate hostname is needed for browser origin isolation.
+
 ## Language and tour
 
 Use the language selector on the login screen or top toolbar to choose English or 繁體中文. The selection is saved in that browser. Switching language changes interface controls and explanations, not source passages, saved questions, model output or graph identifiers.

@@ -1,6 +1,7 @@
 import { Button, Popover } from './components/ui'
 import { useTranslation } from 'react-i18next'
 import { tr } from './i18n'
+import { applicationPath } from './request'
 import { useEffect, useState } from 'react'
 
 const INTROS = {
@@ -94,8 +95,8 @@ export default function TabIntro({ tab, open, onToggle }) {
       </Button>
     }>
           <h3>{tr(intro.title)}</h3>
-          <p><a href={`/assets/ui-guide.html#${tab === 'run' ? 'inquiry' : tab}`} target="_blank" rel="noopener noreferrer">{tr("Controls, outputs and getting started")}</a></p>
-          {tab === 'graph' && <p><a href="/assets/graph-guide.html" target="_blank" rel="noopener noreferrer">{tr("How to read the graph — illustrated guide")}</a></p>}
+          <p><a href={applicationPath(`/assets/ui-guide.html#${tab === 'run' ? 'inquiry' : tab}`)} target="_blank" rel="noopener noreferrer">{tr("Controls, outputs and getting started")}</a></p>
+          {tab === 'graph' && <p><a href={applicationPath('/assets/graph-guide.html')} target="_blank" rel="noopener noreferrer">{tr("How to read the graph — illustrated guide")}</a></p>}
           <dl className="tab-intro-body">
             {intro.body.map(([term, text]) => (
               <div key={term}>

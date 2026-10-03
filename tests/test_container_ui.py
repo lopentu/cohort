@@ -35,3 +35,14 @@ def test_restart_keeps_saved_graph_bytes(tmp_path: Path):
     before = db.read_bytes()
     ensure_graph(db, log)
     assert db.read_bytes() == before
+
+
+def test_hosted_configuration_is_forwarded_and_secrets_are_external():
+    args = server_arguments({'COHORT_ROOT_PATH': '/cohort',
+                             'COHORT_PUBLIC_ORIGIN': 'https://lopen.linguistics.ntu.edu.tw',
+                             'COHORT_TRUSTED_PROXY_IPS': '127.0.0.1',
+                             'COHORT_AUTH_FILE': '/secrets/ui-auth.json'})
+    assert args[args.index('--root-path') + 1] == '/cohort'
+    assert args[args.index('--public-origin') + 1] == 'https://lopen.linguistics.ntu.edu.tw'
+    assert args[args.index('--trusted-proxy-ips') + 1] == '127.0.0.1'
+    assert args[args.index('--auth-file') + 1] == '/secrets/ui-auth.json'

@@ -59,6 +59,7 @@ from cohort.sources.base import Source
 from cohort.sources.cbeta_markup import strip_markup_for_display
 from cohort.sources.cbeta_refs import reader_url
 from cohort.ui.auth import AuthManager, mount_auth
+from cohort.ui.hosting import HostingConfig
 from cohort.views import (
     DISCOUNTING_EDGE_TYPES,
     dossier_json,
@@ -87,6 +88,7 @@ def create_app(
     attribution: AttributionIndex | None = None,
     embeddings: EmbeddingIndex | None = None,
     auth: AuthManager | None = None,
+    root_path: str = '',
 ) -> FastAPI:
     """Build the app around one projection path.
 
@@ -122,6 +124,7 @@ def create_app(
         title="COHORT",
         summary="Read-only view of the evidence graph.",
         version="0.1.0",
+        root_path=HostingConfig(root_path=root_path).root_path,
     )
 
     def read() -> Graph:

@@ -66,6 +66,10 @@ def main() -> None:
                         help="owner-only researcher credentials created by setup_ui_auth.py")
     parser.add_argument("--no-auth", action="store_true",
                         help="disable login for controlled localhost development only")
+    parser.add_argument('--root-path', default='', help='stripped reverse-proxy prefix, e.g. /cohort')
+    parser.add_argument('--public-origin', default=None, help='exact public HTTPS origin, without a path')
+    parser.add_argument('--trusted-proxy-ips', default=None,
+                        help='explicit same-host loopback proxy addresses; never a wildcard')
     parser.add_argument(
         "--allow-writes", action="store_true",
         help="mount the researcher's accept/reject/reopen endpoints (acts as RESEARCHER)",
@@ -99,6 +103,14 @@ def main() -> None:
         help="disable the monetary stopping threshold; retain cost accounting",
     )
     args = parser.parse_args()
+    from cohort.ui.hosting import HostingConfig
+
+    try:
+        hosting = HostingConfig(args.root_path, args.public_origin, args.trusted_proxy_ips)
+    except ValueError as exc:
+        parser.error(str(exc))
+    if args.no_auth and hosting.public_origin:
+        parser.error('public hosting cannot disable authentication')
     if args.host not in ("127.0.0.1", "localhost", "::1"):
         parser.error("the researcher UI must bind to localhost; use SSH port forwarding")
     from cohort.ui.auth import AuthManager
@@ -106,7 +118,8 @@ def main() -> None:
     auth = None
     if not args.no_auth:
         try:
-            auth = AuthManager.from_file(args.auth_file, allow_local_http=True)
+            auth = AuthManager.from_file(args.auth_file, allow_local_http=hosting.public_origin is None,
+                                         root_path=hosting.root_path, public_origin=hosting.public_origin)
         except (OSError, ValueError):
             parser.error("valid owner-only credentials are required; run scripts/setup_ui_auth.py "
                          "or use --no-auth for controlled localhost development")
@@ -215,8 +228,11 @@ def main() -> None:
             db_path, args.log, allow_writes=args.allow_writes,
             source=source, run_manager=run_manager, attribution=attribution, embeddings=embeddings,
             auth=auth,
+            root_path=hosting.root_path,
         ),
-        host=args.host, port=args.port, proxy_headers=False,
+        host=args.host, port=args.port, root_path=hosting.root_path,
+        proxy_headers=hosting.trusted_proxy_ips is not None,
+        forwarded_allow_ips=hosting.trusted_proxy_ips or '',
     )
 
 

@@ -62,9 +62,17 @@ class AuthManager:
                  clock: Callable[[], float] = time.monotonic,
                  idle_seconds: float = 1800, absolute_seconds: float = 28800,
                  max_sessions: int = 64, max_attempts: int = 8,
-                 retry_seconds: float = 60, allow_local_http: bool = False) -> None:
+                 retry_seconds: float = 60, allow_local_http: bool = False,
+                 root_path: str = '', public_origin: str | None = None) -> None:
+        from cohort.ui.hosting import HostingConfig, validate_public_origin
+
+        HostingConfig(root_path=root_path)
+        if public_origin is not None:
+            validate_public_origin(public_origin)
         self.username = username
         self.allow_local_http = allow_local_http
+        self.root_path = root_path
+        self.public_origin = public_origin
         self._salt = salt
         self._hash = password_hash
         self.clock = clock
@@ -79,7 +87,8 @@ class AuthManager:
         self._lock = threading.Lock()
 
     @classmethod
-    def from_file(cls, path: str | Path, *, allow_local_http: bool = False) -> AuthManager:
+    def from_file(cls, path: str | Path, *, allow_local_http: bool = False,
+                  root_path: str = '', public_origin: str | None = None) -> AuthManager:
         """Reject symlinks, broad permissions and unbounded KDF parameters."""
         fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
         with os.fdopen(fd, "r", encoding="utf-8") as handle:
@@ -103,7 +112,16 @@ class AuthManager:
                     raise ValueError("invalid credentials file")
             except (KeyError, TypeError, AttributeError, json.JSONDecodeError) as exc:
                 raise ValueError("invalid credentials file") from exc
-        return cls(username, salt, verifier, allow_local_http=allow_local_http)
+        return cls(username, salt, verifier, allow_local_http=allow_local_http,
+                   root_path=root_path, public_origin=public_origin)
+
+    @property
+    def cookie_name(self) -> str:
+        return '__Secure-' + COOKIE_NAME if self.public_origin else COOKIE_NAME
+
+    @property
+    def cookie_path(self) -> str:
+        return self.root_path + '/'
 
     def _prune(self, now: float) -> None:
         expired = [key for key, session in self._sessions.items()
@@ -167,13 +185,19 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
                                  "X-Content-Type-Options": "nosniff", "Referrer-Policy": "same-origin"})
 
 
-def _same_origin(request: Request) -> bool:
+def _same_origin(request: Request, public_origin: str | None = None) -> bool:
     if request.headers.get("sec-fetch-site") not in (None, "same-origin", "none"):
         return False
     origin = request.headers.get("origin")
-    if origin is None:
-        return True  # Non-browser JSON clients have no ambient Origin.
     try:
+        if public_origin is not None:
+            configured, actual = urlsplit(public_origin), urlsplit(str(request.url))
+            if (actual.scheme, actual.hostname, actual.port or 443) != (
+                configured.scheme, configured.hostname, configured.port or 443
+            ):
+                return False
+        if origin is None:
+            return True  # Non-browser JSON clients have no ambient Origin.
         incoming, expected = urlsplit(origin), urlsplit(str(request.url))
         if incoming.username or incoming.password or incoming.path or incoming.query or incoming.fragment:
             return False
@@ -195,15 +219,22 @@ def mount_auth(app: FastAPI, manager: AuthManager | None) -> None:
 
     @app.middleware("http")
     async def session_boundary(request: Request, call_next):
-        session = manager.session(request.cookies.get(COOKIE_NAME)) if manager else None
+        session = manager.session(request.cookies.get(manager.cookie_name)) if manager else None
         request.state.auth_session = session
         path = request.url.path
+        # Uvicorn includes root_path in scope.path; stripped-prefix test clients
+        # may not. Compare the same route path that the ASGI router receives.
+        prefix = request.scope.get('root_path', '')
+        if prefix and path.startswith(prefix + '/'):
+            path = path[len(prefix):]
+        elif prefix and path == prefix:
+            path = '/'
         is_public = path in public or path == "/" or path.startswith("/assets/")
         if manager and not is_public and session is None:
             return _error(401, "authentication_required", "Sign in to continue.")
         if manager and request.method not in {"GET", "HEAD", "OPTIONS"} and path != "/api/auth/login":
             supplied = request.headers.get("x-csrf-token", "")
-            if (session is None or not _same_origin(request)
+            if (session is None or not _same_origin(request, manager.public_origin)
                     or not hmac.compare_digest(supplied.encode(), session.csrf_token.encode())):
                 return _error(403, "csrf_failed", "Session verification failed.")
         response = await call_next(request)
@@ -226,7 +257,7 @@ def mount_auth(app: FastAPI, manager: AuthManager | None) -> None:
             manager.allow_local_http and request.url.hostname in {"localhost", "127.0.0.1", "::1"}
         ):
             return _error(403, "secure_transport_required", "Login requires HTTPS or configured localhost HTTP.")
-        if not _same_origin(request):
+        if not _same_origin(request, manager.public_origin):
             return _error(403, "origin_failed", "Login origin was rejected.")
         if request.headers.get("content-type", "").split(";")[0].strip().lower() != "application/json":
             return _error(415, "json_required", "Login requires JSON.")
@@ -245,7 +276,7 @@ def mount_auth(app: FastAPI, manager: AuthManager | None) -> None:
             return _error(400, "invalid_login", "Supply a username and password.")
         token, session, limited = await run_in_threadpool(
             manager.login, username, password,
-            request.client.host if request.client else "local", request.cookies.get(COOKIE_NAME),
+            request.client.host if request.client else "local", request.cookies.get(manager.cookie_name),
         )
         if limited:
             response = _error(429, "rate_limited", "Too many login attempts. Try again shortly.")
@@ -254,15 +285,17 @@ def mount_auth(app: FastAPI, manager: AuthManager | None) -> None:
         if token is None:
             return _error(401, "invalid_credentials", "Username or password is incorrect.")
         response = JSONResponse(_session_json(manager, session))
-        response.set_cookie(COOKIE_NAME, token, max_age=int(manager.absolute_seconds), httponly=True,
-                            secure=request.url.scheme == "https", samesite="strict", path="/")
+        response.set_cookie(manager.cookie_name, token, max_age=int(manager.absolute_seconds), httponly=True,
+                            secure=bool(manager.public_origin) or request.url.scheme == "https",
+                            samesite="strict", path=manager.cookie_path)
         return response
 
     @app.post("/api/auth/logout")
     def auth_logout(request: Request):
         if manager:
-            manager.revoke(request.cookies.get(COOKIE_NAME))
+            manager.revoke(request.cookies.get(manager.cookie_name))
         response = JSONResponse(_session_json(manager, None))
-        response.delete_cookie(COOKIE_NAME, httponly=True, secure=request.url.scheme == "https",
-                               samesite="strict", path="/")
+        response.delete_cookie(manager.cookie_name if manager else COOKIE_NAME, httponly=True,
+                               secure=bool(manager and manager.public_origin) or request.url.scheme == "https",
+                               samesite="strict", path=manager.cookie_path if manager else '/')
         return response
