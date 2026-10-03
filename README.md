@@ -31,6 +31,8 @@ at two while its independence flag flips to false the moment a `parallel_of`
 edge is recorded. That is the counter-argument to consensus-seeking, in three
 lines of output.
 
+For container startup and restart commands, see [Docker Compose](docs/docker.md).
+
 Browser startup now requires local account setup: `uv run python scripts/setup_ui_auth.py`. See [login, languages and tour](docs/ui-access.md).
 
 ## Two front ends, same capabilities

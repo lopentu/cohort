@@ -2,6 +2,8 @@
 
 The authenticated bilingual UI is on `feat/auth-i18n-tour`, stacked on the presentation branch. React 18 and Vite remain the frontend; Radix UI supplies shared interactive primitives, and i18next/react-i18next supply localization. The graph still uses vis-network.
 
+For a container installation, use the [Docker guide](docker.md); it builds the frontend and supplies persistent state. The native instructions below still apply.
+
 ## Create the account
 
 After `uv sync --extra dev --extra ui --extra evidence`, run:

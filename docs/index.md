@@ -16,6 +16,7 @@ multi-agent textual research.*
 | The system refused 40 writes — which should I read? | [refusals.md](refusals.md) |
 | How do I run agents, and what does it cost? | [agents.md](agents.md) |
 | How do I point it at a corpus? | [corpus.md](corpus.md) |
+| How do I run and restart it with Docker? | [docker.md](docker.md) |
 | How do I configure login, languages and the tour? | [ui-access.md](ui-access.md) |
 | How do I use the web interface? | [ui.md](ui.md) |
 | What command do I run? | [cli.md](cli.md) — the `cohort` CLI, same capabilities as the UI |
