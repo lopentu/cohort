@@ -77,3 +77,15 @@ or screenshot the contents of `data/`, and keep servers bound to
 - `pkill -f` with a pattern that matches your own shell.
 - The browser caching `index.html` and loading a stale bundle after a
   frontend rebuild; `/` now sends `Cache-Control: no-cache`.
+
+## Hosted service preparation
+
+`lope-service.json` declares the managed hosting boundary; it remains discovery
+until catalog, responsibility, data-transfer, backup and acceptance gates pass.
+Follow `docs/hosting.md`. Production code belongs under `/opt/lope/services/cohort`,
+configuration under `/etc/lope/services/cohort`, root-controlled secrets under
+`/etc/lope/secrets/cohort`, and mutable state under `/srv/lope/services/cohort`.
+Do not proxy to a personal-home checkout. Validate the authoritative fleet catalog
+and the service contract with `--repository-root` and `--catalog` before deployment.
+Keep reviewed images, explicit start/stop/restore/rollback instructions and the
+previous workspace available; a failing checker is a deployment blocker.

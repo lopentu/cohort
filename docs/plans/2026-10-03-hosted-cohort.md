@@ -6,8 +6,10 @@
 
 **Constraints:** Absolute Python imports; no model output-token cap; no corpus or credential contents in Git; one graph writer; authentication remains required for normal launch. Public hosting uses Secure, HttpOnly, SameSite cookies scoped to the application path. The existing home deployment stays available as rollback evidence. No live fleet, DNS, account, catalog or proxy mutation is part of this preparation.
 
-- [ ] Add failing tests for prefixed requests/assets and hosted login origin/cookie behavior; implement shared path handling and explicit launch settings.
-- [ ] Prepare canonical Compose/config/nginx artifacts and a discovery service contract; record catalog, ownership, data-access and backup gates.
+- [x] Add failing tests for prefixed requests/assets and hosted login origin/cookie behavior; implement shared path handling and explicit launch settings.
+- [x] Prepare canonical Compose/config/nginx artifacts and a discovery service contract; record catalog, ownership, data-access and backup gates.
 - [ ] Verify synthetic HTTPS proxy/browser workflows, restore and restart behavior, Python/frontend suites, ruff, ty, and service validators. Obtain an independent review and publish the preparation branch.
 
 Canonical boundaries: `/opt/lope/services/cohort` (code), `/etc/lope/services/cohort` (configuration), `/etc/lope/secrets/cohort` (credentials), `/srv/lope/services/cohort` (state). Service ID: `service.cohort`.
+
+Application and synthetic deployment checks passed. Independent deployment review and branch publication remain pending. The service contract is structurally valid; catalog binding fails because `service.cohort` has not been registered. This plan does not authorize activation or waive that gate.
