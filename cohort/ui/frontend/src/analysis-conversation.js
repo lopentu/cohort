@@ -44,3 +44,8 @@ export function analysisThreads(runs) {
  }
  return [...threads.values()]
 }
+
+// Bounded hosts refuse requests without a budget, including chat follow-ups.
+export function analysisRunRequest(request,config) {
+ return {...request,budget_usd:config.default_budget_usd}
+}

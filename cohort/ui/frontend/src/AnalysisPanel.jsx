@@ -2,7 +2,7 @@ import { Button } from './components/ui'
 import { useTranslation } from 'react-i18next'
 import { tr } from './i18n'
 import ActionList from './ActionList'
-import { analysisContext, analysisThreads, makeAnalysisInstructions } from './analysis-conversation'
+import { analysisContext, analysisThreads, makeAnalysisInstructions, analysisRunRequest } from './analysis-conversation'
 import AnalysisMarkdown from './AnalysisMarkdown'
 import { useEffect, useRef, useState } from 'react'
 import { getRunConfig, getRuns, startRun, stopRun } from './api'
@@ -48,7 +48,7 @@ export default function AnalysisPanel({ view, scope }) {
     setError(null);setPending(true)
     try{
       const instructions=makeAnalysisInstructions({scope,view,conversationId:crypto.randomUUID(),run:followup?run:null,message:followup?message:null})
-      const r=await startRun({agents:[{agent_id:`agent:analysis-${crypto.randomUUID()}`,role:'analyst',model:model.trim(),instructions,method_label:`${followup?context.view:view} analysis`,corpus_scope:'Original view and related local corpus material'}],question_id:(followup?run.question_id:scope.question_id) || null})
+      const r=await startRun(analysisRunRequest({agents:[{agent_id:`agent:analysis-${crypto.randomUUID()}`,role:'analyst',model:model.trim(),instructions,method_label:`${followup?context.view:view} analysis`,corpus_scope:'Original view and related local corpus material'}],question_id:(followup?run.question_id:scope.question_id) || null},config))
       setRunId(r.id)
       if(followup)setMessage('')
       setRuns(previous=>({...previous,current:r}))
