@@ -53,3 +53,28 @@ Scores are reviewer judgments on the inspected scope, not measured compliance pe
 | Theming | 4 | Inspected views and live graph labels follow appearance |
 | Implementation integrity | 3 | Shared controls/tokens retained; existing detector warnings reviewed |
 | Total | 14/20 | Good within the inspected scope |
+
+## Public hosted instance
+
+The temporary instance at `https://lopen.linguistics.ntu.edu.tw/cohort/` was
+checked in Chromium at 1440 × 1000, using the existing account and actual saved
+workspace. No screenshots or text dumps of restricted research records were
+captured. The unauthenticated login screen was viewed directly.
+
+- All five tabs loaded in English and Traditional Chinese: ten states, no
+  document-level horizontal overflow, no JavaScript page errors, and no requests
+  escaping `/cohort/`.
+- HTTPS certificate validation passed. Five anonymous research endpoints returned
+  401. Static illustrated help intentionally remains public.
+- Login set a Secure, HttpOnly, SameSite=Strict cookie at `/cohort/`; sign-out
+  restored the unauthenticated access boundary.
+- Graph node/edge identifiers and the vocabulary-unit response matched the
+  original workspace. Model selection/pool, monetary thresholds, worker turns
+  and agent settings matched the original configuration.
+- Exact corpus search returned two hits for the checked phrase. Related passages
+  for `T0263-rest`, vocabulary comparison for `T0603`, and exclusion of `T1694`
+  returned successful responses. No paid agent runs were started.
+
+The earlier synthetic desktop/mobile sweep remains the evidence for mobile
+layout and automated accessibility checks. This live pass did not add a mobile
+research-data capture or establish complete graph-canvas keyboard accessibility.

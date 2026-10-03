@@ -1,10 +1,10 @@
 # Hosting Cohort at /cohort
 
-This is a preparation package for `https://lopen.linguistics.ntu.edu.tw/cohort/`. It does not install or publish the service. The current localhost installation remains intact. The requested migration preserves the saved graph, event log, account, corpus, vocabulary inputs, embeddings, attribution cache and model configuration.
+The temporary hosted instance is at `https://lopen.linguistics.ntu.edu.tw/cohort/` (2026-10-03). It uses the existing account, saved graph, event log, corpus, vocabulary inputs, embeddings, attribution cache and model configuration. The owner requested a temporary demonstration, deferring formal production onboarding. The original localhost installation remains intact as rollback evidence. See [the deployment checkpoint](hosting-activation-2026-10-03.md) for verification and recovery facts.
 
 ## Boundary
 
-Service ID: `service.cohort`. Governance remains **discovery**; the proposed runtime is always-on Compose. nginx terminates HTTPS, redirects `/cohort` to `/cohort/`, strips the prefix and forwards to a localhost-bound backend. Frontend assets and every API/help link work beneath that prefix. FastAPI/Uvicorn receive the explicit root path. Proxy trust is restricted to declared loopback addresses, and nginx replaces incoming forwarding headers.
+Service ID: `service.cohort`. The production service contract remains **discovery**; the temporary hosted instance runs in Compose with `restart: unless-stopped`. nginx terminates HTTPS, redirects `/cohort` to `/cohort/`, strips the prefix and forwards to a localhost-bound backend. Frontend assets and every API/help link work beneath that prefix. FastAPI/Uvicorn receive the explicit root path. Proxy trust is restricted to declared loopback addresses, and nginx replaces incoming forwarding headers.
 
 | Responsibility | Prepared location |
 |---|---|
@@ -21,7 +21,7 @@ Secrets directories remain root-controlled and unavailable to ordinary host user
 
 The existing application still has **one account and shared research records**. This preparation adds no anonymous corpus access or new users. Cookie paths are not browser-origin isolation: other applications on the same public hostname must be trusted. A separate hostname would be needed to isolate Cohort from a compromised sibling application.
 
-## Required decisions before activation
+## Deferred production onboarding
 
 - Register `service.cohort` and the actual data/state dependencies in the authoritative fleet catalog, referencing a Notion ownership/acceptance record. Do not invent owner references or provenance entries to pass validation.
 - Record the service owner, operational maintainer, data/access authority, backup owner and acceptance authority. The instruction is to preserve existing data and account access; broader access is outside this preparation.
@@ -30,7 +30,7 @@ The existing application still has **one account and shared research records**. 
 - Confirm the final source snapshot and immutable input checksums immediately before copying. Quiesce source writes at cutover so two workspaces cannot diverge.
 - Authorize the exact canonical installation, protected data/credential transfer, nginx location installation/reload and source-runtime transition. No firewall or DNS change is needed for the observed existing HTTPS site.
 
-The discovery contract is `lope-service.json`. It is not active, and absent fleet-catalog registration blocks cross-validation and deployment. Dependency declarations must be completed from the approved catalog before advancing its lifecycle. Nothing in this document waives a failed validator.
+The discovery contract is `lope-service.json`. Formal managed-service activation is deferred at the owner’s request. The temporary instance must not be represented as a completed production handoff. Dependency declarations must be completed from the approved catalog before advancing its lifecycle. Nothing in this document waives a failed validator.
 
 ## Static validation
 
@@ -111,7 +111,7 @@ Keep the original localhost code, image and workspace intact until acceptance cl
 
 ## Handoff
 
-Repository preparation and synthetic tests do not mean the service is live. Record exact source/image revisions, destination checksums, responsibility decisions, backup/restore proof, catalog validation and acceptance in Git-owned technical evidence and Notion-owned task/server/maintenance records. Re-fetch every Notion write. Update the dashboard only with approved public-safe service status, never raw topology, credential paths or corpus details.
+Use the dated deployment checkpoint to distinguish the temporary live instance from the unfinished production handoff. Record exact source/image revisions, destination checksums, responsibility decisions, backup/restore proof, catalog validation and acceptance in Git-owned technical evidence and Notion-owned task/server/maintenance records. Re-fetch every Notion write. Update the dashboard only with approved public-safe service status, never raw topology, credential paths or corpus details.
 
 Before activation, keep unknown measurements null and missing ownership/catalog decisions explicit. The deployed contract may advance to `active` only after the gates and functional checks pass.
 
