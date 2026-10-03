@@ -45,3 +45,21 @@ The design detector reported 13 warnings in existing CSS: ten accent-border matc
 ## Starting this version
 
 Follow [account setup and language controls](ui-access.md), or the [Taiwan Mandarin quickstart](quickstart-zh-TW.md). Rebuild the frontend after checking out the branch; compiled assets remain generated and ignored by Git.
+
+## Hallmark follow-up — 2026-10-03
+
+<!-- Hallmark · pre-emit critique: P4 H4 E4 S5 R4 V4 -->
+
+Hallmark 1.1.0 was run in audit mode against the existing research application. This was a review, with no visual redesign. Its marketing-page rules were assessed in context: the login form is not a marketing hero, and graph status colors have an explicit evidential purpose.
+
+The rebuilt UI was exercised in English and Traditional Chinese at 320, 375, 414, 768 and 1440 pixels wide: 50 tab views, no JavaScript exceptions and no research writes or model runs. Five views overflowed horizontally, all in English at 320 pixels. The other 45 views did not. Screenshots of login, desktop Inquiry, phone Graph and vocabulary output were inspected. A separate axe sweep again returned no reported WCAG 2 A/AA or 2.1 AA violations in 22 inspections; this does not cover every control state or screen-reader task.
+
+| Severity | Hallmark tell | Where | Concrete correction |
+|---|---|---|---|
+| Major | Mobile responsiveness; two-line clickable text | `cohort/ui/frontend/src/styles.css:2407–2429` | Put account controls on their own row at narrow widths and let tabs wrap as whole, single-line controls. The 320px English toolbar clips controls; the vocabulary tab wraps at phone widths. |
+| Minor | Over-specified motion | `cohort/ui/frontend/src/styles.css:1002`, `:428`, `:1213` | Replace `transition: all` with named properties and use transform-based animation where changing width currently triggers layout. |
+| Minor | Mid-render token improvisation | `cohort/ui/frontend/src/styles.css:1977`, `:2070`, `:2080`, `:2411` | Move repeated monospace and Chinese source/interface font stacks into named tokens, preserving their distinct reading purposes. |
+
+No generic hero/feature-grid/footer template or misleading Hallmark stamp was found. Remaining audit findings: **0 critical · 1 major · 2 minor**. The narrow-phone layout needs correction; this audit does not claim it passed Hallmark's responsive floor.
+
+The full Python suite passed 620 tests, including 40 authentication tests. `npm test` passed all 11 test files under the installed Node runner. Ruff and ty passed; the production build passed with the existing graph-chunk size warning, and npm reported no dependency vulnerabilities.

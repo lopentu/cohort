@@ -230,3 +230,77 @@ def test_malformed_credentials_are_rejected_without_contents(tmp_path, contents)
     path.chmod(0o600)
     with pytest.raises(ValueError, match=r"^invalid credentials file$"):
         AuthManager.from_file(path)
+
+
+def test_every_registered_research_route_requires_login(protected):
+    """A new endpoint must inherit protection, including non-GET methods."""
+    import re
+
+    client, _ = protected
+    checked = set()
+    for route in client.app.routes:
+        path = getattr(route, "path", "")
+        if not path or path == "/" or path.startswith(("/assets", "/api/auth/")):
+            continue
+        path = re.sub(r"\{[^}]+\}", "synthetic-id", path)
+        for method in getattr(route, "methods", None) or ():
+            response = client.request(method, path, follow_redirects=False)
+            assert response.status_code == 401, (method, path, response.status_code)
+            checked.add((method, path))
+    assert ("GET", "/api/graph") in checked
+    assert ("POST", "/api/accept") in checked
+
+
+@pytest.mark.parametrize("path", [
+    "/api/%67raph", "/api/auth/session/../graph", "/api/auth/session%2f..%2fgraph",
+    "/assets/%2e%2e/api/graph", "/assets/%2e%2e/%2e%2e/auth.py",
+    "/assets/%252e%252e/%252e%252e/auth.py",
+])
+def test_encoded_paths_cannot_expose_research_or_server_source(protected, path):
+    client, _ = protected
+    response = client.get(path, follow_redirects=False)
+    assert response.status_code in {401, 404}
+
+
+def test_logout_revokes_copied_cookie_and_csrf_token(protected):
+    client, _ = protected
+    csrf = login(client).json()["csrf_token"]
+    cookie = client.cookies.get("cohort_session")
+    assert client.post("/api/auth/logout", headers={"X-CSRF-Token": csrf}).status_code == 200
+    client.cookies.set("cohort_session", cookie, domain="localhost.local", path="/")
+    assert client.get("/api/graph").status_code == 401
+    assert client.post("/api/accept", json={}, headers={"X-CSRF-Token": csrf}).status_code == 401
+    assert client.get("/api/auth/session").json()["csrf_token"] is None
+
+
+def test_csrf_token_cannot_be_reused_in_another_session(protected):
+    client, _ = protected
+    old_csrf = login(client).json()["csrf_token"]
+    client.cookies.clear()
+    new_csrf = login(client).json()["csrf_token"]
+    assert new_csrf != old_csrf
+    assert client.post("/api/auth/logout", headers={"X-CSRF-Token": old_csrf}).status_code == 403
+    assert client.get("/api/graph").status_code == 200
+
+
+def test_large_streamed_login_rejected_before_password_hash(protected, monkeypatch):
+    from cohort.ui.auth import MAX_LOGIN_BYTES
+
+    client, manager = protected
+
+    def unexpected_login(*args, **kwargs):
+        pytest.fail("oversized login reached password verification")
+
+    monkeypatch.setattr(manager, "login", unexpected_login)
+    response = client.post("/api/auth/login", content=iter([b"{" * MAX_LOGIN_BYTES, b"}"]),
+                           headers={"Content-Type": "application/json"})
+    assert response.status_code == 413
+
+
+def test_forwarded_client_addresses_cannot_bypass_attempt_limit(protected):
+    client, manager = protected
+    for attempt in range(manager.max_attempts):
+        response = client.post("/api/auth/login", json={"username": "unknown", "password": "bad"},
+                               headers={"X-Forwarded-For": f"192.0.2.{attempt}"})
+        assert response.status_code == 401
+    assert login(client, headers={"X-Forwarded-For": "192.0.2.254"}).status_code == 429

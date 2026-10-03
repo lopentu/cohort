@@ -48,4 +48,10 @@ Sessions have a thirty-minute idle timeout and an eight-hour absolute limit. Sig
 
 There is one researcher account and one shared set of research records. Login protects HTTP access; it does not create personal workspaces, change the evidence-graph researcher identity, or implement corpus licence governance. ATELIER remains separate and unconnected.
 
+Localhost HTTP assumes that local processes and other services on the same browser hostname are trusted. Cookies are not isolated by port: a malicious service visited at another port on `127.0.0.1` can receive the session cookie. HttpOnly prevents JavaScript from reading it, and SameSite blocks cross-site requests; neither provides port isolation. For stronger separation, use a dedicated hostname with HTTPS and review that deployment separately. Keep the current server behind localhost and SSH forwarding.
+
+Login attempts are limited per client and across the server before password hashing. Forwarded client addresses do not bypass that limit. A local process can still exhaust it and temporarily prevent sign-in; the limit protects guessing and hashing cost, not availability against hostile local software.
+
+On 2026-10-03, the authentication suite passed 40 synthetic tests, including every registered research route, encoded paths, copied-cookie replay after logout, tokens from another session, oversized streamed login bodies and spoofed forwarded addresses. An independent code review found no authentication bypass within the localhost deployment. A live container check returned 401 before login, 200 after login and 401 when a logged-out cookie was replayed. These checks do not prove that every possible attack is excluded.
+
 Credential setup, password verification, session handling and route protection live in `cohort/ui/auth.py` and `scripts/setup_ui_auth.py`. Frontend session handling lives in `src/auth/` and `src/request.js`; translation resources live beside `src/i18n.js`; shared Radix primitives live in `src/components/ui/`; onboarding lives in `src/onboarding/`.
