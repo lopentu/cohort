@@ -35,6 +35,8 @@ For container startup and restart commands, see [Docker Compose](docs/docker.md)
 
 Browser startup now requires local account setup: `uv run python scripts/setup_ui_auth.py`. See [login, languages and tour](docs/ui-access.md).
 
+For HTTPS hosting under `/cohort/`, see the [hosting preparation and recovery guide](docs/hosting.md). This package does not change a live proxy or publish restricted research data.
+
 ## Two front ends, same capabilities
 
     cohort node claim:abc123      # provenance, with independence stated

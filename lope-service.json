@@ -1,0 +1,35 @@
+{
+  "schema": "lope-service-contract-v1",
+  "id": "service.cohort",
+  "name": "Cohort",
+  "catalog_refs": ["service.cohort"],
+  "lifecycle": "discovery",
+  "runtime": {
+    "mode": "always-on",
+    "start_documented_at": "docs/hosting.md#start",
+    "stop_documented_at": "docs/hosting.md#stop"
+  },
+  "deployment": {
+    "mechanism": "compose",
+    "host": "lopen.linguistics.ntu.edu.tw",
+    "manifest": "deploy/compose.yaml",
+    "code_path": "/opt/lope/services/cohort",
+    "config_path": "/etc/lope/services/cohort",
+    "secrets_path": "/etc/lope/secrets/cohort",
+    "state_path": "/srv/lope/services/cohort"
+  },
+  "network": {
+    "ports": [18766],
+    "health_urls": ["http://127.0.0.1:18766/api/auth/session"],
+    "functional_checks": ["docs/hosting.md#functional-check"]
+  },
+  "dependencies": [],
+  "resources": {"cpu_cores": null, "memory_mib": null, "storage_gib": null},
+  "documents": {
+    "operations": "docs/hosting.md",
+    "recovery": "docs/hosting.md",
+    "rollback": "docs/hosting.md#rollback",
+    "handoff": "docs/hosting.md"
+  },
+  "dashboard": {"mode": "none", "reason": "Discovery draft; no accepted hosted service or dashboard declaration yet."}
+}

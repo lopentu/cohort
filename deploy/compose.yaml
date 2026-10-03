@@ -1,0 +1,52 @@
+name: cohort-hosted
+services:
+  cohort:
+    image: "${COHORT_IMAGE:?set the reviewed image tag or digest}"
+    network_mode: host
+    user: "${COHORT_UID:?set the approved runtime UID}:${COHORT_GID:?set the approved runtime GID}"
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 45s
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:mode=1777
+    env_file:
+      - "${COHORT_CONFIG_FILE:-/etc/lope/services/cohort/cohort.env}"
+      - "${COHORT_MODEL_ENV_FILE:-/etc/lope/secrets/cohort/model.env}"
+    environment:
+      COHORT_AUTH_FILE: /secrets/ui-auth.json
+      COHORT_DB: /state/research.sqlite
+      COHORT_LOG: /state/research.jsonl
+      OPENROUTER_MAX_OUTPUT_TOKENS: "0"
+    volumes:
+      - type: bind
+        source: "${COHORT_WORKSPACE_DIR:-/srv/lope/services/cohort/workspace}"
+        target: /state
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${COHORT_INPUT_DIR:-/srv/lope/services/cohort/inputs}"
+        target: /inputs
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${COHORT_EMBEDDING_DIR:-/srv/lope/services/cohort/embeddings}"
+        target: /embeddings
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${COHORT_AUTH_FILE_HOST:-/etc/lope/secrets/cohort/ui-auth.json}"
+        target: /secrets/ui-auth.json
+        read_only: true
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: [CMD, python, -c, "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:'+os.environ.get('COHORT_PORT','18766')+'/api/auth/session', timeout=4).close()"]
+      interval: 30s
+      timeout: 5s
+      start_period: 120s
+      retries: 3
