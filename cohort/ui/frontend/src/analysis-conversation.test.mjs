@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { analysisContext, analysisMessages, analysisThreads, makeAnalysisInstructions } from './analysis-conversation.js'
+import { analysisContext, analysisMessages, analysisThreads, makeAnalysisInstructions, analysisRunRequest } from './analysis-conversation.js'
 
 const scope={view:'evidence',uid:'T0603',features:'radich',withhold:[]}
 function run(id,instructions,analysis='First answer') {
@@ -35,4 +35,14 @@ test('saved selector groups messages into conversations',()=>{
 test('a failed answer is not invented in the conversation',()=>{
  const a=run('a',makeAnalysisInstructions({scope,view:'evidence',conversationId:'one'}),'')
  assert.equal(analysisMessages(a).length,1)
+})
+
+test('initial and follow-up analyses send the configured spending budget',()=>{
+ for (const question_id of [null, 'question:original']) {
+  const request=analysisRunRequest({agents:[{role:'analyst'}],question_id}, {default_budget_usd:0.25})
+  assert.equal(request.budget_usd,0.25)
+  assert.equal(request.question_id,question_id)
+  assert.equal(request.agents[0].role,'analyst')
+  assert.equal('max_output_tokens' in request,false)
+ }
 })
