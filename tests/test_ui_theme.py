@@ -271,4 +271,6 @@ def test_canvas_external_labels_cover_queries_and_audit_nodes():
     assert declaration is not None
     shapes = set(re.findall(r"'([^']+)'", declaration[1]))
     assert {"dot", "square", "diamond", "star"} <= shapes
-    assert "OUTSIDE_LABEL_SHAPES.has(shape) ? INK_DARK : c.text" in source
+    # Outside labels must follow canvas ink; a fixed dark value disappears
+    # after switching to the dark theme. Inside labels still follow their fill.
+    assert "OUTSIDE_LABEL_SHAPES.has(shape) ? p.text : c.text" in source

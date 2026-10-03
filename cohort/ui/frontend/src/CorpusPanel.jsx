@@ -207,7 +207,7 @@ export default function CorpusPanel({ onCite }) {
                         {record.source_terms && (
                           <p className="terms">{record.source_terms}</p>
                         )}
-                        <pre className="record-text">{record.text}</pre>
+                        <pre className="record-text" tabIndex="0" aria-label={tr("Selected passage")}>{record.text}</pre>
                         {record.truncated && (
                           <p className="warn small">{tr("Partial text shown.")}</p>
                         )}
