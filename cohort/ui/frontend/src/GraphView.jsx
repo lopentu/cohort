@@ -1,7 +1,7 @@
 import { Button } from './components/ui'
 import { useTranslation } from 'react-i18next'
 import { tr } from './i18n'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DataSet, Network } from 'vis-network/standalone'
 import { EDGE_STYLE, isVisible, nodeTitle, nodeStatusLabel } from './graph-model'
 
@@ -16,7 +16,7 @@ import { EDGE_STYLE, isVisible, nodeTitle, nodeStatusLabel } from './graph-model
 
 // vis renders to <canvas>, so the CSS classes cannot style it — the palette is
 // read from the same CSS custom properties the sheet uses, so a theme switch is
-// picked up on the next rebuild.
+// picked up without discarding node positions.
 function palette() {
   const cs = getComputedStyle(document.documentElement)
   const v = (name, fallback) => cs.getPropertyValue(name).trim() || fallback
@@ -239,7 +239,7 @@ function truncate(s, n) {
 }
 
 // Boxes and ellipses contain their labels. Diamonds, stars, dots and
-// squares place labels outside, on the light canvas. Query and audit labels
+// squares place labels outside, on the canvas. Query and audit labels
 // must use canvas ink too, rather than white chosen for their node fills.
 const OUTSIDE_LABEL_SHAPES = new Set(['diamond', 'star', 'dot', 'square'])
 
@@ -262,7 +262,7 @@ function buildNodes(nodes, showAudit, p, contradicted) {
       borderWidth: width,
       borderWidthSelected: width + 2.5,
       shapeProperties: { borderDashes: dashes },
-      font: { color: OUTSIDE_LABEL_SHAPES.has(shape) ? INK_DARK : c.text, size: 14, face: 'system-ui' },
+      font: { color: OUTSIDE_LABEL_SHAPES.has(shape) ? p.text : c.text, size: 14, face: 'system-ui' },
       margin: 7,
       widthConstraint: { maximum: 150 },
       // hover tooltip; the click opens the full DetailPanel inspector.
@@ -310,6 +310,17 @@ function buildEdges(edges, visibleIds, p) {
 
 export default function GraphView({ data, selectedId, onSelect, showAudit, exploration }) {
   const { i18n } = useTranslation()
+  const [paletteVersion, setPaletteVersion] = useState(0)
+  useEffect(() => {
+    // Canvas ink does not inherit CSS. Refresh its palette after theme changes
+    // while retaining the network, camera and stored node positions.
+    const refreshPalette = () => setPaletteVersion(version => version + 1)
+    const observer = new MutationObserver(refreshPalette)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    const appearance = window.matchMedia('(prefers-color-scheme: dark)')
+    appearance.addEventListener('change', refreshPalette)
+    return () => { observer.disconnect(); appearance.removeEventListener('change', refreshPalette) }
+  }, [])
   const containerRef = useRef(null)
   const networkRef = useRef(null)
   const nodesRef = useRef(null)
@@ -442,7 +453,7 @@ export default function GraphView({ data, selectedId, onSelect, showAudit, explo
     if (selectedRef.current && idsRef.current.has(selectedRef.current)) {
       networkRef.current.selectNodes([selectedRef.current])
     }
-  }, [data, showAudit, exploration, i18n.resolvedLanguage])
+  }, [data, showAudit, exploration, i18n.resolvedLanguage, paletteVersion])
 
   // reflect a selection made elsewhere (e.g. the Findings tab) onto the canvas
   useEffect(() => {

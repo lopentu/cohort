@@ -2,6 +2,7 @@
 export const resources = {
   "en": {
     "translation": {
+      "AI runs are unavailable. Ask the administrator to check the model configuration.": "AI runs are unavailable. Ask the administrator to check the model configuration.",
       " +{{count}} more": " +{{count}} more",
       " different strings · vocabulary:": " different strings · vocabulary:",
       " the projection disagrees with the log": " the projection disagrees with the log",
@@ -813,6 +814,7 @@ export const resources = {
   },
   "zh-TW": {
     "translation": {
+      "AI runs are unavailable. Ask the administrator to check the model configuration.": "目前無法執行 AI 研究，請聯絡管理員檢查模型設定。",
       " +{{count}} more": " ＋另有 {{count}} 筆",
       " different strings · vocabulary:": "種不同字串 · 詞彙：",
       " the projection disagrees with the log": "投影與事件紀錄不一致",

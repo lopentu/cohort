@@ -197,7 +197,7 @@ export default function RunPanel({ instructionSeed, onSeedConsumed, onGraphChang
         <p className="warn">
           {!config.corpus_available
             ? tr("No corpus is configured on this server, so an agent would have nothing to search.")
-            : config.config_error}
+            : tr("AI runs are unavailable. Ask the administrator to check the model configuration.")}
       </p>
       )}
 

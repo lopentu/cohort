@@ -1156,9 +1156,9 @@ button:disabled { opacity: .42; cursor: not-allowed; transform: none; }
 }
 .record-meta {
   display: flex; flex-wrap: wrap; gap: 11px; align-items: center;
-  font-size: 11px; color: var(--text-faint);
+  font-size: 11px; color: var(--text-dim);
 }
-.terms { margin: 9px 0 0; font-size: 11px; font-style: italic; color: var(--text-faint); }
+.terms { margin: 9px 0 0; font-size: 11px; font-style: italic; color: var(--text-dim); }
 .record-text {
   max-height: 340px; overflow: auto;
   margin: 9px 0 0; padding: 12px;
