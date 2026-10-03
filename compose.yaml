@@ -1,0 +1,45 @@
+name: cohort
+services:
+  cohort:
+    build: .
+    image: cohort-local:latest
+    # The Python server retains its localhost-only binding. No public ports.
+    network_mode: host
+    user: "${COHORT_UID:-1000}:${COHORT_GID:-1000}"
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 45s
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs:
+      - /tmp:mode=1777
+    environment:
+      COHORT_PORT: "${COHORT_PORT:-18766}"
+      COHORT_ALLOW_WRITES: "${COHORT_ALLOW_WRITES:-0}"
+      COHORT_ALLOW_RUNS: "${COHORT_ALLOW_RUNS:-0}"
+      OPENROUTER_MAX_OUTPUT_TOKENS: "0"
+    volumes:
+      - type: bind
+        source: "${COHORT_STATE_DIR:-./data/container}"
+        target: /state
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${COHORT_DATA_DIR:-./data}"
+        target: /inputs
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${COHORT_ENV_FILE:-./.env.docker}"
+        target: /app/.env
+        read_only: true
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: [CMD, python, -c, "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:'+os.environ.get('COHORT_PORT','18766')+'/api/auth/session', timeout=4).close()"]
+      interval: 30s
+      timeout: 5s
+      start_period: 120s
+      retries: 3

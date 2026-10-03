@@ -33,3 +33,6 @@ wget-log
 
 # Playwright MCP scratch (screenshots, snapshots) from browser checks
 .playwright-mcp/
+
+# Local container configuration; example stays tracked.
+.env.docker

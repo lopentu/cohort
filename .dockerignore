@@ -1,0 +1,15 @@
+# Allowlist: restricted data, secrets, Git metadata and local documents must
+# never be sent to the Docker daemon, even when a new folder is added.
+**
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!README.md
+!cohort/
+!cohort/**
+!scripts/
+!scripts/*.py
+cohort/ui/frontend/node_modules/
+cohort/ui/static/
+**/__pycache__/
+**/*.pyc
