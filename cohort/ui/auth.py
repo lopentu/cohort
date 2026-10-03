@@ -198,9 +198,8 @@ def _same_origin(request: Request, public_origin: str | None = None) -> bool:
         return False
     origin = request.headers.get("origin")
     try:
-        if public_origin is not None:
-            if _origin_tuple(public_origin) != _origin_tuple(str(request.url)):
-                return False
+        if public_origin is not None and _origin_tuple(public_origin) != _origin_tuple(str(request.url)):
+            return False
         if origin is None:
             return True  # Non-browser JSON clients have no ambient Origin.
         incoming = urlsplit(origin)
