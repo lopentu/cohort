@@ -1,7 +1,5 @@
 # Cohort UI: a beginner's guide for the PNC presenter
 
-> Historical draft from 7 September 2026. For the current presentation and interface, use the [presenter walkthrough](presentation/walkthrough.md) and [cue card](presentation/presenter-cue-card.md). Earlier implementation descriptions and speaking sequences may be outdated.
-
 Draft, 7 September 2026. **Source-grounded; not browser-verified.** Screenshot
 slots below are requirements for a later browser pass, not evidence that the
 screens have been captured. This guide contains no real corpus excerpts or

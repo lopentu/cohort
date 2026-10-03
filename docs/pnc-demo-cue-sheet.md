@@ -1,7 +1,5 @@
 # PNC demo: speaker cue sheet
 
-> Historical draft from 7 September 2026. For the current presentation and interface, use the [presenter walkthrough](presentation/walkthrough.md) and [cue card](presentation/presenter-cue-card.md). Earlier implementation descriptions and speaking sequences may be outdated.
-
 Working script for a twenty-minute presentation. Use the Claude explainer for
 background, and [the working canvas](pnc-speaker-canvas.md) for the code audit.
 Experimental figures belong on stage only after reconciling their recorded

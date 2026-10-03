@@ -1,7 +1,5 @@
 # Buddhist studies background for the Cohort presenter
 
-> Historical draft from 7 September 2026. For the current presentation and interface, use the [presenter walkthrough](presentation/walkthrough.md) and [cue card](presentation/presenter-cue-card.md). Earlier implementation descriptions and speaking sequences may be outdated.
-
 Prepared 7 September 2026. This is a reading companion for a presenter who
 knows NLP and is new to Buddhist textual scholarship. It explains why the
 research question matters, what the demonstration's documents represent, and
