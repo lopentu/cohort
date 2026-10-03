@@ -11,10 +11,10 @@ research access or new accounts were added.
 
 ## Runtime
 
-Reviewed application revision: `2a46bed`, including PRs #12–#16, merged into
-main at `994800b`. Image `cohort:2a46bed`:
-`sha256:ca9b47bed1040fa75b450a94e0c4ef06233234eb48750bc6d771a2c081e235be`.
-The previous image `cohort:11b35aa` is retained for rollback.
+Reviewed application revision: `a40ded8`, including PRs #12–#17, merged into
+main at `004a88b`. Image `cohort:a40ded8`:
+`sha256:17cb979501736471f26be8c75187057da390b3e6a55436c5ab76c8612b0aced1`.
+Previous images `cohort:2a46bed` and `cohort:11b35aa` are retained for rollback.
 
 Code is under `/opt/lope/services/cohort`; configuration under
 `/etc/lope/services/cohort`; credentials under `/etc/lope/secrets/cohort`;
@@ -114,7 +114,7 @@ PR #15 repairs a separate blocker: view analyses and follow-ups omitted the
 spending budget, so bounded servers refused them before calling a model.
 Both now use the advertised default budget. Independent review approved the
 change; server spending ceilings and unlimited output tokens are unchanged.
-The repair is merged into main at `9ba1078`. Its fix is included in the hosted `cohort:2a46bed` image described above.
+The repair is merged into main at `9ba1078`. Its fix is included in the hosted image described above.
 
 Live Evidence and Graph analyses and a follow-up remain pending explicit
 approval to send restricted corpus-derived material to OpenRouter. Automatic
@@ -139,3 +139,23 @@ public HTTPS page serves the updated CSS. Anonymous research APIs still return
 401. A fresh hosted read-only audit passed 26 checks and confirmed 701 nodes
 and 722 edges, with no paid model calls or research writes. The external AI
 analysis approval remains pending.
+
+## Reading widths
+
+PR #17 centers and constrains the text-heavy tabs on wide displays. Corpus
+and Inquiry cap at 980px, Findings and Vocabulary at 1120px. Corpus expands
+to 1280px for side-by-side comparisons; the graph retains the full viewport.
+Prose has a 72ch measure and vocabulary excerpts cap at 40em.
+
+Twenty tab states at 2560/390px passed centering, width and overflow checks.
+Twelve expanded result states at 1440/768/390px passed accessibility/overflow
+checks. Synthetic screenshots were inspected. Twelve frontend test files,
+sixteen theme/vocabulary tests, build, ruff and ty passed. Independent review
+approved the change. The design detector flagged only pre-existing styles.
+
+Protected checkpoint: `/var/backups/server-utils/cohort/20261003-reading-width`.
+Activation rechecked no active writer and retained automatic health rollback.
+The new container is healthy, the chosen account verifier matches, and the
+public HTTPS page serves the constrained layout with anonymous graph access
+still refused. A fresh 26-check hosted read-only audit passed, with 701 nodes
+and 722 edges unchanged. External AI analysis approval remains pending.
