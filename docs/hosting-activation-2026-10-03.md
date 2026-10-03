@@ -77,3 +77,16 @@ UI sweep document.
 
 Formal service/catalog activation, long-term backup scheduling and a production
 handoff remain deferred. Their discovery drafts are not live-service acceptance.
+
+## Hosted account reset
+
+At the owner's request on 2026-10-03, the hosted `researcher` password was
+rotated and the Compose container recreated to load the new verifier and end
+existing sessions. The new password was delivered through an owner-only local
+file; no password value entered Git, chat, arguments or ordinary logs. The
+previous verifier is retained in a root-only password-reset checkpoint beneath
+`/var/backups/server-utils/cohort`. The initial migration backup contains the
+previous verifier, so restoring it would require another authorized password
+reset. HTTPS login with the new password passed, the previous password returned
+401, and the graph still contained 701 nodes and 722 edges. No inquiry was
+running at restart.
