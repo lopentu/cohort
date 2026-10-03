@@ -11,10 +11,10 @@ research access or new accounts were added.
 
 ## Runtime
 
-Reviewed application revision: `11b35aa`, merged through PRs #12–#14 into main
-at `51bfc175ca2b6801dbd61d56adc12d31cc28c0fd`.
-Image `cohort:11b35aa`:
-`sha256:a7fd20322c4d954e2d5cc6b522885889975c697d1b2ff3de23fb60539666ac59`.
+Reviewed application revision: `2a46bed`, including PRs #12–#16, merged into
+main at `994800b`. Image `cohort:2a46bed`:
+`sha256:ca9b47bed1040fa75b450a94e0c4ef06233234eb48750bc6d771a2c081e235be`.
+The previous image `cohort:11b35aa` is retained for rollback.
 
 Code is under `/opt/lope/services/cohort`; configuration under
 `/etc/lope/services/cohort`; credentials under `/etc/lope/secrets/cohort`;
@@ -114,9 +114,28 @@ PR #15 repairs a separate blocker: view analyses and follow-ups omitted the
 spending budget, so bounded servers refused them before calling a model.
 Both now use the advertised default budget. Independent review approved the
 change; server spending ceilings and unlimited output tokens are unchanged.
-The repair is merged into main at `9ba1078`. Image `cohort:c3c80f0` is built
-locally but has not replaced the hosted image.
+The repair is merged into main at `9ba1078`. Its fix is included in the hosted `cohort:2a46bed` image described above.
 
 Live Evidence and Graph analyses and a follow-up remain pending explicit
 approval to send restricted corpus-derived material to OpenRouter. Automatic
 approval review blocked those checks; do not describe them as verified.
+
+## Top tab refinement
+
+PR #16 removes the colored bottom underline from selected tabs, retaining the
+selection background and bold label. Twenty tab states across desktop/mobile
+sizes and light/dark themes passed browser checks; screenshots were inspected
+using synthetic data. Frontend tests, build, ruff and ty passed. The design
+detector reports pre-existing warnings elsewhere in the stylesheet; those
+styles are outside this narrow refinement.
+
+The image was activated with no graph writer running. Configuration changed
+only the image setting. A protected checkpoint at
+`/var/backups/server-utils/cohort/20261003-tab-accent` preserves configuration,
+account verifier, workspace snapshot and the isolated AI check archive. The
+old image remains available; activation had an automatic health rollback.
+The new container is healthy, the chosen account verifier matches, and the
+public HTTPS page serves the updated CSS. Anonymous research APIs still return
+401. A fresh hosted read-only audit passed 26 checks and confirmed 701 nodes
+and 722 edges, with no paid model calls or research writes. The external AI
+analysis approval remains pending.
