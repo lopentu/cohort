@@ -96,3 +96,27 @@ interactive setup tool. That verifier replaced the temporary generated login;
 the hosted container was recreated and loaded it with valid ownership and
 permissions. The saved graph again replayed 1,281 events, 701 nodes and 722
 edges. The setup tool saved only the salted verifier, not the chosen password.
+
+## Functional verification and analysis repair
+
+A private copy of the hosted workspace completed a real worker/reviewer inquiry
+through Chromium. It made eight tool calls and nine model calls; the recorded
+spend was $0.11205135. The reviewer refused an initial citation check and
+attested a corrected one. These checks changed only the isolated copy.
+
+The hosted read-only audit passed 26 API checks. The complete regression suite
+passed 651 tests; 12 frontend test files, ruff, ty and the UI build passed.
+The rebuilt UI passed 38 synthetic browser states without accessibility,
+overflow or page errors. Earlier expanded and stateful synthetic checks also
+passed. The build still warns about its large application chunk.
+
+PR #15 repairs a separate blocker: view analyses and follow-ups omitted the
+spending budget, so bounded servers refused them before calling a model.
+Both now use the advertised default budget. Independent review approved the
+change; server spending ceilings and unlimited output tokens are unchanged.
+The repair is merged into main at `9ba1078`. Image `cohort:c3c80f0` is built
+locally but has not replaced the hosted image.
+
+Live Evidence and Graph analyses and a follow-up remain pending explicit
+approval to send restricted corpus-derived material to OpenRouter. Automatic
+approval review blocked those checks; do not describe them as verified.
