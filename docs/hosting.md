@@ -52,7 +52,7 @@ The installed skill path above is the one resolved for this preparation; another
 
 ## Snapshot and transfer
 
-`scripts/snapshot_ui.py` takes the graph's writer lock, uses SQLite's backup API (including WAL), copies the log, replays it independently and writes private checksums only after verification. It refuses an active writer and an existing destination. A failed directory without a valid manifest is incomplete; preserve it for diagnosis and retry to a new location.
+`scripts/snapshot_ui.py` takes the graph's writer lock using the same database filename as the writer, uses SQLite's backup API (including WAL), copies the log, replays it independently and writes private checksums only after verification. It refuses an active writer and an existing destination. A failed directory without a valid manifest is incomplete; preserve it for diagnosis and retry to a new location.
 
 ```sh
 uv run python scripts/snapshot_ui.py --db /path/to/current/research.sqlite \
@@ -117,7 +117,7 @@ Before activation, keep unknown measurements null and missing ownership/catalog 
 
 ## Preparation verification
 
-The preparation passed 650 Python tests, 35 frontend tests, ruff, ty and the Vite production build. The candidate nginx configuration passed an isolated syntax check. An isolated Compose container using synthetic inputs passed HTTPS login/logout, all five tabs in both languages, application-scoped help/API links, corpus search, vocabulary comparison and embedding availability. A saved synthetic question retained its graph identifiers after restart; sessions expired as intended. The existing monetary threshold remained unchanged. No paid model requests were made.
+The preparation passed 651 Python tests, 35 frontend tests, ruff, ty and the Vite production build. The candidate nginx configuration passed an isolated syntax check. An isolated Compose container using synthetic inputs passed HTTPS login/logout, all five tabs in both languages, application-scoped help/API links, corpus search, vocabulary comparison and embedding availability. A saved synthetic question retained its graph identifiers after restart; sessions expired as intended. The existing monetary threshold remained unchanged. No paid model requests were made.
 
 A protected snapshot of the current workspace passed independent event-log replay and SQLite integrity checks. A private input checksum ledger records the serving inputs and account verifier for later transfer verification. These checks do not establish an off-host backup.
 

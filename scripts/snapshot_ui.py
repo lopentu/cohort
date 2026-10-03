@@ -20,7 +20,9 @@ from cohort.graph import Graph
 
 
 def snapshot(db: Path, log: Path, destination: Path) -> dict[str, Any]:
-    db, log, destination = db.resolve(), log.resolve(), destination.absolute()
+    # Graph derives its lock from the supplied filename, including symlinks.
+    # Resolving only here would let a snapshot bypass that writer's lock.
+    db, log, destination = db.absolute(), log.absolute(), destination.absolute()
     if not db.is_file() or not log.is_file():
         raise FileNotFoundError('both the database and event log must exist')
     # The same lock used by Graph excludes all supported writers while the
@@ -56,11 +58,13 @@ def snapshot(db: Path, log: Path, destination: Path) -> dict[str, Any]:
         handle.write('\n')
         handle.flush()
         os.fsync(handle.fileno())
-    directory_fd = os.open(destination, os.O_RDONLY | os.O_DIRECTORY)
-    try:
-        os.fsync(directory_fd)
-    finally:
-        os.close(directory_fd)
+    # Persist both the contents and the newly created directory's parent entry.
+    for directory in (destination, destination.parent):
+        directory_fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
     return report
 
 

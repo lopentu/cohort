@@ -51,3 +51,13 @@ def test_snapshot_refuses_writer_and_existing_destination(tmp_path):
     with pytest.raises(FileExistsError):
         snapshot_function()(db, log, destination)
     assert sentinel.read_text() == 'preserve'
+
+
+def test_snapshot_uses_the_writer_lock_for_a_symlink_filename(tmp_path):
+    db, log = tmp_path / 'source.sqlite', tmp_path / 'source.jsonl'
+    Graph.open(db, log).close()
+    alias = tmp_path / 'alias.sqlite'
+    alias.symlink_to(db)
+    with Graph.open(alias, log), pytest.raises(BlockingIOError):
+        snapshot_function()(alias, log, tmp_path / 'blocked-alias')
+    assert not (tmp_path / 'blocked-alias').exists()
