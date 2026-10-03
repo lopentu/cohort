@@ -2067,7 +2067,7 @@ a.cbeta-link.block:hover { color: var(--text); }
 .ev-cell { flex: 1; min-width: 1px; border: 0; padding: 0; cursor: pointer; }
 .ev-cell:hover, .ev-cell:focus-visible { outline: 2px solid var(--text); outline-offset: -2px; }
 .ev-cell.here { box-shadow: inset 0 -3px 0 var(--text); }
-.ev-text { font-family: "Noto Serif TC", "Noto Serif CJK TC", "Songti TC", "PMingLiU", "Noto Sans CJK TC", serif; font-size: 19px; line-height: 1.95; text-align: justify; padding: 14px 18px; background: var(--bg-raised); border: 1px solid var(--line-soft); border-radius: var(--radius-sm); max-width: 64em; }
+.ev-text { font-family: "Noto Serif TC", "Noto Serif CJK TC", "Songti TC", "PMingLiU", "Noto Sans CJK TC", serif; font-size: 19px; line-height: 1.95; text-align: justify; padding: 14px 18px; background: var(--bg-raised); border: 1px solid var(--line-soft); border-radius: var(--radius-sm); max-width: 40em; }
 .ev-text mark { color: inherit; border-radius: 2px; padding: 0 1px; }
 .ev-text mark.a { box-shadow: inset 0 -2px 0 rgba(var(--ev-a-rgb), .9); }   /* direction survives without colour */
 .ev-text mark.b { box-shadow: inset 0 -2px 0 rgba(var(--ev-b-rgb), .9); }
@@ -2428,3 +2428,9 @@ html[lang="zh-TW"] .tab { letter-spacing: 0; }
   .tabs { overflow: visible; min-height: 44px; }
   .tabs [role="tab"] { flex: 1 1 0; min-width: 0; white-space: normal; line-height: 1.25; padding: 7px 4px; font-size: 11px; }
 }
+
+/* Keep prose readable on wide displays; comparisons need two source columns. */
+.tab-panel:not([data-view="graph"]) { width:100%; max-width:1120px; align-self:center; }
+.tab-panel[data-view="run"], .tab-panel[data-view="corpus"] { max-width:980px; }
+.tab-panel[data-view="corpus"]:has(.related-comparison, .exact-comparison) { max-width:1280px; }
+:is(.corpus, .runs, .findings) p, .corpus .record-text { max-width:72ch; }
