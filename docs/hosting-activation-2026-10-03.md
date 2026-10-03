@@ -90,3 +90,9 @@ previous verifier, so restoring it would require another authorized password
 reset. HTTPS login with the new password passed, the previous password returned
 401, and the graph still contained 701 nodes and 722 edges. No inquiry was
 running at restart.
+
+Later the same day, the owner created a chosen username/password through the
+interactive setup tool. That verifier replaced the temporary generated login;
+the hosted container was recreated and loaded it with valid ownership and
+permissions. The saved graph again replayed 1,281 events, 701 nodes and 722
+edges. The setup tool saved only the salted verifier, not the chosen password.
