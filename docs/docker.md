@@ -1,6 +1,6 @@
 # Run Cohort with Docker Compose
 
-This version is on `feat/docker-runner`, based on `feat/auth-i18n-tour`. It includes the login script, English/Traditional Chinese interface and quick-start tour. A checkout of `main` does not yet include those changes.
+`main` includes Docker support, the login script, the English/Traditional Chinese interface and the quick-start tour.
 
 Docker builds the frontend and Python dependencies. You do not need Node or a Python virtual environment on the host. The image contains code only; credentials, licensed source material, embeddings and saved research stay outside it.
 

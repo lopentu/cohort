@@ -1,6 +1,6 @@
 # Cohort 快速上手與中文示範指南
 
-這份指南對應 `feat/auth-i18n-tour` 分支。`main` 尚未包含這個版本的完整介面，請先確認分支。介面可切換英文與繁體中文；下面保留英文按鈕名稱，方便對照。
+這份指南對應 `main`，已包含登入、中英文介面與快速上手導覽。介面可切換英文與繁體中文；下面保留英文按鈕名稱，方便對照。
 
 Cohort 可以查找佛典段落、比較用語，並讓 AI 提出有來源可查的解釋。研究者可以回頭看它搜尋了什麼、引用了哪一段，再決定是否接受。這次要展示的是這些操作怎麼幫助研究；譯者歸屬仍需要研究者判斷。
 
@@ -64,7 +64,7 @@ ssh -N -L 18766:127.0.0.1:18766 USER@SERVER
 需要 Git、uv、Python 3.11 以上，以及另外取得授權的 Radich 資料和段落向量檔。這些資料不在 Git 裡。若要重建介面，還需要 Node.js 與 npm。
 
 ```sh
-git clone --branch feat/auth-i18n-tour https://github.com/lopentu/cohort.git
+git clone --branch main https://github.com/lopentu/cohort.git
 cd cohort
 uv sync --extra dev --extra ui --extra evidence
 cp .env.example .env
