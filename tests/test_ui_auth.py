@@ -366,3 +366,16 @@ def test_hosted_login_trusts_headers_only_from_explicit_proxy(protected):
     assert login(trusted, headers=headers).status_code == 200
     untrusted = TestClient(app, base_url='http://lopen.linguistics.ntu.edu.tw', client=('192.0.2.1', 9000))
     assert login(untrusted, headers=headers).status_code == 403
+
+
+def test_zero_port_origin_does_not_match_default_port(protected):
+    client, _manager = protected
+    assert login(client, headers={'Origin': 'http://localhost:0'}).status_code == 403
+
+
+def test_zero_port_host_does_not_match_hosted_origin(protected):
+    _client, manager = protected
+    manager.public_origin = 'https://lopen.linguistics.ntu.edu.tw'
+    hosted = TestClient(create_app('unused.sqlite', auth=manager),
+                        base_url='https://lopen.linguistics.ntu.edu.tw:0')
+    assert login(hosted).status_code == 403

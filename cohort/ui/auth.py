@@ -185,24 +185,28 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
                                  "X-Content-Type-Options": "nosniff", "Referrer-Policy": "same-origin"})
 
 
+def _origin_tuple(url: str) -> tuple[str, str | None, int]:
+    parsed = urlsplit(url)
+    # Port zero is explicit, not an absent default port. Truthiness here used
+    # to treat a malformed :0 authority as the ordinary HTTP/HTTPS origin.
+    port = parsed.port if parsed.port is not None else (443 if parsed.scheme == 'https' else 80)
+    return parsed.scheme, parsed.hostname, port
+
+
 def _same_origin(request: Request, public_origin: str | None = None) -> bool:
     if request.headers.get("sec-fetch-site") not in (None, "same-origin", "none"):
         return False
     origin = request.headers.get("origin")
     try:
         if public_origin is not None:
-            configured, actual = urlsplit(public_origin), urlsplit(str(request.url))
-            if (actual.scheme, actual.hostname, actual.port or 443) != (
-                configured.scheme, configured.hostname, configured.port or 443
-            ):
+            if _origin_tuple(public_origin) != _origin_tuple(str(request.url)):
                 return False
         if origin is None:
             return True  # Non-browser JSON clients have no ambient Origin.
-        incoming, expected = urlsplit(origin), urlsplit(str(request.url))
+        incoming = urlsplit(origin)
         if incoming.username or incoming.password or incoming.path or incoming.query or incoming.fragment:
             return False
-        return (incoming.scheme, incoming.hostname, incoming.port or (443 if incoming.scheme == "https" else 80)) == (
-            expected.scheme, expected.hostname, expected.port or (443 if expected.scheme == "https" else 80))
+        return _origin_tuple(origin) == _origin_tuple(str(request.url))
     except ValueError:
         return False
 
