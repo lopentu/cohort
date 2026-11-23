@@ -199,11 +199,19 @@ you arrive — which is the point of principle 4.
       eventlog.py       append-only JSONL; read_events / read_refusals
       graph.py          the projection and the only writer
       migrations.py     numbered, forward-only
+      _locking.py       the cross-platform exclusive lock behind single-writer
+      attribution.py    string-profile comparison over Radich's corpus (needs it)
+      embeddings.py     reads the precomputed passage-embedding index
+      related.py        one passage and its nearest neighbours; writes nothing
       sources/          search(query) / fetch(ref) — the whole corpus seam
-                        (env.py builds the CBETA reader for every front end)
-      tools/            named, schema-validated, individually refusable writes
-      agents/           OpenRouter transport, worker, swarm, budget cap
-      ui/               FastAPI JSON API + React frontend (optional `ui` extra)
+                        (env.py builds the CBETA reader for every front end;
+                        radich_manifest.py reads Radich's corpus)
+      tools/            named, schema-validated, individually refusable writes,
+                        plus three read-only evidence tools
+      agents/           OpenRouter transport, worker, reviewer, read-only analyst,
+                        action explanations, swarm, budget cap
+      ui/               FastAPI JSON API + React frontend (optional `ui` extra);
+                        local accounts (auth.py), reverse-proxy hosting (hosting.py)
 
 The dependency direction is strictly downward: `tools/` may use `graph.py` and
 `sources/`, `agents/` may use `tools/`, and `ui/` may use anything. Nothing

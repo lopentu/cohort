@@ -10,6 +10,7 @@ multi-agent textual research.*
 | 如何啟動、操作與用中文介紹？ | [快速上手與中文示範指南](quickstart-zh-TW.md) |
 | What is this and why does it exist? | [design.md](design.md) — the spec |
 | What's true right now? What's left? | [handoff.md](handoff.md) |
+| What could a month of work toward an ACL/IJCAI 2027 paper be? | [handoff-paper-2027.md](handoff-paper-2027.md) |
 | How does it actually work inside? | [architecture.md](architecture.md) |
 | What are the node and edge types? | [vocabulary.md](vocabulary.md) |
 | What can an agent do, and what will it be refused? | [tools.md](tools.md) |
@@ -23,6 +24,8 @@ multi-agent textual research.*
 | Why is it built this way? What got reversed? | [decisions.md](decisions.md) |
 | What's the plan and how far along is it? | [roadmap.md](roadmap.md) |
 | How did it get here? | [changelog.md](changelog.md) |
+| How do labmates' implementations of the same idea compare? | [../compare.md](../compare.md) |
+| What sources do the docs cite? | [references.md](references.md) — corpora, tools and scholarship |
 
 ## Start here
 

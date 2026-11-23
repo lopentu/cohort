@@ -1,8 +1,14 @@
 # Handoff: current state
 
-What is true as of **2026-09-02**. For how the system got here, see
-[changelog.md](changelog.md); for why it is shaped this way, see
-[design.md](design.md).
+What is true as of **2026-11-23**; the previous revision was dated
+2026-09-02. For how the system got here, see [changelog.md](changelog.md); for
+why it is shaped this way, see [design.md](design.md). For the current
+work toward a paper, see [handoff-paper-2027.md](handoff-paper-2027.md).
+
+Cohort is meant to support any research question over any corpus. It was
+developed on CBETA and on Radich's modified CBETA corpus, and several tools
+still depend on them (listed under "What works without the restricted
+corpora" below).
 
 ## Read first
 
@@ -19,10 +25,13 @@ What is true as of **2026-09-02**. For how the system got here, see
 
 ## Verified state
 
-    .venv/bin/pytest -q      # 439 passed
-    .venv/bin/python demo.py # no corpus, no API key, no network
+    uv run pytest -q         # 651 passed, 2026-11-23
+    uv run python demo.py    # exits 0; no corpus, no API key, no network
 
-Proven by real runs rather than by assertion — every one manual, none
+Those two were rerun for this revision. Nothing below was rerun: it is the
+record of earlier live runs, and their dates are in the changelog.
+
+Proven by real runs rather than by assertion, as of 2026-09-02 — every one manual, none
 automated: a live OpenRouter call; two *concurrent* live agents writing to one
 graph; attestation against the hash-verified CBETA archive; the stage-4
 `parallel_of` flip on three real Heart Sutra translations; a conjecture through
@@ -77,6 +86,62 @@ integrity are re-checked after each live run, not assumed — that one replayed
   [ui.md](ui.md). The UI's capabilities are each opt-in behind their own flag.
 - **Agent identity.** `register_agent`, `AgentProfile`, and `agent_report()` as
   a pure contribution count — deliberately not a reputation score.
+
+### Added between 2026-09-02 and 2026-10-03
+
+Read from the commit history and the code, not re-verified by live runs for
+this revision. The changelog entry "September to October 2026" has the detail.
+
+- **Radich's corpus as a source**, and the **Vocabulary comparison** (Evidence)
+  tab over it: `cohort/attribution.py`. It counts the short strings that lean
+  between translator groups. It withholds every unit of the target's own work,
+  keeps a ledger of what it discarded, and can withhold further texts on
+  request (for example T1694 when examining T0603).
+- **Three read-only evidence tools for agents**: `attribution_evidence`,
+  `align_passages` and `semantic_neighbors`. They are offered to a worker only
+  when Radich's corpus is configured; `semantic_neighbors` also needs the
+  precomputed embedding index (`cohort/embeddings.py`).
+- **Related passages** in the Corpus tab (`cohort/related.py`): nearest
+  embedded windows from other works, with shared wording highlighted.
+- **Read-only AI analysis** of the current view
+  (`cohort/agents/analysis_worker.py`). It can read and compare but cannot
+  propose, accept or reject; saved analyses refer to the view they began from.
+- **Action explanations**: workers must state why they take each action, and
+  the UI shows these separately from graph evidence
+  (`cohort/agents/action_history.py`).
+- **Passage context**: characters of source text on either side of a cited
+  excerpt.
+- **Local accounts, a bilingual (English / Taiwan Mandarin) interface and an
+  onboarding tour**: [ui-access.md](ui-access.md).
+- **Docker Compose** for local runs ([docker.md](docker.md)) and HTTPS hosting
+  under a path prefix ([hosting.md](hosting.md)). A temporary hosted instance
+  is recorded in [hosting-activation-2026-10-03.md](hosting-activation-2026-10-03.md).
+- **A cross-platform writer lock** (`cohort/_locking.py`), so Cohort runs on
+  Windows.
+- **Strict ruff and a clean ty pass**, enforced since 2026-09-06.
+- **PNC 2026 presentation materials** in [presentation/](presentation/README.md),
+  with two critical reviews of what the output supports:
+  [conjecture-review.md](presentation/conjecture-review.md) and
+  [researcher-review.md](presentation/researcher-review.md).
+
+### What works without the restricted corpora
+
+For a collaborator who has neither CBETA nor Radich's corpus, these run:
+
+- the test suite;
+- `demo.py`;
+- `scripts/run_swarm_demo.py`, which needs an OpenRouter key;
+- the graph, both front ends, the six writing tools, review, refusals and
+  questions, over any corpus supplied through `LocalReader`
+  ([corpus.md](corpus.md)).
+
+These do not:
+
+- `link_parallels` and `collate_editions`, which read CBETA markup;
+- `align_passages`, which compares Chinese characters only, and is only
+  offered to agents with Radich's corpus;
+- everything in `cohort/attribution.py`, `related.py` and `embeddings.py`;
+- every other script under `scripts/` that reads a real corpus.
 
 ## What does not exist
 
@@ -183,16 +248,22 @@ rather than reusing a copy from elsewhere.
 
 ## What's left
 
-1. **The paper.** [design.md](design.md) §15 has the claim paragraph and the
-   venue is PNC 2026, but no submission artifact exists in this repository.
-   This is the largest remaining piece of work and it is not a coding task.
+1. **The paper.** The PNC 2026 presentation materials are in
+   [presentation/](presentation/README.md); no paper exists in this
+   repository. [handoff-paper-2027.md](handoff-paper-2027.md) plans a month of
+   work toward ACL 2027 or IJCAI-27. It is built around the problems the
+   September conjecture review found: tests that could not fail, alternatives
+   that could not be told apart, and tests never run.
+   *Update 2026-11-23:* a one-month plan toward ACL 2027 or IJCAI-27, with the
+   experiments a main-track paper would still need, is in
+   [handoff-paper-2027.md](handoff-paper-2027.md).
 2. **The chronology scheme — do not decide it unilaterally.** Named as open in
    [design.md](design.md) §14 for a reason: for translation material,
    translation date, composition date and recension date are three different
    things, and the translator matters more than the dynasty. Flag it, don't
    guess.
-3. **`record_contradiction` has never been called by a live model.** Every
-   other registered tool has. One cheap run would close that gap.
+3. **`record_contradiction` had not been called by a live model as of
+   2026-09-02.** Not rechecked since. One cheap run would close that gap.
 3b. **Done, 2026-09-02.** Three live three-model runs with a reviewer, censused.
    The first two each found a defect in the census's own reach — nine tool rules
    raising bare `ValueError`, and an id listing whose `claim:` prefix all three

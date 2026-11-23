@@ -61,6 +61,14 @@ infrastructure for (Buddhist) DH. It is not an argument about textual history,
 and it should not be dressed up as one. This scopes the demo: what gets
 demonstrated is that the machinery refuses the right things.
 
+> **Scope clarified, 2026-11-23.** The project lead states that Cohort is meant
+> to support any research question over any corpus. Buddhist material is the
+> corpus it was developed on, not a limit on what it is for. The rest of this
+> paragraph stands: the contribution is still methodological infrastructure,
+> not a finding about textual history. Corpus-specific parts (CBETA markup,
+> Radich's attribution catalogue, Han-only alignment) are listed in
+> [handoff.md](handoff.md).
+
 ---
 
 ## 2. Scope: standalone, and what that forbids

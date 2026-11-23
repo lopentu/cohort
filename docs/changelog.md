@@ -1412,3 +1412,76 @@ it before looking is what stops it being quietly reshaped afterwards.
 question rather than with a list of node ids.
 
 **11 new tests** (439 total), one new module.
+
+---
+
+
+## September to October 2026: Radich's corpus, the PNC talk, and hosting
+
+*Written 2026-11-23 from the commit history (2026-09-03 to 2026-10-03), not
+at the time.* No entries were written to this file during that period. This
+summary is reconstructed from commit messages and the code. It does not
+reproduce the measurements those commits reported. Where a number matters, the
+document named below is the source.
+
+**Radich's corpus and the Vocabulary comparison (2026-09-06 to 09-09).**
+Radich's modified pre-450 Taishō corpus became a source
+(`cohort/sources/radich_manifest.py`). `cohort/attribution.py` added the
+Evidence tab, later named Vocabulary comparison. For a chosen text, it reports
+which short strings lean between translator groups. It withholds the target's
+whole work, after holding out single chapters had inflated agreement with
+catalogue labels from 52% to 82% (see the module docstring). Two vocabularies
+are offered, and everything discarded is counted. Three read-only evidence
+tools followed: `attribution_evidence`, `align_passages` and
+`semantic_neighbors`. They are offered to workers only when that corpus is
+configured, and they refuse with named rules. A one-click exclusion of T1694
+for T0603 came on 09-09.
+
+**Retrieval and reading (09-08 to 09-09).** Each cited excerpt now shows
+passage context. The Corpus tab gained related-passage retrieval from a
+precomputed embedding index (`cohort/embeddings.py`, `cohort/related.py`),
+with shared wording highlighted, and exact-search results can be compared side
+by side. CBETA reading links were added to comparisons and citations.
+
+**Agents (09-08 to 09-09).**
+- Inquiry runs may take up to 32 turns, and report when that limit stopped
+  them.
+- Workers must explain each action, and the explanations are shown separately
+  from graph evidence.
+- A read-only analyst (`cohort/agents/analysis_worker.py`) interprets the
+  current view and saves its conversation, but cannot change any record.
+- Operators may select uncapped accounting explicitly.
+
+**Interface (09-03 to 09-09).**
+- Hypotheses are drawn as diamonds, with a five-state status colour.
+- The graph layout is frozen, so positions survive updates.
+- A question, and what only supported it, can be hidden from the Graph tab.
+- `part_of` is relabelled "contains".
+- Every tab has a plain-language introduction, and the interface uses general
+  research wording throughout.
+
+**Infrastructure (09-04 to 09-08).**
+- The writer lock became cross-platform (`cohort/_locking.py`), so Cohort runs
+  on Windows.
+- Researcher data was removed from the public repository.
+- Strict ruff and a clean ty pass became the standard (09-06).
+- `demo.py`, which could not run, was fixed (09-04).
+
+**PNC 2026 presentation (09-07 to 09-09).** The materials are in
+[presentation/](presentation/README.md). Two reviews written then still govern
+what may be claimed about the output:
+[conjecture-review.md](presentation/conjecture-review.md) and
+[researcher-review.md](presentation/researcher-review.md).
+
+**Accounts, languages and hosting (10-02 to 10-03).**
+- Local account sessions protect the UI.
+- The interface is bilingual (English and Taiwan Mandarin), with an onboarding
+  tour and a Taiwan Mandarin quickstart.
+- Docker Compose runs Cohort locally with persistent state.
+- HTTPS hosting works under a path prefix, with explicit origin checks.
+- A temporary hosted instance, its recovery and its refinements are recorded
+  in [hosting-activation-2026-10-03.md](hosting-activation-2026-10-03.md).
+  PRs #12–#17 were merged into main at `004a88b`.
+
+**Test count.** 439 at the previous entry; 606 in the 2026-10-02 UI review; 651
+on 2026-11-23.
