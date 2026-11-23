@@ -1,8 +1,12 @@
 # Cohort
 
-Cohort helps a researcher go from **a research question over a corpus** to
-**hypotheses backed by citable evidence**. LLM agents propose; a reviewing
-agent from a different model family checks; only the researcher accepts.
+Cohort helps a researcher turn a research question about a corpus into
+hypotheses backed by evidence: LLM agents propose claims that must cite real
+passages and conjectures that must say what would prove them wrong, and only
+the researcher can accept a finding.
+
+A reviewing agent from a different model family checks each proposal. It can
+stop a proposal from advancing, but cannot advance one on its own judgement.
 
 The agents work with two kinds of record:
 
