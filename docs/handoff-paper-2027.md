@@ -58,67 +58,66 @@ So the question the paper has to answer is:
 > refuse?**
 
 Nothing in that question names a language or a domain. Cohort is meant to work
-with any research question over any corpus. The evaluation should therefore
-vary the **kind of research question**. Examples include:
+with any research question over any corpus. **Every experiment in this plan
+runs on your own data.** None of it needs CBETA, Radich's corpus or anything
+under `data/`, and none of it should.
 
-- who wrote or translated a text;
-- when a text was written;
-- whether one text reuses another;
-- how a term spread;
-- where two sources contradict each other.
+## Your data and your research questions
 
-## Working without CBETA
+**What Cohort needs from your data.**
+- **Plain-text files and a `manifest.csv`** listing them
+  (`path, witness_ref, label, note`; see [corpus.md](corpus.md)). `LocalReader`
+  indexes the text one character at a time, so search works in any script.
+  It has only been used on Chinese, so check search on your data first.
+- **Optional: known relations between your texts.** For example, "B copies A",
+  or "these two are versions of one text". Item 3 below adds a file format for
+  declaring them. Without it, Cohort has nothing to tell it that two agreeing
+  sources are not independent.
+- **Licence or permission** to use the texts, and to quote short passages in
+  a paper. Record it beside the manifest, as `examples/local_corpus/README.md`
+  does.
 
-The person picking this up **does not have access to CBETA**. That also rules
-out Radich's corpus and everything else under `data/`. It does not narrow
-what the paper can claim. It does decide which corpora the evaluation runs on.
-
-**What works on any corpus today.** None of the following assumes a particular
-corpus or language:
-
+**What works on your data today:**
 - the evidence graph and its event log;
 - `propose_claim`, `propose_conjecture` and `run_prospective_test`;
 - re-fetching cited passages;
 - the reviewing agent;
 - the refusal summary (`summarize_refusals()`);
 - `question` records;
-- the CLI and the web UI.
+- the CLI and the web UI;
+- `scripts/run_swarm_demo.py`, which uses `LocalReader`.
 
-`LocalReader` reads any folder of plain-text files listed in a `manifest.csv`
-(`path, witness_ref, label, note`; see [corpus.md](corpus.md)). It indexes the
-text one character at a time, so search works in any script. It has only been
-used on Chinese, so check it on the chosen corpora first.
+**Not yet**, until item 3 is done:
+- `link_parallels` and `collate_editions`, which read CBETA markup;
+- `align_passages`, which compares Chinese characters only.
 
-**What is tied to CBETA or to Chinese.**
-- `link_parallels` reads parallel-text links only from CBETA's `<cb:docNumber>`
-  markup.
-- `collate_editions` understands only CBETA's edition labels.
-- `align_passages` compares Chinese characters only.
-- `cohort/attribution.py` is built on Radich's catalogue.
-- Every script that reads a real corpus needs CBETA, except
-  `run_swarm_demo.py`. That includes `run_negative_control.py`,
-  `run_conjecture_demo.py`, `run_stage4_demo.py` and `seed_demo_graph.py`.
+Ignore `cohort/attribution.py`, `related.py`, `embeddings.py`, and the scripts
+that read CBETA or Radich's corpus. They are not part of this plan.
 
-**Choosing corpora.** Pick open corpora that support real research questions,
-including some whose answers are already settled in the scholarship, so the
-evaluation can check whether those answers are found. Two corpora with 8–15
-questions each is realistic for a month.
+**Research questions you can ask of your own data.** Choose the kinds your
+corpus supports. For each, there are things your data must contain before the
+question can be answered from it at all.
 
-A corpus with well-documented reuse between texts is especially useful. Texts
-that copy from one another are exactly where counting agreeing sources goes
-wrong. The Synoptic Gospels in a public-domain translation are one example.
+| Kind of question | Example shape | Your data needs |
+|---|---|---|
+| Reuse | Does text B quote or adapt text A, and in which passages? | Two or more texts that might share wording |
+| Dependence | Do these sources agree because they copy each other or a common source? | Several sources on one topic, plus whatever relations are already known |
+| Contradiction | Where do two sources disagree about the same event, term or claim? | Overlapping coverage of the same subject |
+| Spread of a term or motif | Where does a term first appear, and in which texts does it recur? | A term or motif to track, and texts with some known order or grouping |
+| Authorship or style | Does a disputed text read more like group X or group Y? | Some texts with secure attribution, and some disputed ones |
+| Dating | Is this text earlier or later than that one? | Some texts with known dates, and features expected to change over time |
 
-Confirm the licence of each corpus before committing anything from it, as
-`examples/local_corpus/README.md` does for its poems. Write the questions down
-**before** any run and record them as `question` records, so nobody can pick
-questions after seeing which ones worked.
-
-**CBETA as an optional extra example.** Someone with CBETA access can run the
-same scripts on it by changing a path. They commit **only summary numbers**:
-counts, rates, file hashes and the code version, with no passages and no file
-paths ([AGENTS.md](../AGENTS.md#data-and-licences)). The paper does not depend
-on those runs. The T0453 and T0603 examples can appear only as already written
-up in [pnc-background-research.md](pnc-background-research.md).
+**Rules for the question set.**
+- **Write the questions down before any run**, and record them as `question`
+  records. Nobody can then pick the questions after seeing which ones worked.
+- **Include some questions whose answer you already know** from your own
+  knowledge of the material, or from published work on it. That is how item 2
+  checks whether a known answer is found. Include others whose answer is open.
+- **Size.** 15–30 questions in total is realistic for a month. They may cover
+  one corpus or two, and should cover at least three of the kinds above.
+- **Use at least one question where agreement can mislead**, such as a
+  dependence question with known copying. That is where the paper's argument
+  about counting agreeing sources is tested.
 
 ## Deadlines
 
@@ -166,8 +165,8 @@ hypothesis quality. Everything so far consists of single runs on one corpus.
 
 ## Work that fits in a month
 
-The first two items are the paper. The third makes the second possible on open
-corpora. The fourth and fifth measure the protections the paper depends on.
+The first two items are the paper. The third makes the second possible on your
+data. The fourth and fifth measure the protections the paper depends on.
 The rest is optional. Day estimates are judgement.
 
 ### 1. Refuse conjectures whose tests cannot fail *(core; ~6 days)*
@@ -231,7 +230,7 @@ what item 1 adds. Use at least two model families.
 That does not predict the cost of this design. Run a pilot of 3 questions in
 both settings, read the spend from the event log, then size the full run.
 
-### 3. Remove the CBETA-only parts *(needed for item 2; ~4 days)*
+### 3. Make the remaining tools work on your data *(needed for item 2; ~4 days)*
 
 1. **Let researchers declare relations between texts in a file.** One row per
    relation: `witness_ref, witness_ref, relation, source`, where `relation` is
@@ -244,9 +243,9 @@ both settings, read the spend from the event log, then size the full run.
    `<listWit>`. This is only needed if a chosen corpus has variant readings
    marked up.
 
-Each change needs synthetic test data under `tmp_path`. Also add a test that
-CBETA behaviour is unchanged, because the person making these changes cannot
-check CBETA directly.
+Each change needs synthetic test data under `tmp_path`. The existing CBETA
+tests use synthetic markup, so they run without CBETA. Keep them passing; they
+are how you know the CBETA path still works.
 
 ### 4. Show that agreeing sources are not independent evidence *(supporting; ~4 days; no model spending)*
 
@@ -256,14 +255,12 @@ Measure how much counting agreeing witnesses overstates support, compared with
 - **Simulated copying.** Generate copies of a text from known family trees,
   varying copying errors, mixing between copies, and losses. Because the true
   relations are known, report results across these settings.
-- **The chosen corpora.** Use the relations declared in item 3. Someone with
-  CBETA access may add one CBETA run. That would be a lower bound, because
-  CBETA's "cf." cross-references are not read
-  ([changelog.md](changelog.md)).
+- **Your data.** Use the relations declared through item 3. Compare the
+  support counts for your questions with and without those relations.
 
 ### 5. Show which errors citation checks catch *(supporting; ~4 days; small model spending)*
 
-Plant five kinds of citation in the open corpora:
+Plant five kinds of citation in your data:
 
 - a changed character;
 - a shifted passage;
@@ -272,16 +269,11 @@ Plant five kinds of citation in the open corpora:
 - an unchanged control.
 
 Report which ones the passage re-fetch catches and which the reviewing agent
-catches. `scripts/run_negative_control.py` did one such case, but it reads
-CBETA, so rewrite it to use `LocalReader`.
+catches. `scripts/run_negative_control.py` did one such case. It reads CBETA,
+so write a new version that uses `LocalReader` on your data.
 
 ### Optional
 
-- **Leakage in attribution scores, run on CBETA by someone with access.**
-  Holding out single chapters instead of whole works raised agreement with
-  catalogue labels from 52% to 82%. Today that is recorded only in a docstring
-  of `cohort/attribution.py`. Turn it into a script, test it on synthetic data,
-  and have someone with access run it.
 - **More agents.** Run 1, 2, 4 and 8 agents at once on the item 2 questions,
   and check whether they converge because they share evidence. This is item 4
   in [handoff.md](handoff.md). Do not headline claims per agent
@@ -309,7 +301,7 @@ Corpus Research with LLM Agents.*
    support; the reviewing agent; and acceptance by the researcher only.
 3. **Evaluation.** Item 2.
 4. **Supporting analyses.** Items 4 and 5.
-5. **CBETA example.** T0453 and T0603, plus the leakage study if it was run.
+5. **Worked example.** One question from your data, traced from question to accepted finding or refusal.
 6. **Limitations.** Most of these are already listed under "What does not
    exist" in [handoff.md](handoff.md).
 
@@ -317,10 +309,10 @@ Corpus Research with LLM Agents.*
 
 | Dates | Build | Needs someone else | Write |
 |---|---|---|---|
-| 23–30 Nov | Choose corpora and write questions. Item 3. Item 1 parts 1, 4, 5. | Confirm venue, licences, raters, spend limit. | Outline, problem, related work ([references.md](references.md)). |
+| 23–30 Nov | Prepare your data and write the questions. Item 3. Item 1 parts 1, 4, 5. | Confirm venue, raters, spend limit. | Outline, problem, related work ([references.md](references.md)). |
 | 1–7 Dec | Item 1 parts 2, 3. Item 2 pilot. Simulated copying. | — | System section. |
-| 8–16 Dec | Item 2 full run. Items 4 and 5. | Optional CBETA run. | Evaluation set-up. |
-| 17–23 Dec | Expert rating. Optional items. | Optional leakage run. | Results. |
+| 8–16 Dec | Item 2 full run. Items 4 and 5. | — | Evaluation set-up. |
+| 17–23 Dec | Expert rating. Optional items. | — | Results. |
 | 24 Dec – 4 Jan | Freeze code and regenerate every table. | — | Limitations, ARR checklist, anonymization, submit. |
 
 Put each experiment in a script under a new, tracked `scripts/experiments/`
@@ -335,31 +327,29 @@ those files.
   the lab, the hosted URL and collaborators. Link an anonymized copy and keep
   real links out of the PDF and supplement.
 - **Data.** Nothing from `data/` goes in the paper, supplement or figures
-  ([AGENTS.md](../AGENTS.md#data-and-licences)). CBETA's licence is
-  non-commercial and share-alike; cite it.
+  ([AGENTS.md](../AGENTS.md#data-and-licences)). Quote from your own data only
+  as far as its licence or permission allows, and cite its source.
 - **ARR requirements.** A Limitations section and the Responsible NLP
   checklist. Take model spending and model names from the event log.
 - **Related work.** Cover LLM hypothesis-generation and "AI scientist" agents,
-  and research or fact-checking agents that count agreeing sources. For
-  Buddhist texts, TACL and CBC@ already support string comparison
-  ([pnc-background-research.md](pnc-background-research.md)). What is new is
+  and research or fact-checking agents that count agreeing sources. Also cover
+  the existing tools researchers in your data's field already use. What is new is
   the requirement that conjectures carry refutable tests, and its evaluation,
   not retrieval.
 
 ## Decisions for the project lead
 
 1. **Venue.** ACL or IJCAI, not both.
-2. **Corpora and questions.** Who proposes them, who confirms licences, and who
-   frames the questions, as Radich's Q1 did for CBETA.
+2. **The question set.** The person picking this up proposes questions about
+   their own data. Agree on them before any run.
 3. **Expert raters for item 2**, and whether they become authors.
 4. **Item 1's new refusals.** They tighten the rules in
    [design.md](design.md) §7, so approve them before they are merged.
 5. **Spending limit** for items 2 and 5 and the optional runs.
-6. **Michael Radich's role**, if any CBETA work uses his corpus.
-7. **The `feat/rq3` branches.** They are not ready to merge
+6. **The `feat/rq3` branches.** They are not ready to merge
    ([researcher-review.md](presentation/researcher-review.md): 77 lint findings
    and the chapter-leakage bug). Their idea of registering a prediction before
    measuring is close to item 1 and worth reusing.
-8. **[design.md](design.md) §1** still describes the contribution as
+7. **[design.md](design.md) §1** still describes the contribution as
    "methodological infrastructure for (Buddhist) DH". The paper claims more.
-9. **Authorship and affiliations.**
+8. **Authorship and affiliations.**
