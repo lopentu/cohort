@@ -1,112 +1,64 @@
 # Cohort
 
-Evidential pluralism made auditable — a supervised evidence graph for
-multi-agent textual research.
+Cohort helps a researcher go from **a research question over a corpus** to
+**hypotheses backed by citable evidence**. LLM agents propose; a reviewing
+agent from a different model family checks; only the researcher accepts.
 
-Agentic research systems usually import their verification model from
-fact-checking: many sources agreeing raises confidence. Transmitted textual
-corpora violate the independence assumption that model needs, because agreement
-between witnesses is usually evidence of shared descent rather than independent
-confirmation. COHORT is an evidence graph in which nothing is asserted as true,
-relations of descent and parallelism are first-class, claims must cite their
-sources, conjectures must arrive with what would refute them, and only the
-researcher can promote a finding to citable status.
+The agents work with two kinds of record:
 
-**📖 Documentation: [docs/index.md](docs/index.md)** — start there. It maps which
-document answers which question. If you're picking this project up fresh, read
-[docs/design.md](docs/design.md) then [docs/handoff.md](docs/handoff.md).
+- **Claims** must cite passages in the corpus. Before a claim can advance,
+  Cohort re-fetches every cited passage and checks that the quoted text is
+  really there.
+- **Conjectures** may go beyond what the cited passages say, which is how
+  something new gets proposed. In exchange, a conjecture is refused unless it
+  comes with a search that could refute it, plus a prediction of that search's
+  result, recorded before the search is run.
 
-## Quickstart
+Cohort also refuses to treat agreement between sources as independent support
+when the sources are recorded as copies or parallels of one another. Every
+proposal, check, refusal and decision is kept in an append-only event log.
 
-繁體中文：[快速上手與示範指南](docs/quickstart-zh-TW.md)，包含啟動方式、分頁功能、限制與三十分鐘操作流程。
+Cohort is meant to work with any research question over any corpus. It was
+developed on the Chinese Buddhist canon (CBETA), whose licence restricts
+redistribution, so that corpus is not in this repository.
 
-No corpus, no API key, no network needed:
+📖 **Documentation: [docs/index.md](docs/index.md).** 繁體中文：[快速上手](docs/quickstart-zh-TW.md)
 
-    python -m venv .venv && .venv/bin/pip install -e '.[dev]'
-    .venv/bin/pytest -q
-    .venv/bin/python demo.py
+## Try it: no corpus, API key or network needed
 
-`demo.py` prints the thing worth seeing first: a claim whose support count stays
-at two while its independence flag flips to false the moment a `parallel_of`
-edge is recorded. That is the counter-argument to consensus-seeking, in three
-lines of output.
+    uv sync --extra dev --extra ui
+    uv run pytest -q
+    uv run python demo.py
 
-For container startup and restart commands, see [Docker Compose](docs/docker.md).
+`demo.py` records a claim with two supporting witnesses. When a `parallel_of`
+link between those witnesses is added, the claim still counts two witnesses,
+but Cohort stops treating them as independent.
 
-Browser startup now requires local account setup: `uv run python scripts/setup_ui_auth.py`. See [login, languages and tour](docs/ui-access.md).
+To use your own texts, list plain-text files in a `manifest.csv`; see
+[docs/corpus.md](docs/corpus.md). Agent runs need an OpenRouter key: copy
+`.env.example` to `.env`, then see [docs/agents.md](docs/agents.md).
 
-For HTTPS hosting under `/cohort/`, see the [hosting preparation and recovery guide](docs/hosting.md). This package does not change a live proxy or publish restricted research data.
+## Where to go next
 
-## Two front ends, same capabilities
+| If you want to… | Read |
+|---|---|
+| understand the idea and its rules | [docs/design.md](docs/design.md) |
+| know what works today and what doesn't | [docs/handoff.md](docs/handoff.md) |
+| pick up the current work toward a paper | [docs/handoff-paper-2027.md](docs/handoff-paper-2027.md) |
+| use the browser UI or the CLI (they have the same features) | [docs/ui.md](docs/ui.md), [docs/cli.md](docs/cli.md) |
+| run it in Docker or host it | [docs/docker.md](docs/docker.md), [docs/hosting.md](docs/hosting.md) |
+| see what the docs cite | [docs/references.md](docs/references.md) |
 
-    cohort node claim:abc123      # provenance, with independence stated
-    cohort accept claim:abc123
-    cohort search 色即是空
+## Using an AI coding assistant
 
-Installed with the package. The CLI and the web UI cover the same capability
-set, and that is enforced by a test rather than intended — see
-[docs/cli.md](docs/cli.md).
+Point it at [AGENTS.md](AGENTS.md). Claude Code and Gemini CLI load it
+automatically, through `CLAUDE.md` and `GEMINI.md`. It gives the reading order,
+the commands, the rules the tests enforce, and the data you must not commit.
 
-## The researcher UI
+## Two things not to assume
 
-The same functionality as the Python API, in a browser — because COHORT should
-be usable as a library by people who write Python and as a tool by researchers
-who don't.
-
-    .venv/bin/pip install -e '.[ui]'
-    cd cohort/ui/frontend && npm install && npm run build && cd -
-    .venv/bin/python scripts/seed_demo_graph.py     # needs the corpus
-    .venv/bin/python scripts/serve_ui.py --db demo_graph.sqlite
-
-Reads never take the writer lock, so the UI can serve while an agent run is
-writing. Three capabilities are opt-in separately, because they carry different
-consequences — reading the corpus is free, accepting a finding is a scholarly
-act, and starting an agent run spends money:
-
-    --corpus        corpus browse/search
-    --allow-writes  the researcher's accept / reject / reopen
-    --allow-runs    the agent-run launcher   (--max-budget caps each run)
-
-It binds `127.0.0.1` by default and deliberately: the corpus behind the graph is
-licence-restricted. Over SSH, forward the port rather than changing the bind.
-Details in [docs/ui.md](docs/ui.md).
-
-## Access governance is a separate system, and it is not connected
-
-COHORT has **no** access-governance layer. There is no policy file, no
-allowlist, no request caps, no retention rules and no deletion verification, and
-nothing here should be read as providing any of them. That work belongs to
-ATELIER, which is a separate working system, currently **not** integrated —
-COHORT's `search`/`fetch` source interface is deliberately shaped like
-ATELIER's adapter so that integration later means writing one adapter class,
-but that integration has not happened.
-
-What COHORT does do about rights is narrow and worth stating exactly: the
-development corpus (CBETA v061) is locally held and licensed
-CC BY-NC-SA-equivalent, not public domain, so its terms are carried through
-every derived artifact — `source_terms` on every witness node and in every
-corpus API response — rather than dropped. Corpus bytes are never committed to
-this repository; only a local path is configured. That is provenance hygiene,
-not governance, and it is not a substitute for it.
-
-See [docs/corpus.md](docs/corpus.md) for setup.
-
-## Live scripts
-
-Everything under `scripts/` that calls a model is **manual-only and never run by
-the test suite**. Each one names its own cost in its docstring. Spend is capped
-in code (`cohort/agents/budget.py`) rather than estimated: the cap is checked
-*before* a request, and a response that reports no cost is charged an estimate
-rather than treated as free. Full reference in [docs/cli.md](docs/cli.md).
-
-## Conventions
-
-No linter or formatter is configured; match the surrounding style. The house
-habit that matters most: **a document about this system should report
-arithmetic, not assertion** — count the outputs rather than claiming things
-about them. If a rule in [docs/design.md](docs/design.md) cannot be honoured,
-say so and stop rather than quietly working around it.
-
-## Comparisons
-
-For comparisons with other implementations of this system by labmates, see [compare.md](compare.md).
+- **Cohort has no access-governance layer**: no allowlists, no retention rules,
+  no deletion checks. That belongs to a separate system, ATELIER, which is not
+  connected ([design.md](docs/design.md) §2).
+- **"Attested" means cited and located, never "true".** Only the researcher's
+  `accept` makes a finding citable.

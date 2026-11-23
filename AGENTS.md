@@ -6,12 +6,41 @@ rediscover it; when this file and `docs/design.md` disagree, design.md wins.
 
 ## What Cohort is
 
-An evidence graph for textual scholarship in which **nothing is asserted
-true**. Agents propose; a different agent checks that citations resolve; only
-the human researcher accepts. Refusals are an output, not an error path. The
+A system that helps a researcher go from a research question over a corpus to
+hypotheses backed by citable evidence, in which **nothing is asserted true**.
+Agents propose claims, which must cite passages, and conjectures, which must
+come with a search that could refute them. A different agent checks; only the
+human researcher accepts. Refusals are an output, not an error path. The
 event log (`*.jsonl`) is the ground truth and SQLite is a rebuildable
 projection of it. Read `docs/design.md` before changing anything under
 `cohort/graph.py`, `cohort/schemas.py` or `cohort/eventlog.py`.
+
+## Onboarding someone new
+
+If you are an assistant helping a person get started, walk them through this
+in order. Do not summarise the whole of `docs/`.
+
+1. **What it is for:** `README.md`, then `docs/design.md` §1 (thesis), §7
+   (claims and conjectures) and §8 (the promotion ladder).
+2. **What works and what doesn't:** `docs/handoff.md`. Its "What does not
+   exist" section is as important as what does.
+3. **How good the output has been:** `docs/presentation/conjecture-review.md`
+   and `docs/presentation/researcher-review.md`.
+4. **Current work:** `docs/handoff-paper-2027.md`, a one-month plan toward an
+   ACL 2027 or IJCAI-27 submission.
+5. **Run something:** the test suite and `demo.py` (see below). Neither needs a
+   corpus, an API key or network.
+
+Most collaborators **do not have CBETA or Radich's corpus**. Before suggesting a
+script, check its docstring: most of `scripts/` and all of
+`cohort/attribution.py` need one of them. What runs without them:
+
+- the tests;
+- `demo.py`;
+- `scripts/run_swarm_demo.py`, which needs an OpenRouter key;
+- any corpus the person supplies through `LocalReader` (`docs/corpus.md`).
+
+Never ask them to obtain or share `data/`.
 
 ## Setup and commands
 

@@ -1,16 +1,13 @@
 # PNC presentation source
 
-**Current editable base:** [cohort-pnc-2026-main.pptx](cohort-pnc-2026-main.pptx), supplied and edited by the presenter. Make subsequent edits directly in this file. `slides.json`, the older PowerPoint and its PDF predate the presenter’s edits; rebuilding them does not preserve this deck. Export a fresh PDF from the current PowerPoint when needed.
+**Current editable base:** [cohort-pnc-2026-main.pptx](cohort-pnc-2026-main.pptx), supplied and edited by the presenter. Make subsequent edits directly in this file. `slides.json` predates the presenter’s edits; rebuilding them does not preserve this deck. Export a fresh PDF from the current PowerPoint when needed.
 
 The current scope wording describes exact search, embedding-based passage retrieval, shared-wording alignment, agent proposals and source-linked review. It does not claim full semantic analysis or textual-variant collation.
 
 Downloads: [Current PowerPoint](cohort-pnc-2026-main.pptx) · [Taiwan Mandarin quickstart and presentation guide](../quickstart-zh-TW.md) · [Presenter cue card](presenter-cue-card.md)
 
-The older `cohort-pnc-2026.pptx` and PDF are retained as earlier versions.
-
 The deck follows the activities in the supplied abstract: corpus retrieval, semantic analysis, alignment, interpretation, provenance and researcher decisions. It has 21 slides in one main sequence: twenty minutes of slides and ten minutes in the application, with no scheduled audience Q&A.
 
-- [Earlier notes and downloaded explainer](earlier-notes.md): archived preparation sources; current instructions take precedence.
 - [Walkthrough](walkthrough.md): current controls, speaking guidance and background explanations.
 - [Researcher review](researcher-review.md): usefulness, limitations and inspection of the Q3 branches.
 - `slides.json`: editable text, geometry and speaker notes for all slides.

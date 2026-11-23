@@ -4,8 +4,8 @@ Prepared 7 September 2026. This is a reading companion for a presenter who
 knows NLP and is new to Buddhist textual scholarship. It explains why the
 research question matters, what the demonstration's documents represent, and
 which conclusions require historical judgment. Implementation boundaries
-belong in [the speaker canvas](pnc-speaker-canvas.md); reported experimental
-results belong in [the handoff](handoff.md), subject to that canvas's audit.
+are in [the researcher review](presentation/researcher-review.md); recomputed
+experimental results are in [the conjecture review](presentation/conjecture-review.md).
 No restricted corpus material was opened or reproduced for this document.
 
 ## The historical question behind the classifier
@@ -218,9 +218,10 @@ need not mean the target was produced by the people represented by the
 profile. The historical relationship makes the similarity expected.
 
 That is an explanatory model for the reported T0603 demonstration, not a new
-measurement in this research note. The handoff reports a change after T1694
-is withheld; the speaker canvas identifies unresolved numerical and wording
-issues. Keep the final numbers tied to the verified experiment record. Also
+measurement in this research note. The
+[conjecture review](presentation/conjecture-review.md) recomputes the change
+after T1694 is withheld and corrects how earlier wording interpreted it. Keep
+the final numbers tied to that recomputed record. Also
 keep a mixed corpus bin distinct from a person: a label such as
 `pre-Dhr-other` is a grouping used by the experiment, not the name of another
 translator.
@@ -313,8 +314,10 @@ than an extra feature list.
    observation was sought before or after the conjecture was recorded.
 6. **What did review actually establish?** Distinguish retrievable words,
    source identity, relevance, an attested proposal, and human acceptance.
-   The speaker canvas explains why the recorded demonstration must not be
-   narrated as an accepted dependency automatically changing future profiles.
+   [The walkthrough](presentation/walkthrough.md) explains why the recorded
+   demonstration must not be narrated as an accepted dependency automatically
+   changing future profiles: accepting a graph record does not change
+   Vocabulary comparison profiles.
 
 ## Short glossary and further reading
 
